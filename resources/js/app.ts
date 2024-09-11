@@ -1,6 +1,6 @@
 import './bootstrap'
 import '../css/app.css'
-// import '@/scss/style.scss'
+import '@/scss/style.scss'
 
 import { createApp, h, DefineComponent } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'
@@ -11,6 +11,8 @@ import vuetify from './plugins/vuetify'
 import PerfectScrollbar from 'vue3-perfect-scrollbar'
 import VueApexCharts from 'vue3-apexcharts'
 import VueTablerIcons from 'vue-tabler-icons'
+import VueScrollTo from 'vue-scrollto'
+import VueEasyLightbox from 'vue-easy-lightbox'
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel'
 
@@ -25,6 +27,11 @@ createInertiaApp({
 			.use(PerfectScrollbar)
 			.use(VueApexCharts)
 			.use(VueTablerIcons)
+			.use(VueEasyLightbox)
+			.use(VueScrollTo, {
+				duration: 1000,
+				easing: 'ease',
+			})
 			.mount(el)
 	},
 	progress: {
