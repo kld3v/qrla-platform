@@ -13,15 +13,17 @@ import VueApexCharts from 'vue3-apexcharts'
 import VueTablerIcons from 'vue-tabler-icons'
 import VueScrollTo from 'vue-scrollto'
 import VueEasyLightbox from 'vue-easy-lightbox'
+import { createPinia } from 'pinia'
+const pinia = createPinia()
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel'
 
 createInertiaApp({
 	title: (title) => `${title} - ${appName}`,
-	resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob<DefineComponent>('./Pages/**/*.vue')),
 	setup({ el, App, props, plugin }) {
 		createApp({ render: () => h(App, props) })
 			.use(plugin)
+			.use(pinia)
 			.use(ZiggyVue)
 			.use(vuetify)
 			.use(PerfectScrollbar)
@@ -34,6 +36,7 @@ createInertiaApp({
 			})
 			.mount(el)
 	},
+	resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob<DefineComponent>('./Pages/**/*.vue')),
 	progress: {
 		color: '#4B5563',
 	},
