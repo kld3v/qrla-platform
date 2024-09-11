@@ -20,21 +20,21 @@ export default defineConfig({
 		}),
 		vuetify({
 			autoImport: true,
-			styles: { configFile: 'src/scss/variables.scss' },
+			styles: { configFile: 'resources/js/scss/variables.scss' },
 		}),
 	],
-	// resolve: {
-	// 	alias: {
-	// 		'@': fileURLToPath(new URL('./src', import.meta.url)),
-	// 	},
-	// },
-	// css: {
-	// 	preprocessorOptions: {
-	// 		scss: {},
-	// 	},
-	// },
-	// optimizeDeps: {
-	// 	exclude: ['vuetify'],
-	// 	entries: ['./src/**/*.vue'],
-	// },
+	resolve: {
+		alias: {
+			'@': fileURLToPath(new URL('./resources/js', import.meta.url)),
+		},
+	},
+	css: {
+		preprocessorOptions: {
+			scss: {},
+		},
+	},
+	optimizeDeps: {
+		exclude: ['vuetify'],
+		entries: ['./resources/js/**/*.vue'],
+	},
 })
