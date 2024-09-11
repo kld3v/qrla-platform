@@ -7,6 +7,8 @@ import PrimaryButton from '@/components/PrimaryButton.vue'
 import TextInput from '@/components/TextInput.vue'
 import { Head, Link, useForm } from '@inertiajs/vue3'
 
+import BoxedLogin from '@/views/authentication/BoxedLogin.vue'
+
 defineProps<{
 	canResetPassword?: boolean
 	status?: string
@@ -101,4 +103,5 @@ const submit = () => {
 			</div>
 		</form>
 	</GuestLayout>
+	<BoxedLogin />
 </template>
