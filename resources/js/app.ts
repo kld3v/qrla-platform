@@ -16,6 +16,7 @@ import VueEasyLightbox from 'vue-easy-lightbox'
 import { createPinia } from 'pinia'
 const pinia = createPinia()
 
+import { Link } from '@inertiajs/vue3'
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel'
 
 createInertiaApp({
@@ -34,6 +35,7 @@ createInertiaApp({
 				duration: 1000,
 				easing: 'ease',
 			})
+			.component('Link', Link)
 			.mount(el)
 	},
 	resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob<DefineComponent>('./Pages/**/*.vue')),

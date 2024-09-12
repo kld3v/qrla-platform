@@ -75,10 +75,10 @@ function validate(values: any, { setErrors }: any) {
 			hide-details="auto"></VTextField>
 		<div class="d-flex justify-space-between align-center pb-2">
 			<v-label class="font-weight-semibold">Password</v-label>
-			<RouterLink
-				to="/auth/forgot-password2"
+			<Link
+				href="/auth/forgot-password2"
 				class="text-primary text-decoration-none font-weight-medium"
-				>Forgot Password ?</RouterLink
+				>Forgot Password ?</Link
 			>
 		</div>
 
