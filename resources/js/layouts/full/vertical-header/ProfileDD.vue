@@ -37,8 +37,8 @@ import { profileDD } from '@/_mockApis/headerData'
 							width="55" />
 					</v-avatar>
 					<div class="ml-3">
-						<h6 class="text-subtitle-1">David McMichael <span class="text-success text-caption">Pro</span></h6>
-						<span class="text-subtitle-1 textSecondary">david@wrappixel.com</span>
+						<h6 class="text-subtitle-1">{{ $page.props.auth.user.name }}<span class="text-success text-caption"> Pro</span></h6>
+						<span class="text-subtitle-1 textSecondary">{{ $page.props.auth.user.email }}</span>
 					</div>
 				</div>
 				<v-divider></v-divider>

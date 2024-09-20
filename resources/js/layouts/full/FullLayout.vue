@@ -44,15 +44,6 @@ const customizer = useCustomizerStore()
 						<div>
 							<div :class="customizer.boxed ? 'maxWidth' : ''">
 								<slot></slot>
-								<v-btn
-									class="customizer-btn"
-									size="large"
-									icon
-									variant="flat"
-									color="primary"
-									@click.stop="customizer.SET_CUSTOMIZER_DRAWER(!customizer.Customizer_drawer)">
-									<SettingsIcon />
-								</v-btn>
 							</div>
 						</div>
 					</v-container>

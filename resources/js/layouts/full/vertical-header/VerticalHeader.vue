@@ -70,26 +70,6 @@ const getCart = computed(() => {
 
 		<ThemeToggler />
 
-		<!-- ---------------------------------------------- -->
-		<!-- ShoppingCart -->
-		<!-- ---------------------------------------------- -->
-		<v-btn
-			icon
-			class="custom-hover-primary hidden-sm-and-down"
-			size="small"
-			variant="text"
-			color="primary"
-			to="/ecommerce/checkout">
-			<v-badge
-				color="error"
-				:content="getCart?.length">
-				<Icon
-					icon="solar:cart-large-2-outline"
-					height="22" />
-			</v-badge>
-		</v-btn>
-
-		<!-- ---------------------------------------------- -->
 		<!-- Notification -->
 		<!-- ---------------------------------------------- -->
 		<div class="hidden-sm-and-down">
