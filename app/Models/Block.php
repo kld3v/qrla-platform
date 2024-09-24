@@ -9,11 +9,11 @@ class Block extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['venue_id', 'name', 'base_url_id'];
+    protected $fillable = ['name', 'stand_id', 'base_url_id'];
 
-    public function venue()
+    public function stand()
     {
-        return $this->belongsTo(Venue::class);
+        return $this->belongsTo(Stand::class);
     }
 
     public function baseUrl()
