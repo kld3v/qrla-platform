@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\VenueController;
 use App\Http\Controllers\BlockController;
+use App\Http\Controllers\PlaqueController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -43,5 +44,7 @@ Route::get('/venues/{venue}/blocks/{name}', [BlockController::class, 'show'])->n
 
 // // Route to see all of the stats for a specific block by block name within a venue
 // Route::get('/venues/{venue}/blocks/{block_name}/stats', [BlockStatsController::class, 'show'])->name('blocks.stats');
+
+Route::get('/{short_code}', [PlaqueController::class, 'redirectPlaque'])->name('plaques.redirect');
 
 require __DIR__.'/auth.php';
