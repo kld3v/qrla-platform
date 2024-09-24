@@ -35,4 +35,14 @@ class Venue extends Model
     {
         return $this->hasMany(Block::class);
     }
+
+    public function redirect()
+    {
+        return $this->hasOne(Redirect::class);
+    }
+
+    public function logos()
+    {
+        return $this->hasMany(Logo::class);
+    }
 }

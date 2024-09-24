@@ -1,0 +1,46 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Redirect extends Model
+{
+    use HasFactory;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'venue_id',
+        'logo_id',
+        'redirect_preset_id',
+    ];
+
+    /**
+     * Get the venue that owns the redirect.
+     */
+    public function venue()
+    {
+        return $this->belongsTo(Venue::class);
+    }
+
+    /**
+     * Get the logo associated with the redirect.
+     */
+    public function logo()
+    {
+        return $this->belongsTo(Logo::class);
+    }
+
+    /**
+     * Get the preset associated with the redirect.
+     */
+    public function preset()
+    {
+        return $this->belongsTo(RedirectPreset::class, 'redirect_preset_id');
+    }
+}
