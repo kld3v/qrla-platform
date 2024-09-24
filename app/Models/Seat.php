@@ -15,9 +15,8 @@ class Seat extends Model
     {
         return $this->belongsTo(Block::class);
     }
-
-    public function plaque()
+    public function plaques()
     {
-        return $this->hasOne(Plaque::class);
+        return $this->morphMany(Plaque::class, 'plaqueable');
     }
 }

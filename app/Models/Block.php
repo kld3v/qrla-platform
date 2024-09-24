@@ -9,15 +9,25 @@ class Block extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['venue_id', 'name'];
+    protected $fillable = ['venue_id', 'name', 'base_url_id'];
 
     public function venue()
     {
         return $this->belongsTo(Venue::class);
     }
 
+    public function baseUrl()
+    {
+        return $this->belongsTo(BaseUrl::class);
+    }
+
     public function seats()
     {
         return $this->hasMany(Seat::class);
+    }
+
+    public function plaques()
+    {
+        return $this->morphMany(Plaque::class, 'plaqueable');
     }
 }

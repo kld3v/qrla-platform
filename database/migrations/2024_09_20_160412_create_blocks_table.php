@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('venue_id')->constrained()->onDelete('cascade');
             $table->string('name');
+            $table->foreignId('base_url_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

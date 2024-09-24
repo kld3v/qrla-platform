@@ -9,15 +9,10 @@ class Plaque extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['seat_id', 'block_id', 'short_code'];
+    protected $fillable = ['short_code', 'plaqueable'];
 
-    public function seat()
+    public function plaqueable()
     {
-        return $this->belongsTo(Seat::class);
-    }
-
-    public function block()
-    {
-        return $this->belongsTo(Block::class);
+        return $this->morphTo();
     }
 }

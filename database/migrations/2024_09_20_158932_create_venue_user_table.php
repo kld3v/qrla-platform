@@ -9,22 +9,21 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('plaques', function (Blueprint $table) {
+        Schema::create('venue_user', function (Blueprint $table) {
             $table->id();
-            $table->string('short_code')->unique();
-            $table->nullableMorphs('plaqueable');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('venue_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
-    
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('plaques');
+        Schema::dropIfExists('venue_user');
     }
 };

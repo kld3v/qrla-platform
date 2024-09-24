@@ -9,22 +9,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('plaques', function (Blueprint $table) {
+        Schema::create('base_urls', function (Blueprint $table) {
             $table->id();
-            $table->string('short_code')->unique();
-            $table->nullableMorphs('plaqueable');
+            $table->string('url');
             $table->timestamps();
         });
     }
-    
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('plaques');
+        Schema::dropIfExists('venues');
     }
 };
