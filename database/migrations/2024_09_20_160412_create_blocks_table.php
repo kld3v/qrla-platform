@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('blocks', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('stand_id')->constrained()->onDelete('cascade');
+            $table->foreignId('stand_id')->constrained()->onDelete('cascade');
             $table->foreignId('base_url_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });

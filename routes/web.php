@@ -5,6 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\VenueController;
+use App\Http\Controllers\BlockController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -35,7 +36,7 @@ Route::get('/venues/{venue}', [VenueController::class, 'show'])->name('venues.sh
 Route::get('/venues/{venue}/blocks', [BlockController::class, 'index'])->name('blocks.index');
 
 // Route to see a specific block within a venue by block name
-Route::get('/venues/{venue}/blocks/{block_name}', [BlockController::class, 'show'])->name('blocks.show');
+Route::get('/venues/{venue}/blocks/{name}', [BlockController::class, 'show'])->name('blocks.show');
 
 // // Route to see all of the stats for a specific venue
 // Route::get('/venues/{venue}/stats', [VenueStatsController::class, 'show'])->name('venues.stats');
