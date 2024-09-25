@@ -19,7 +19,7 @@ class PlaqueController extends Controller
             $stand = $plaqueable->stand->name;
             $block = $plaqueable->name;
 
-            echo $baseUrl . "?stand=" . urlencode($stand) . "&block=" . urlencode($block);
+            $path =  $baseUrl . "?stand=" . urlencode($stand) . "&block=" . urlencode($block);
         } elseif ($plaque->plaqueable_type === 'seat') {
             $block = $plaqueable->block;
             $baseUrl = $block->baseUrl->url;
@@ -28,9 +28,24 @@ class PlaqueController extends Controller
             $row = $plaqueable->row;
             $seatNumber = $plaqueable->seat_number;
 
-            echo $baseUrl . "?stand=" . urlencode($stand) . "&block=" . urlencode($blockName) . "&row=" . urlencode($row) . "&seat=" . urlencode($seatNumber);
+            $path =  $baseUrl . "?stand=" . urlencode($stand) . "&block=" . urlencode($blockName) . "&row=" . urlencode($row) . "&seat=" . urlencode($seatNumber);
         } else {
             abort(404, 'Plaque type not supported.');
         }
+
+        // Fetch related redirect preset and logo (if exists)
+        $redirect = $plaqueable->baseUrl->redirect;
+        $logo = $redirect->logo;
+        $logoPath = $logo ? $logo->path : null;
+        $presetView = 'redirect_presets.' . $redirect->preset->file_name;
+
+        // Return the view for the preset with the required data
+        return view($presetView, [
+            'shortUrl' => (object)[
+                'destination_url' => $path,
+            ],
+            'logoPath' => $logoPath,
+            'domain' => parse_url( $path, PHP_URL_HOST),
+        ]);
     }
 }

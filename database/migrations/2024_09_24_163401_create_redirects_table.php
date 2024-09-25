@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('redirects', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('venue_id')->constrained()->onDelete('cascade');
+            $table->foreignId('base_url_id')->constrained()->onDelete('cascade');
             $table->foreignId('logo_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('redirect_preset_id')->constrained('redirect_presets')->onDelete('cascade');
             $table->timestamps();

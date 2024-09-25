@@ -15,17 +15,14 @@ class Redirect extends Model
      * @var array
      */
     protected $fillable = [
-        'venue_id',
+        'base_url_id',
         'logo_id',
         'redirect_preset_id',
     ];
-
-    /**
-     * Get the venue that owns the redirect.
-     */
-    public function venue()
+    
+    public function baseUrl()
     {
-        return $this->belongsTo(Venue::class);
+        return $this->belongsTo(BaseUrl::class);
     }
 
     /**
