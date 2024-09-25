@@ -38,6 +38,14 @@ const findTitleByPath = (items: any, path: any) => {
 	return title
 }
 
+const foundId = findTitleByPath(sidebarItems, window.location.pathname)
+const getCurrent = foundId ? foundId : 1
+const currentMenu = ref<any>(getCurrent)
+function showData(data: any) {
+	currentMenu.value = data
+	//customizer.SET_MINI_SIDEBAR(!customizer.mini_sidebar)
+}
+
 // MiniSidebar Icons End
 const customizer = useCustomizerStore()
 const sidebarMenu = shallowRef(sidebarItems)
@@ -45,16 +53,16 @@ const sidebarMenu = shallowRef(sidebarItems)
 
 <template>
 	<!-- Minisidebar Icons -->
-	<v-navigation-drawer
+	<!-- <v-navigation-drawer
 		class="bg-light"
 		v-model="customizer.Sidebar_drawer"
 		top="0"
 		rail
 		rail-width="80">
-		<perfect-scrollbar class="miniscrollnavbar">
-			<v-list-item class="px-0">
-				<!-- Toggle Sidebar Button -->
-				<div class="px-4 mb-3">
+		<perfect-scrollbar class="miniscrollnavbar"> -->
+	<!-- <v-list-item class="px-0"> -->
+	<!-- Toggle Sidebar Button -->
+	<!-- <div class="px-4 mb-3">
 					<v-btn
 						class="hidden-md-and-down my-2"
 						icon
@@ -65,37 +73,39 @@ const sidebarMenu = shallowRef(sidebarItems)
 							icon="solar:hamburger-menu-line-duotone"
 							height="25" />
 					</v-btn>
-				</div>
+				</div> -->
 
-				<div class="miniicons mt-lg-0 mt-4">
-					<!-- MiniSidebar Icons -->
-					<div class="d-flex flex-column gap-2">
+	<!-- <div class="miniicons mt-lg-0 mt-4"> -->
+	<!-- MiniSidebar Icons -->
+	<!-- <div class="d-flex flex-column gap-2">
 						<div
 							class="miniicons-list px-4"
 							v-for="menu in MiniSideIcons"
-							:key="menu.icon">
-							<v-btn
+							:key="menu.icon"> -->
+	<!-- <v-btn
 								rounded="md"
 								flat
 								icon
-								variant="plain">
+								variant="plain"
+								@click="showData(menu.id)"
+								:class="{ 'bg-primary opacity-1': currentMenu === menu.id }">
 								<Icon
 									:icon="'solar:' + menu.icon"
-									width="25" />
-								<!-- Tooltip on Hover -->
-								<v-tooltip
+									width="25" /> -->
+	<!-- Tooltip on Hover -->
+	<!-- <v-tooltip
 									activator="parent"
 									location="end"
 									class="custom-tooltip"
 									>{{ menu.tooltip }}</v-tooltip
 								>
-							</v-btn>
-						</div>
+						 </v-btn> -->
+	<!-- </div>
 					</div>
 				</div>
 			</v-list-item>
 		</perfect-scrollbar>
-	</v-navigation-drawer>
+	</v-navigation-drawer> -->
 
 	<!-- LeftSidebar Items -->
 	<v-navigation-drawer
@@ -119,7 +129,7 @@ const sidebarMenu = shallowRef(sidebarItems)
 			<div class="px-4 py-0 sidebar-menus">
 				<v-list class="py-1">
 					<template v-for="(item, i) in sidebarMenu">
-						<template>
+						<template v-if="currentMenu == item.id">
 							<!---Item Sub Header -->
 							<NavGroup
 								:item="item"

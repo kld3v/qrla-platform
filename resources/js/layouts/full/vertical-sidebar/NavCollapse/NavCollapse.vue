@@ -29,7 +29,7 @@ const props = defineProps({ item: Object, level: Number })
 						:class="'text-' + item.BgColor" />
 				</template>
 				<!---Title  -->
-				<v-list-item-title class="mr-auto">{{}}</v-list-item-title>
+				<v-list-item-title class="mr-auto">{{ item.title }}</v-list-item-title>
 				<!---If Caption-->
 				<v-list-item-subtitle
 					v-if="item.subCaption"

@@ -10,6 +10,6 @@ const props = defineProps({ item: Object })
 				stroke-width="1.5"
 				class="iconClass"
 		/></span>
-		<span class="mini-text">{{}}</span>
+		<span class="mini-text">{{ props.item.header }}</span>
 	</v-list-subheader>
 </template>
