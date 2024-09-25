@@ -198,7 +198,7 @@
       </text>
     </svg>
     <img class="logo" src="{{ asset($logoPath) }}" alt="User Logo">
-    <p class="below-image__green-text">{{ $destination_url }}</p>
+    <p class="below-image__green-text">{{ $domain }}</p>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.10.2/lottie.min.js"></script>
