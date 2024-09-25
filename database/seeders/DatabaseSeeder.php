@@ -22,6 +22,9 @@ class DatabaseSeeder extends Seeder
             BlocksTableSeeder::class,      // Seeds blocks related to stands
             SeatsTableSeeder::class,       // Seeds seats related to blocks
             MarkersTableSeeder::class,     // Seeds markers for both blocks and seats
+            RedirectPresetSeeder::class,  
+            LogoSeeder::class,  
+            RedirectSeeder::class,  
         ]);
     }
 }
