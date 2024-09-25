@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
         // Instead of storing the fully qualified class
         // names (App\Models\Seat or App\Models\Block),
         // it will store the simpler strings 'seat' and 'block'
-        // in the plaqueable_type column of your plaques table.
+        // in the markerable_type column of your markers table.
         Relation::enforceMorphMap([
             'seat' => 'App\Models\Seat',
             'block' => 'App\Models\Block',
