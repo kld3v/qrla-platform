@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   @if(!isset($testing))
-  <meta http-equiv="refresh" content="3;url={{ $shortUrl->destination_url }}">
+  <meta http-equiv="refresh" content="3;url={{ $destination_url }}">
   @endif
   <title>Redirecting...</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -198,7 +198,7 @@
       </text>
     </svg>
     <img class="logo" src="{{ asset($logoPath) }}" alt="User Logo">
-    <p class="below-image__green-text">{{ $shortUrl->destination_url }}</p>
+    <p class="below-image__green-text">{{ $destination_url }}</p>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.10.2/lottie.min.js"></script>
