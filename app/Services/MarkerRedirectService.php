@@ -2,17 +2,17 @@
 
 namespace App\Services;
 
-use App\Models\Plaque;
+use App\Models\Marker;
 use App\Models\Block;
 use App\Models\Seat;
 
-class PlaqueRedirectService
+class MarkerRedirectService
 {
-    public function getPlaqueByShortCode($short_code)
+    public function getMarkerByShortCode($short_code)
     {
-        return Plaque::where('short_code', $short_code)
+        return Marker::where('short_code', $short_code)
             ->with([
-                'plaqueable' => function ($morphTo) {
+                'markerable' => function ($morphTo) {
                     $morphTo->morphWith([
                         Block::class => ['baseUrl.redirect.logo', 'baseUrl.redirect.preset'],
                         Seat::class => ['block.baseUrl.redirect.logo', 'block.baseUrl.redirect.preset'],
@@ -22,34 +22,34 @@ class PlaqueRedirectService
             ->firstOrFail();
     }
 
-    public function buildDestinationUrl($plaqueable, $type)
+    public function buildDestinationUrl($markerable, $type)
     {
         if ($type === 'block') {
-            $baseUrl = $plaqueable->baseUrl->url;
-            $stand = $plaqueable->stand->name;
-            $block = $plaqueable->name;
+            $baseUrl = $markerable->baseUrl->url;
+            $stand = $markerable->stand->name;
+            $block = $markerable->name;
             return $baseUrl . "?stand=" . urlencode($stand) . "&block=" . urlencode($block);
         } elseif ($type === 'seat') {
-            $block = $plaqueable->block;
+            $block = $markerable->block;
             $baseUrl = $block->baseUrl->url;
             $stand = $block->stand->name;
             $blockName = $block->name;
-            $row = $plaqueable->row;
-            $seatNumber = $plaqueable->seat_number;
+            $row = $markerable->row;
+            $seatNumber = $markerable->seat_number;
             return $baseUrl . "?stand=" . urlencode($stand) . "&block=" . urlencode($blockName) . "&row=" . urlencode($row) . "&seat=" . urlencode($seatNumber);
         } else {
-            abort(404, 'Plaque type not supported.');
+            abort(404, 'Marker type not supported.');
         }
     }
 
-    public function getRedirectData($plaqueable)
+    public function getRedirectData($markerable)
     {
-        if ($plaqueable instanceof Block) {
-            $baseUrl = $plaqueable->baseUrl;
-        } elseif ($plaqueable instanceof Seat) {
-            $baseUrl = $plaqueable->block->baseUrl;
+        if ($markerable instanceof Block) {
+            $baseUrl = $markerable->baseUrl;
+        } elseif ($markerable instanceof Seat) {
+            $baseUrl = $markerable->block->baseUrl;
         } else {
-            abort(404, 'Plaque type not supported.');
+            abort(404, 'Marker type not supported.');
         }
 
         $redirect = $baseUrl->redirect;

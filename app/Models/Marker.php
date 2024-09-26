@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Plaque extends Model
+class Marker extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['short_code', 'plaqueable'];
+    protected $fillable = ['short_code', 'markerable'];
 
-    public function plaqueable()
+    public function markerable()
     {
         return $this->morphTo();
     }

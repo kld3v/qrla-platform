@@ -26,8 +26,8 @@ class Block extends Model
         return $this->hasMany(Seat::class);
     }
 
-    public function plaques()
+    public function markers()
     {
-        return $this->morphMany(Plaque::class, 'plaqueable');
+        return $this->morphMany(Marker::class, 'markerable');
     }
 }

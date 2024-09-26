@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('plaques', function (Blueprint $table) {
+        Schema::create('markers', function (Blueprint $table) {
             $table->id();
             $table->string('short_code')->unique();
-            $table->nullableMorphs('plaqueable');
+            $table->nullableMorphs('markerable');
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('plaques');
+        Schema::dropIfExists('markers');
     }
 };
