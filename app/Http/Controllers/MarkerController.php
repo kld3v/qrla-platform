@@ -14,7 +14,7 @@ class MarkerController extends Controller
         $this->markerRedirectService = $markerRedirectService;
     }
 
-    public function redirectMarker($short_code)
+    public function handleMarkerRedirect($short_code)
     {
         $marker = $this->markerRedirectService->getMarkerByShortCode($short_code);
         $markerable = $marker->markerable;
