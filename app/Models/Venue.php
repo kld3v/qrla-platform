@@ -29,8 +29,9 @@ class Venue extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class, 'venue_user');
     }
+    
 
     public function blocks()
     {
@@ -45,5 +46,10 @@ class Venue extends Model
     public function logos()
     {
         return $this->hasMany(Logo::class);
+    }
+
+    public function stands()
+    {
+        return $this->hasMany(Stand::class);
     }
 }

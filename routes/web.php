@@ -36,15 +36,11 @@ Route::get('/venues/{venue}', [VenueController::class, 'show'])->name('venues.sh
 // Route to see all blocks associated with a specific venue
 Route::get('/venues/{venue}/blocks', [BlockController::class, 'index'])->name('blocks.index');
 
-// Route to see a specific block within a venue by block name
-Route::get('/venues/{venue}/blocks/{name}', [BlockController::class, 'show'])->name('blocks.show');
-
 // // Route to see all of the stats for a specific venue
 // Route::get('/venues/{venue}/stats', [VenueStatsController::class, 'show'])->name('venues.stats');
 
 // // Route to see all of the stats for a specific block by block name within a venue
 // Route::get('/venues/{venue}/blocks/{block_name}/stats', [BlockStatsController::class, 'show'])->name('blocks.stats');
+require __DIR__.'/auth.php';
 
 Route::get('/{short_code}', [MarkerController::class, 'handleMarkerRedirect'])->name('markers.redirect');
-
-require __DIR__.'/auth.php';
