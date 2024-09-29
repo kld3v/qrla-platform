@@ -34,7 +34,6 @@ const customizer = useCustomizerStore()
 			<VerticalSidebarVue v-if="!customizer.setHorizontalLayout" />
 			<div :class="customizer.boxed ? 'maxWidth' : 'full-header'"><VerticalHeaderVue v-if="!customizer.setHorizontalLayout" /></div>
 			<div :class="customizer.boxed ? 'maxWidth' : 'full-header'"><HorizontalHeader v-if="customizer.setHorizontalLayout" /></div>
-			<HorizontalSidebar v-if="customizer.setHorizontalLayout" />
 
 			<v-main class="mr-md-4">
 				<div class="mb-3 hr-layout bg-containerBg">

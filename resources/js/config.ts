@@ -16,7 +16,7 @@ const config: ConfigProps = {
 	setHorizontalLayout: false, // Horizontal layout
 	setRTLLayout: false, // RTL layout
 	actTheme: 'DARK_BLUE_THEME',
-	boxed: true,
+	boxed: false,
 	setBorderCard: false,
 }
 

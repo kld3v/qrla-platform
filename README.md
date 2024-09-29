@@ -4,6 +4,10 @@ To install you must have: php composer node(and npm)
 
 # Pages
 
+Everything that has the potential to be rendered by inertia goes in Pages.
+
+Files in pages will reach out into the Components directory via @Components to pull code snippets in to build the file.
+
 The page structure is as follows:
 
 In the pages directory, create a new directory for each page. For each page, create a main vue component and a sibling partials directory. In the partials directory, put all sub components for the
