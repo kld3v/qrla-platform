@@ -55,15 +55,11 @@ const props = defineProps({
 		default: true,
 	},
 })
-
-if (props.isHome) {
-	customizer.SET_MINI_SIDEBAR(true)
-}
 </script>
 
 <template>
 	<!-- Minisidebar Icons -->
-	<v-navigation-drawer
+	<!-- <v-navigation-drawer
 		class="bg-background"
 		v-model="customizer.Sidebar_drawer"
 		top="0"
@@ -71,7 +67,6 @@ if (props.isHome) {
 		rail-width="80">
 		<perfect-scrollbar class="miniscrollnavbar">
 			<v-list-item class="px-0">
-				<!-- Toggle Sidebar Button -->
 				<div
 					v-if="!isHome"
 					class="px-4 mb-3">
@@ -88,7 +83,6 @@ if (props.isHome) {
 				</div>
 
 				<div :class="['miniicons mt-lg-0 mt-4', { 'pt-4': isHome }]">
-					<!-- MiniSidebar Icons -->
 					<div class="d-flex flex-column gap-2">
 						<div
 							class="miniicons-list px-4"
@@ -104,7 +98,7 @@ if (props.isHome) {
 								<Icon
 									:icon="'solar:' + menu.icon"
 									width="25" />
-								<!-- Tooltip on Hover -->
+
 								<v-tooltip
 									activator="parent"
 									location="end"
@@ -117,7 +111,7 @@ if (props.isHome) {
 				</div>
 			</v-list-item>
 		</perfect-scrollbar>
-	</v-navigation-drawer>
+	</v-navigation-drawer> -->
 
 	<!-- LeftSidebar Items -->
 	<v-navigation-drawer

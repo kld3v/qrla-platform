@@ -13,12 +13,12 @@ import { Icon } from '@iconify/vue'
 				This month <strong>+15% Profit</strong>
 			</div>
 			<div class="pt-6 mt-12">
-				<h3 class="text-h3 text-white mb-2">Hey, Daviddddd McMichael</h3>
-				<p class="opacity-80 mb-1 text-white text-subtitle-1">Aenean vel libero id metus sollicitudin</p>
+				<h3 class="text-h3 text-white mb-2">Hello, {{ $page.props.auth.user.name }}</h3>
+				<p class="opacity-80 mb-1 text-white text-subtitle-1">Welcome to the QRLA dashboard.</p>
 			</div>
 		</v-card-item>
 		<img
-			src="@/assets/images/backgrounds/welcome-bg2.png"
+			src="@/assets/images/backgrounds/outline_logo.png"
 			alt="matdash-img"
 			class="position-absolute" />
 	</v-card>

@@ -3,7 +3,7 @@ import Logoimg from '@/assets/images/logos/logo.svg'
 </script>
 <template>
 	<div class="logo">
-		<Link href="/">
+		<Link href="/venues">
 			<img
 				:src="Logoimg"
 				alt="home" />
