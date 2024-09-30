@@ -17,10 +17,6 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/home', function () {
-    return Inertia::render(component: 'Home/index');
-})->middleware(middleware: ['auth', 'verified'])->name('dashboard');
-
 Route::middleware('auth')->group(function (): void {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -45,6 +41,6 @@ Route::get('/venues/{venue}/blocks/{name}', [BlockController::class, 'show'])->n
 // // Route to see all of the stats for a specific block by block name within a venue
 // Route::get('/venues/{venue}/blocks/{block_name}/stats', [BlockStatsController::class, 'show'])->name('blocks.stats');
 
-Route::get('/{short_code}', [MarkerController::class, 'handleMarkerRedirect'])->name('markers.redirect');
-
 require __DIR__.'/auth.php';
+
+Route::get('/{short_code}', [MarkerController::class, 'handleMarkerRedirect'])->name('markers.redirect');
