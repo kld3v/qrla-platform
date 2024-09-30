@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             RedirectPresetSeeder::class,  
             LogoSeeder::class,  
             RedirectSeeder::class,  
+            AccessLogSeeder::class,  
         ]);
     }
 }

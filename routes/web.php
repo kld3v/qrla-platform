@@ -7,6 +7,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\VenueController;
 use App\Http\Controllers\BlockController;
 use App\Http\Controllers\MarkerController;
+use App\Http\Controllers\StatsController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -35,6 +36,9 @@ Route::get('/venues/{venue}', [VenueController::class, 'show'])->name('venues.sh
 
 // Route to see all blocks associated with a specific venue
 Route::get('/venues/{venue}/blocks', [BlockController::class, 'index'])->name('blocks.index');
+
+
+Route::get('/stats/accesses-over-time', [StatsController::class, 'getAccessesOverTime']);
 
 // // Route to see all of the stats for a specific venue
 // Route::get('/venues/{venue}/stats', [VenueStatsController::class, 'show'])->name('venues.stats');

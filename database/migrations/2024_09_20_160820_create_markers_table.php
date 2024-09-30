@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('markers', function (Blueprint $table) {
             $table->id();
             $table->string('short_code')->unique();
-            $table->nullableMorphs('markerable');
+            $table->morphs('markerable');
             $table->timestamps();
         });
     }
