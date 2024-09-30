@@ -5,10 +5,6 @@ import { useCustomizerStore } from '../../stores/customizer'
 import { ref } from 'vue'
 
 const customizer = useCustomizerStore()
-
-const props = defineProps<{
-	isHome: boolean
-}>()
 </script>
 
 <template>
@@ -31,7 +27,7 @@ const props = defineProps<{
 				v-model="customizer.Customizer_drawer"
 				width="320">
 			</v-navigation-drawer>
-			<VerticalSidebarVue :isHome="isHome" />
+			<VerticalSidebarVue />
 			<VerticalHeaderVue />
 
 			<v-main class="mr-md-4">
