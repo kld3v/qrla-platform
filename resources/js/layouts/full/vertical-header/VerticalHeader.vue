@@ -50,14 +50,14 @@ const getCart = computed(() => {
 		<!-- ---------------------------------------------- -->
 		<!-- Search part -->
 		<!-- ---------------------------------------------- -->
-		<Searchbar />
+		<!-- <Searchbar /> -->
 
 		<!-- ---------------------------------------------- -->
 		<!-- Mega menu -->
 		<!-- ---------------------------------------------- -->
-		<div class="hidden-sm-and-down">
+		<!-- <div class="hidden-sm-and-down">
 			<Navigations />
-		</div>
+		</div> -->
 
 		<v-spacer class="hidden-sm-and-down" />
 

@@ -29,11 +29,11 @@ const DARK_BLUE_THEME: ThemeTypes = {
 		hoverColor: '#333f55',
 		surface: '#03111B',
 		// surface done
-		grey100: '#333F55',
-		grey200: '#465670',
+		grey100: '#041522',
+		grey200: '#041522',
 		light: '#1F2A3D',
 		muted: '#babfc3',
-		darkgray: '#404A5A',
+		darkgray: '#041522',
 	},
 }
 

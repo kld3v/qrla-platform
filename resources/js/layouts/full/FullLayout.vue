@@ -2,8 +2,13 @@
 import VerticalSidebarVue from './vertical-sidebar/VerticalSidebar.vue'
 import VerticalHeaderVue from './vertical-header/VerticalHeader.vue'
 import { useCustomizerStore } from '../../stores/customizer'
+import { ref } from 'vue'
 
 const customizer = useCustomizerStore()
+
+const props = defineProps<{
+	isHome: boolean
+}>()
 </script>
 
 <template>
@@ -25,10 +30,9 @@ const customizer = useCustomizerStore()
 				location="right"
 				v-model="customizer.Customizer_drawer"
 				width="320">
-				<Customizer />
 			</v-navigation-drawer>
-			<VerticalSidebarVue v-if="!customizer.setHorizontalLayout" />
-			<div :class="customizer.boxed ? 'maxWidth' : 'full-header'"><VerticalHeaderVue v-if="!customizer.setHorizontalLayout" /></div>
+			<VerticalSidebarVue :isHome="isHome" />
+			<VerticalHeaderVue />
 
 			<v-main class="mr-md-4">
 				<div class="mb-3 hr-layout bg-containerBg">

@@ -14,10 +14,13 @@ import DailyActivities from '@/components/dashboards/dashboard2/DailyActivities.
 import ProifileCard from '@/components/dashboards/dashboard2/ProifileCard.vue'
 
 import FullLayout from '@/layouts/full/FullLayout.vue'
-import BlankLayout from '@/layouts/blank/BlankLayout.vue'
+import { ref } from 'vue'
+
+const props = defineProps({})
+const isHome = ref(true)
 </script>
 <template>
-	<FullLayout>
+	<FullLayout :isHome="isHome">
 		<v-row>
 			<!-- Profit card -->
 			<v-col
