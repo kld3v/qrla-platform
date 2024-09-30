@@ -8,7 +8,7 @@ const DARK_BLUE_THEME: ThemeTypes = {
 		'border-opacity': 1,
 	},
 	colors: {
-		primary: '#635BFF',
+		primary: '#A2F732',
 		secondary: '#14E9E2',
 		info: '#3CACC8',
 		success: '#13DEB9',
@@ -23,7 +23,7 @@ const DARK_BLUE_THEME: ThemeTypes = {
 		textPrimary: '#EAEFF4',
 		textSecondary: '#7C8FAC',
 		borderColor: '#333F55',
-		containerBg: '#1A2537',
+		containerBg: '#03111B',
 		background: '#041522',
 		//bg done
 		hoverColor: '#333f55',
