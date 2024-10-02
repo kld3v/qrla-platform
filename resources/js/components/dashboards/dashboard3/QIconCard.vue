@@ -1,39 +1,41 @@
 <script setup lang="ts">
-import { IconcardData } from '@/_mockApis/components/dashboard/dashboard3'
+import { QCardType } from '@/types'
 import { Icon } from '@iconify/vue'
-import type { computed } from 'vue'
+const props = defineProps<{
+	card: QCardType
+}>()
 </script>
 
 <template>
 	<v-card
 		elevation="10"
 		class="overflow-hidden">
-		<v-card-item>
-			<div class="d-flex gap-4 flex-wrap">
-				<div
-					v-for="card in IconcardData"
-					:key="card.bg"
-					class="flex-1-0">
-					<v-sheet
-						:class="card.bg"
-						class="py-8 px-3 rounded-md text-center">
+		<v-card-item style="padding: 0">
+			<div
+				:key="card.bg"
+				class="flex-1-0">
+				<v-sheet
+					:class="card.bg"
+					class="py-8 px-8 rounded-md text-center !flex flex-row justify-between align-center">
+					<div class="flex flex-row align-center">
 						<v-avatar
 							size="48"
 							:color="card.color"
-							class="rounded-md mb-3">
+							class="rounded-full mr-3">
 							<Icon
 								:icon="card.icon"
 								height="25" />
 						</v-avatar>
-						<p class="mb-1">{{ card.title }}</p>
-						<h3 class="text-h3 heading mb-5">{{ card.price }}</h3>
-						<Link
-							:href="card.link"
-							class="bg-surface mt-3 rounded-sm text-decoration-none text-body-2 font-weight-semibold btn-white elevation-9"
-							>View Details</Link
-						>
-					</v-sheet>
-				</div>
+						<p class="font-black text-xl">{{ card.title }}</p>
+					</div>
+					<h3 class="text-h3 heading">{{ card.dataValue }}</h3>
+					<Link
+						v-if="card.link"
+						:href="card.link"
+						class="bg-surface mt-3 rounded-sm text-decoration-none text-body-2 font-weight-semibold btn-white elevation-9"
+						>View Details</Link
+					>
+				</v-sheet>
 			</div>
 		</v-card-item>
 	</v-card>
@@ -58,5 +60,9 @@ import type { computed } from 'vue'
 
 .success-gradient {
 	background: linear-gradient(180deg, rgba(var(--v-theme-success), 0.12) 0, rgba(var(--v-theme-success), 0.03) 100%);
+}
+
+.dark-primary-gradient {
+	background: linear-gradient(180deg, rgba(var(--v-theme-darkprimary), 0.2) 0, rgba(var(--v-theme-darkprimary), 0.05) 100%);
 }
 </style>

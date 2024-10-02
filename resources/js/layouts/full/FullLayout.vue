@@ -35,14 +35,11 @@ const customizer = useCustomizerStore()
 					<v-container
 						fluid
 						class="page-wrapper bg-background pt-md-8 rounded-xl">
-						<div>
-							<div :class="customizer.boxed ? 'maxWidth' : ''">
-								<slot></slot>
-							</div>
-						</div>
+						<slot></slot>
 					</v-container>
 				</div>
 			</v-main>
 		</v-app>
 	</v-locale-provider>
 </template>
+<style lang="scss"></style>

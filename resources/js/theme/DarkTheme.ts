@@ -20,6 +20,7 @@ const DARK_BLUE_THEME: ThemeTypes = {
 		lighterror: '#4B313D',
 		lightinfo: '#274A60',
 		lightwarning: '#4D3A2A',
+		darkprimary: '#2C4E26',
 		textPrimary: '#EAEFF4',
 		textSecondary: '#7C8FAC',
 		borderColor: '#333F55',
