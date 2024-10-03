@@ -212,8 +212,10 @@ class StatsOverTimeService
         $diffInMonths  = $startTime->diffInMonths($endTime);
 
         if ($diffInMinutes <= 60) {
+            //NOT WORKING
             return '%Y-%m-%d %H:%i:00';   //This means we group by the minute
         } elseif ($diffInMinutes <= 60 * 24) {
+            //NOT WORKING
             return '%Y-%m-%d %H:00:00';   //This means we group by the hour
         } elseif ($diffInDays <= 31) {
             return '%Y-%m-%d 00:00:00';   //This means we group by the days
