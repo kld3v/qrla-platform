@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use App\Models\AccessLog;
+use App\Models\Seat;
 
 class StatsOverTimeService
 {
@@ -15,8 +16,18 @@ class StatsOverTimeService
             ->join('markers', 'access_logs.marker_id', '=', 'markers.id');
 
         if ($blockId) {
-            $query->where('markers.markerable_type', 'block')
-                ->where('markers.markerable_id', $blockId);
+
+            $seatIds = Seat::where('block_id', $blockId)->pluck('id');
+
+            $query->where(function ($query) use ($blockId, $seatIds) {
+                $query->where(function ($query) use ($blockId) {
+                    $query->where('markers.markerable_type', 'block')
+                        ->where('markers.markerable_id', $blockId);
+                })->orWhere(function ($query) use ($seatIds) {
+                    $query->where('markers.markerable_type', 'seat')
+                        ->whereIn('markers.markerable_id', $seatIds);
+                });
+            });
         } elseif ($venueId) {
             $query->join('blocks', function ($join) {
                 $join->on('markers.markerable_id', '=', 'blocks.id')
@@ -25,13 +36,26 @@ class StatsOverTimeService
                 ->join('stands', 'blocks.stand_id', '=', 'stands.id')
                 ->join('venues', 'stands.venue_id', '=', 'venues.id')
                 ->where('venues.id', $venueId);
+
+            $seatIds = Seat::join('blocks', 'seats.block_id', '=', 'blocks.id')
+                ->join('stands', 'blocks.stand_id', '=', 'stands.id')
+                ->where('stands.venue_id', $venueId)
+                ->pluck('seats.id');
+
+            $query->orWhere(function ($query) use ($seatIds) {
+                $query->where('markers.markerable_type', 'seat')
+                    ->whereIn('markers.markerable_id', $seatIds);
+            });
         }
+
 
         $results = $query->whereBetween('access_logs.accessed_at', [$startTime, $endTime])
             ->select(DB::raw("
-                COUNT(*) as access_count,
-                DATE_FORMAT(access_logs.accessed_at, '$groupByFormat') as time_group
-            "))
+            DATE_FORMAT(access_logs.accessed_at, '$groupByFormat') as time_group,
+            COUNT(*) as total_access_count,
+            SUM(CASE WHEN markers.markerable_type = 'seat' THEN 1 ELSE 0 END) as seat_access_count,
+            SUM(CASE WHEN markers.markerable_type = 'block' THEN 1 ELSE 0 END) as block_access_count
+        "))
             ->groupBy('time_group')
             ->orderBy('time_group')
             ->get()
@@ -40,9 +64,19 @@ class StatsOverTimeService
         $allTimeGroups = $this->generateTimeGroups($startTime, $endTime, $groupByFormat);
 
         $completeResults = $allTimeGroups->map(function ($timeGroup) use ($results) {
+            $timeGroupKey = $timeGroup->format('Y-m-d H:i:s');
+            $data = $results->get($timeGroupKey, [
+                'time_group'          => $timeGroupKey,
+                'total_access_count'  => 0,
+                'seat_access_count'   => 0,
+                'block_access_count'  => 0,
+            ]);
+
             return [
-                'time_group'    => $timeGroup->format('Y-m-d H:i:s'),
-                'access_count'  => $results->has($timeGroup->format('Y-m-d H:i:s')) ? $results->get($timeGroup->format('Y-m-d H:i:s'))->access_count : 0,
+                'time_group'          => $timeGroupKey,
+                'total_access_count'  => (int) $data['total_access_count'],
+                'seat_access_count'   => (int) $data['seat_access_count'],
+                'block_access_count'  => (int) $data['block_access_count'],
             ];
         });
 
