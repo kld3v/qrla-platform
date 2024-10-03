@@ -21,3 +21,11 @@ export type QCardType = {
 	link?: string
 	linkButtonText?: string
 }
+
+export type VenuesTableData = {
+	venue: unknown
+	type: string
+	location: string
+	status: 'active' | 'inactive'
+	actions: unknown
+}

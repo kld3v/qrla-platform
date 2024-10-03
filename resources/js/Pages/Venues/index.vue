@@ -3,6 +3,7 @@ import ProfitCard from '@/components/dashboards/dashboard2/ProfitCard.vue'
 import QCard from '@/components/widgets/banners/QCard.vue'
 import QIconCard from '@/components/dashboards/dashboard3/QIconCard.vue'
 import FullLayout from '@/layouts/full/FullLayout.vue'
+import QFiltering from '@/views/tables/datatables/QFiltering.vue'
 import { ref } from 'vue'
 import { QCardType } from '@/types'
 
@@ -46,5 +47,6 @@ const cards: QCardType[] = [
 				<QIconCard :card="card" />
 			</v-col>
 		</v-row>
+		<QFiltering />
 	</FullLayout>
 </template>
