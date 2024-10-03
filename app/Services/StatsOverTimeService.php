@@ -61,24 +61,29 @@ class StatsOverTimeService
      */
     private function applyVenueFilter($query, $venueId)
     {
-        $query->join('blocks', function ($join) {
-                $join->on('markers.markerable_id', '=', 'blocks.id')
-                     ->where('markers.markerable_type', 'block');
-            })
-            ->join('stands', 'blocks.stand_id', '=', 'stands.id')
-            ->join('venues', 'stands.venue_id', '=', 'venues.id')
-            ->where('venues.id', $venueId);
-
-        $seatIds = $this->getSeatIdsByVenue($venueId);
-
-        $query->orWhere(function ($query) use ($seatIds) {
-            $query->where('markers.markerable_type', 'seat')
-                  ->whereIn('markers.markerable_id', $seatIds);
+        $query->where(function ($query) use ($venueId) {
+            $query->where(function ($query) use ($venueId) {
+                $query->where('markers.markerable_type', 'block')
+                    ->whereIn('markers.markerable_id', function ($subQuery) use ($venueId) {
+                        $subQuery->select('blocks.id')
+                            ->from('blocks')
+                            ->join('stands', 'blocks.stand_id', '=', 'stands.id')
+                            ->where('stands.venue_id', $venueId);
+                    });
+            })->orWhere(function ($query) use ($venueId) {
+                $query->where('markers.markerable_type', 'seat')
+                    ->whereIn('markers.markerable_id', function ($subQuery) use ($venueId) {
+                        $subQuery->select('seats.id')
+                            ->from('seats')
+                            ->join('blocks', 'seats.block_id', '=', 'blocks.id')
+                            ->join('stands', 'blocks.stand_id', '=', 'stands.id')
+                            ->where('stands.venue_id', $venueId);
+                    });
+            });
         });
-
+    
         return $query;
     }
-
     /**
      * Fetch results from the database based on the built query.
      */
@@ -207,15 +212,15 @@ class StatsOverTimeService
         $diffInMonths  = $startTime->diffInMonths($endTime);
 
         if ($diffInMinutes <= 60) {
-            return '%Y-%m-%d %H:%i:00';
+            return '%Y-%m-%d %H:%i:00';   //This means we group by the minute
         } elseif ($diffInMinutes <= 60 * 24) {
-            return '%Y-%m-%d %H:00:00';
+            return '%Y-%m-%d %H:00:00';   //This means we group by the hour
         } elseif ($diffInDays <= 31) {
-            return '%Y-%m-%d 00:00:00';
+            return '%Y-%m-%d 00:00:00';   //This means we group by the days
         } elseif ($diffInMonths <= 12) {
-            return '%Y-%m-01 00:00:00';
+            return '%Y-%m-01 00:00:00';   //This means we group by the month
         } else {
-            return '%Y-01-01 00:00:00';
+            return '%Y-01-01 00:00:00';   //This means we group by the year, but thinking probably should still group by month.
         }
     }
 }

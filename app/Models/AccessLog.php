@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AccessLog extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'marker_id',
         'ip_address',
