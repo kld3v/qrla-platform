@@ -2,9 +2,12 @@
 import VerticalSidebarVue from './vertical-sidebar/VerticalSidebar.vue'
 import VerticalHeaderVue from './vertical-header/VerticalHeader.vue'
 import { useCustomizerStore } from '../../stores/customizer'
-import { ref } from 'vue'
 
 const customizer = useCustomizerStore()
+
+const props = defineProps<{
+	isGlobalHome: boolean
+}>()
 </script>
 
 <template>
@@ -27,7 +30,7 @@ const customizer = useCustomizerStore()
 				v-model="customizer.Customizer_drawer"
 				width="320">
 			</v-navigation-drawer>
-			<VerticalSidebarVue />
+			<VerticalSidebarVue :isGlobalHome="isGlobalHome" />
 			<VerticalHeaderVue />
 
 			<v-main class="mr-md-4">

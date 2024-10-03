@@ -1,15 +1,21 @@
 <script setup lang="ts">
 import { ref, shallowRef } from 'vue'
 import { useCustomizerStore } from '@/stores/customizer'
-import sidebarItems from './sidebarItem'
+import { sidebarItem, sidebarItemsVenue } from './sidebarItem'
 import NavGroup from './NavGroup/index.vue'
 import NavItem from './NavItem/index.vue'
 import NavCollapse from './NavCollapse/NavCollapse.vue'
 import Logo from '../logo/Logo.vue'
-import { Icon } from '@iconify/vue'
 
 // MiniSidebar Icons
 import MiniSideIcons from './MinIconItems'
+
+const props = defineProps({
+	isGlobalHome: {
+		type: Boolean,
+		default: true,
+	},
+})
 
 const findTitleByPath = (items: any, path: any) => {
 	let title = ''
@@ -38,7 +44,7 @@ const findTitleByPath = (items: any, path: any) => {
 	return title
 }
 
-const foundId = findTitleByPath(sidebarItems, window.location.pathname)
+const foundId = findTitleByPath(sidebarItem, window.location.pathname)
 const getCurrent = foundId ? foundId : 1
 const currentMenu = ref<any>(getCurrent)
 function showData(data: any) {
@@ -48,13 +54,7 @@ function showData(data: any) {
 
 // MiniSidebar Icons End
 const customizer = useCustomizerStore()
-const sidebarMenu = shallowRef(sidebarItems)
-const props = defineProps({
-	isHome: {
-		type: Boolean,
-		default: true,
-	},
-})
+const sidebarMenu = shallowRef(props.isGlobalHome ? sidebarItem : sidebarItemsVenue)
 </script>
 
 <template>

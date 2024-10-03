@@ -8,7 +8,8 @@ import { ref } from 'vue'
 import { QCardType } from '@/types'
 
 const props = defineProps({})
-const isGlobalHome = ref(true)
+const isHome = ref(true)
+const card: QCardType = { bg: 'primary-gradient', icon: 'mdi-account-group', title: 'Total Users', dataValue: 299, color: 'primary' }
 
 const cards: QCardType[] = [
 	{ bg: 'dark-primary-gradient', icon: 'mdi-account-group', title: 'Total Venues', dataValue: 2, color: 'primary' },
@@ -17,7 +18,7 @@ const cards: QCardType[] = [
 ]
 </script>
 <template>
-	<FullLayout :isGlobalHome="isGlobalHome">
+	<FullLayout>
 		<v-row class="mb-6">
 			<v-col
 				cols="12"

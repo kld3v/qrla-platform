@@ -38,6 +38,7 @@ Route::get('/venues/{venue}/blocks/{name}', [BlockController::class, 'show'])->n
 // // Route to see all of the stats for a specific venue
 // Route::get('/venues/{venue}/stats', [VenueStatsController::class, 'show'])->name('venues.stats');
 
+
 // // Route to see all of the stats for a specific block by block name within a venue
 // Route::get('/venues/{venue}/blocks/{block_name}/stats', [BlockStatsController::class, 'show'])->name('blocks.stats');
 
