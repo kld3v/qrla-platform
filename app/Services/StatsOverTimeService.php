@@ -147,15 +147,31 @@ class StatsOverTimeService
     private function generateTimeGroups(Carbon $startTime, Carbon $endTime, $groupByFormat): Collection
     {
         $timeGroups = collect();
-        $current = $startTime->copy();
-
+        $current = $this->alignToTimeGroup($startTime->copy(), $groupByFormat);
+    
         while ($current->lessThanOrEqualTo($endTime)) {
             $timeGroups->push($current->copy());
             $current = $this->incrementTime($current, $groupByFormat);
         }
-
+    
         return $timeGroups;
     }
+    
+    private function alignToTimeGroup(Carbon $time, $groupByFormat)
+    {
+        if (strpos($groupByFormat, '%Y-%m-%d %H:%i') !== false) {
+            return $time->startOfMinute();
+        } elseif (strpos($groupByFormat, '%Y-%m-%d %H') !== false) {
+            return $time->startOfHour();
+        } elseif (strpos($groupByFormat, '%Y-%m-%d') !== false) {
+            return $time->startOfDay();
+        } elseif (strpos($groupByFormat, '%Y-%m') !== false) {
+            return $time->startOfMonth();
+        } else {
+            return $time->startOfYear();
+        }
+    }
+    
 
     /**
      * Increment the time based on the group by format.
