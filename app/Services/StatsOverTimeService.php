@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use App\Models\AccessLog;
 use App\Models\Seat;
+use App\Models\Block;
 
 class StatsOverTimeService
 {
@@ -27,6 +28,94 @@ class StatsOverTimeService
         return $completeResults->values();
     }
 
+    public function getAccessLogsByDeviceAndBrowser($venueId, $blockId, Carbon $startTime, Carbon $endTime)
+    {
+        $baseQuery = $this->buildBaseQuery();
+
+        if ($blockId) {
+            $baseQuery = $this->applyBlockFilter($baseQuery, $blockId);
+        } elseif ($venueId) {
+            $baseQuery = $this->applyVenueFilter($baseQuery, $venueId);
+        }
+
+        $baseQuery->whereBetween('access_logs.accessed_at', [$startTime, $endTime]);
+
+        // Clone the base query for devices and browsers
+        $deviceQuery = clone $baseQuery;
+        $browserQuery = clone $baseQuery;
+
+        // Get total accesses per device
+        $deviceResults = $deviceQuery->select(
+                DB::raw('COALESCE(access_logs.device, "Unknown") as device'),
+                DB::raw('COUNT(*) as access_count')
+            )
+            ->groupBy('device')
+            ->orderBy('access_count', 'desc')
+            ->get();
+
+        // Get total accesses per browser
+        $browserResults = $browserQuery->select(
+                DB::raw('COALESCE(access_logs.browser, "Unknown") as browser'),
+                DB::raw('COUNT(*) as access_count')
+            )
+            ->groupBy('browser')
+            ->orderBy('access_count', 'desc')
+            ->get();
+
+        return [
+            'devices'  => $deviceResults,
+            'browsers' => $browserResults,
+        ];
+    }
+
+    public function getAccessesByBlockForVenue($venueId, Carbon $startTime, Carbon $endTime)
+    {
+        // Build the query
+        $accessesPerBlock = AccessLog::query()
+            ->join('markers', 'access_logs.marker_id', '=', 'markers.id')
+            // Join seats when the marker is a seat
+            ->leftJoin('seats', function ($join) {
+                $join->on('markers.markerable_type', '=', DB::raw("'seat'"))
+                     ->on('markers.markerable_id', '=', 'seats.id');
+            })
+            // Join blocks directly or via seats
+            ->join('blocks', function ($join) {
+                $join->on(function ($query) {
+                    $query->where('markers.markerable_type', 'block')
+                          ->whereColumn('markers.markerable_id', 'blocks.id');
+                })->orWhere(function ($query) {
+                    $query->where('markers.markerable_type', 'seat')
+                          ->whereColumn('seats.block_id', 'blocks.id');
+                });
+            })
+            ->join('stands', 'blocks.stand_id', '=', 'stands.id')
+            ->where('stands.venue_id', $venueId)
+            ->whereBetween('access_logs.accessed_at', [$startTime, $endTime])
+            ->groupBy('blocks.id', 'blocks.name')
+            ->select(
+                'blocks.id as block_id',
+                'blocks.name as block_name',
+                DB::raw('COUNT(access_logs.id) as access_count')
+            )
+            ->get();
+
+        // Calculate total accesses
+        $totalAccesses = $accessesPerBlock->sum('access_count');
+
+        // Calculate percentages and format results
+        $results = $accessesPerBlock->map(function ($item) use ($totalAccesses) {
+            $percentage = $totalAccesses > 0 ? ($item->access_count / $totalAccesses) * 100 : 0;
+
+            return [
+                'block_id'       => $item->block_id,
+                'block_name'     => $item->block_name ?? 'Unknown',
+                'access_count'   => (int) $item->access_count,
+                'access_percent' => round($percentage, 2),
+            ];
+        });
+
+        return $results->sortByDesc('access_count')->values();
+    }
     /**
      * Build the base query for fetching access logs.
      */

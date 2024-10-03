@@ -40,6 +40,11 @@ Route::get('/venues/{venue}/blocks', [BlockController::class, 'index'])->name('b
 
 Route::get('/stats/accesses-over-time', [StatsController::class, 'getAccessesOverTime']);
 
+Route::get('/stats/accesses-by-device-browser', [StatsController::class, 'getAccessesByDeviceAndBrowser']);
+
+Route::get('/stats/accesses-by-block', [StatsController::class, 'getAccessesByBlockForVenue']);
+
+
 // // Route to see all of the stats for a specific venue
 // Route::get('/venues/{venue}/stats', [VenueStatsController::class, 'show'])->name('venues.stats');
 
