@@ -7,9 +7,6 @@ import NavItem from './NavItem/index.vue'
 import NavCollapse from './NavCollapse/NavCollapse.vue'
 import Logo from '../logo/Logo.vue'
 
-// MiniSidebar Icons
-import MiniSideIcons from './MinIconItems'
-
 const props = defineProps({
 	isGlobalHome: {
 		type: Boolean,

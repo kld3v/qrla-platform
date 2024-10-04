@@ -73,17 +73,17 @@ export const sidebarItemsVenue: menu[] = [
 			{
 				title: 'Plaque Management Dashboard',
 				icon: 'home-line-duotone',
-				to: '/venues',
+				to: '/PlaqueManagement',
 			},
 			{
 				title: 'Venue Performance Tracker',
 				icon: 'home-line-duotone',
-				to: '/venues',
+				to: '/VenueStats',
 			},
 			{
 				title: 'Block Performance Tracker',
 				icon: 'home-line-duotone',
-				to: '/venues',
+				to: '/BlockStats',
 			},
 		],
 	},

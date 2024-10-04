@@ -18,7 +18,7 @@ const cards: QCardType[] = [
 ]
 </script>
 <template>
-	<FullLayout>
+	<FullLayout :isGlobalHome="false">
 		<v-row class="mb-6">
 			<v-col
 				cols="12"
