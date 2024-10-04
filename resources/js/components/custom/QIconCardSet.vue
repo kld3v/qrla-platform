@@ -2,53 +2,20 @@
 import { Icon } from '@iconify/vue'
 import { computed } from 'vue'
 
+type IconCardObject = {
+	bg: string
+	icon?: string
+	color?: string
+	title: string
+	data: any
+	link: string
+}
 const props = defineProps<{
 	bg: string
+	IconCardData: IconCardObject[]
 }>()
 
 // TODO this will be passed as props eventually.
-const IconcardData = [
-	{
-		bg: 'dark-primary-gradient',
-		icon: 'solar:dollar-minimalistic-linear',
-		color: 'primary',
-		title: 'Venue Capacity',
-		data: '16,689',
-		link: false,
-	},
-	{
-		bg: 'dark-primary-gradient',
-		icon: 'solar:recive-twice-square-linear',
-		color: 'warning',
-		title: 'Venue Type',
-		data: 'Sport',
-		link: false,
-	},
-	{
-		bg: 'dark-primary-gradient',
-		icon: 'ic:outline-backpack',
-		color: 'secondary',
-		title: 'QRLA Plaques',
-		data: '450',
-		link: false,
-	},
-	{
-		bg: 'dark-primary-gradient',
-		icon: 'ic:baseline-sync-problem',
-		color: 'error',
-		title: 'Managed By',
-		data: 'Levy UK & Ireland',
-		link: false,
-	},
-	{
-		bg: 'dark-primary-gradient',
-		icon: 'ic:outline-forest',
-		color: 'success',
-		title: 'Activity Level',
-		data: '+86%',
-		link: false,
-	},
-]
 
 const bgClass = computed(() => {
 	return props.bg ? `bg-[${props.bg}]` : ''
@@ -62,12 +29,21 @@ const bgClass = computed(() => {
 		<v-card-item :class="bgClass">
 			<div class="grid grid-cols-5 gap-4">
 				<div
-					v-for="card in IconcardData"
+					v-for="card in props.IconCardData"
 					:key="card.bg"
 					class="flex-1-0">
 					<v-sheet
 						:class="card.bg"
 						class="py-8 px-3 rounded-md text-center">
+						<v-avatar
+							v-if="card.icon"
+							size="48"
+							:color="card.color"
+							class="rounded-md mb-3">
+							<Icon
+								:icon="card.icon"
+								height="25" />
+						</v-avatar>
 						<img
 							src=""
 							alt="" />

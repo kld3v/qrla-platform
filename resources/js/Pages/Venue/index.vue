@@ -14,6 +14,50 @@ const props = defineProps<{
 }>()
 
 const isGlobalHome = ref(false)
+
+// to be relpaced with prop data
+const IconCardData = [
+	{
+		bg: 'dark-primary-gradient',
+		icon: 'solar:dollar-minimalistic-linear',
+		color: 'primary',
+		title: 'Venue Capacity',
+		data: '16,689',
+		link: '',
+	},
+	{
+		bg: 'dark-primary-gradient',
+		icon: 'solar:recive-twice-square-linear',
+		color: 'warning',
+		title: 'Venue Type',
+		data: 'Sport',
+		link: '',
+	},
+	{
+		bg: 'dark-primary-gradient',
+		icon: 'ic:outline-backpack',
+		color: 'secondary',
+		title: 'QRLA Plaques',
+		data: '450',
+		link: '',
+	},
+	{
+		bg: 'dark-primary-gradient',
+		icon: 'ic:baseline-sync-problem',
+		color: 'error',
+		title: 'Managed By',
+		data: 'Levy UK & Ireland',
+		link: '',
+	},
+	{
+		bg: 'dark-primary-gradient',
+		icon: 'ic:outline-forest',
+		color: 'success',
+		title: 'Activity Level',
+		data: '+86%',
+		link: '',
+	},
+]
 </script>
 <template>
 	<FullLayout
@@ -39,7 +83,9 @@ const isGlobalHome = ref(false)
 			<v-col
 				cols="12"
 				lg="12">
-				<QIconCardSet bg="#151C25" />
+				<QIconCardSet
+					:IconCardData="IconCardData"
+					bg="#151C25" />
 			</v-col>
 		</v-row>
 		<v-row class="mb-6">
