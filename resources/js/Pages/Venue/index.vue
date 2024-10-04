@@ -8,6 +8,7 @@ import VenueTitleAndAddress from '@/components/custom/VenueTitleAndAddress.vue'
 import QIconCardSet from '@/components/custom/QIconCardSet.vue'
 import QCard from '@/components/custom/QCard.vue'
 import HorizontalPlaque from '@/assets/images/QAssets/chelspng 1horizontal_plaque.png'
+
 const props = defineProps<{
 	venue: VenuePageProps
 }>()
@@ -15,7 +16,9 @@ const props = defineProps<{
 const isGlobalHome = ref(false)
 </script>
 <template>
-	<FullLayout :isGlobalHome="isGlobalHome">
+	<FullLayout
+		:isGlobalHome="isGlobalHome"
+		:venue="venue">
 		<HeaderImageAndLogo
 			:bannerUrl="venue.banner_url"
 			:logoUrl="venue.logo_url"

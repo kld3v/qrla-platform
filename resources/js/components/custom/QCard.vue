@@ -50,6 +50,6 @@ const props = defineProps<{
 }
 
 .default-gray {
-	background-color: #151c25;
+	background-color: rgba(var(--v-theme-darkdefaultgray), 0.2);
 }
 </style>

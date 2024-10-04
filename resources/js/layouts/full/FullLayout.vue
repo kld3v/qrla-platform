@@ -2,11 +2,13 @@
 import VerticalSidebarVue from './vertical-sidebar/VerticalSidebar.vue'
 import VerticalHeaderVue from './vertical-header/VerticalHeader.vue'
 import { useCustomizerStore } from '../../stores/customizer'
+import { VenuePageProps } from '@/types/Venue'
 
 const customizer = useCustomizerStore()
 
 const props = defineProps<{
 	isGlobalHome: boolean
+	venue?: VenuePageProps
 }>()
 </script>
 
@@ -30,7 +32,9 @@ const props = defineProps<{
 				v-model="customizer.Customizer_drawer"
 				width="320">
 			</v-navigation-drawer>
-			<VerticalSidebarVue :isGlobalHome="isGlobalHome" />
+			<VerticalSidebarVue
+				:isGlobalHome="isGlobalHome"
+				:venueId="venue ? venue.id : 1" />
 			<VerticalHeaderVue />
 
 			<v-main class="mr-md-4">

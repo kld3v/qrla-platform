@@ -16,6 +16,7 @@ export type ThemeTypes = {
 		lightinfo?: string
 		lightwarning?: string
 		darkprimary?: string
+		darkdefaultgray?: string
 		textPrimary?: string
 		textSecondary?: string
 		borderColor?: string

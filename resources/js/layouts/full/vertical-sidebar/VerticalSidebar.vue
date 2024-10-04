@@ -1,18 +1,76 @@
 <script setup lang="ts">
 import { ref, shallowRef } from 'vue'
 import { useCustomizerStore } from '@/stores/customizer'
-import { sidebarItem, sidebarItemsVenue } from './sidebarItem'
+import { sidebarItem } from './sidebarItem'
 import NavGroup from './NavGroup/index.vue'
 import NavItem from './NavItem/index.vue'
 import NavCollapse from './NavCollapse/NavCollapse.vue'
 import Logo from '../logo/Logo.vue'
 
-const props = defineProps({
-	isGlobalHome: {
-		type: Boolean,
-		default: true,
+const props = defineProps<{
+	isGlobalHome: boolean
+	venueId?: number
+}>()
+
+// to update with props accordingly
+const sidebarItemsVenue: any[] = [
+	{
+		header: ' ',
+		id: 1,
+		children: [
+			{
+				title: 'Venue Home',
+				icon: 'home-line-duotone',
+				to: `/venues/${props.venueId}`,
+			},
+			{
+				title: 'Plaque Management Dashboard',
+				icon: 'home-line-duotone',
+				to: '/PlaqueManagement',
+			},
+			{
+				title: 'Venue Performance Tracker',
+				icon: 'home-line-duotone',
+				to: '/VenueStats',
+			},
+			{
+				title: 'Block Performance Tracker',
+				icon: 'home-line-duotone',
+				to: '/BlockStats',
+			},
+		],
 	},
-})
+	{
+		header: 'QRLA v.2 Features',
+		id: 1,
+		children: [
+			{
+				title: 'Seat Activity',
+				icon: 'calendar-mark-line-duotone',
+				to: '/apps/calendar',
+				disabled: true,
+			},
+			{
+				title: 'Calendar',
+				icon: 'airbuds-case-minimalistic-line-duotone',
+				to: '/apps/kanban',
+				disabled: true,
+			},
+			{
+				title: 'Event Day Data',
+				icon: 'chat-round-line-line-duotone',
+				to: '/apps/chats',
+				disabled: true,
+			},
+			{
+				title: 'Taskboard',
+				icon: 'document-text-line-duotone',
+				to: '/apps/notes',
+				disabled: true,
+			},
+		],
+	},
+]
 
 const findTitleByPath = (items: any, path: any) => {
 	let title = ''

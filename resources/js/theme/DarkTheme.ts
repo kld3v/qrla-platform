@@ -21,6 +21,7 @@ const DARK_BLUE_THEME: ThemeTypes = {
 		lightinfo: '#274A60',
 		lightwarning: '#4D3A2A',
 		darkprimary: '#2C4E26',
+		darkdefaultgray: '#151c25',
 		textPrimary: '#EAEFF4',
 		textSecondary: '#7C8FAC',
 		borderColor: '#333F55',
