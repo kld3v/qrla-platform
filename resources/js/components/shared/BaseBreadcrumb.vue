@@ -14,7 +14,7 @@ const props = defineProps({
 		class="mb-8">
 		<div class="px-6 py-4">
 			<div class="d-flex justify-space-between align-center">
-				<h5 class="text-h5">{{ title }}</h5>
+				<h2 class="text-h2">{{ title }}</h2>
 				<v-breadcrumbs
 					:items="breadcrumbs"
 					class="pa-0">
