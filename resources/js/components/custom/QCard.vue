@@ -2,7 +2,7 @@
 import { QCardType } from '@/types'
 import { Icon } from '@iconify/vue'
 const props = defineProps<{
-	bg: QCardType['bg']
+	bg: QCardType['bg'] | 'default-gray'
 }>()
 </script>
 
@@ -47,5 +47,9 @@ const props = defineProps<{
 
 .dark-primary-gradient {
 	background: linear-gradient(180deg, rgba(var(--v-theme-darkprimary), 0.2) 0, rgba(var(--v-theme-darkprimary), 0.05) 100%);
+}
+
+.default-gray {
+	background-color: #151c25;
 }
 </style>

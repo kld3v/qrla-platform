@@ -1,5 +1,10 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
+import { computed } from 'vue'
+
+const props = defineProps<{
+	bg: string
+}>()
 
 // TODO this will be passed as props eventually.
 const IconcardData = [
@@ -44,13 +49,17 @@ const IconcardData = [
 		link: false,
 	},
 ]
+
+const bgClass = computed(() => {
+	return props.bg ? `bg-[${props.bg}]` : ''
+})
 </script>
 
 <template>
 	<v-card
 		elevation="10"
 		class="overflow-hidden">
-		<v-card-item class="bg-[#151C25]">
+		<v-card-item :class="bgClass">
 			<div class="grid grid-cols-5 gap-4">
 				<div
 					v-for="card in IconcardData"

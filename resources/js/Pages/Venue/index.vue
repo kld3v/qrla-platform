@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue'
+import QSubsectionHeader from '@/components/custom/QSubSectionHeader.vue'
 import FullLayout from '@/layouts/full/FullLayout.vue'
 import HeaderImageAndLogo from '@/components/custom/HeaderImageAndLogo.vue'
 import { ref } from 'vue'
@@ -26,32 +26,98 @@ const isGlobalHome = ref(false)
 			:city="venue.city"
 			class="mb-12" />
 		<v-row class="mb-6">
-			<BaseBreadcrumb title="Venue Home" />
+			<v-col
+				cols="12"
+				lg="12">
+				<QSubsectionHeader title="Venue Home" />
+			</v-col>
 		</v-row>
 		<v-row class="mb-6">
-			<QIconCardSet />
+			<v-col
+				cols="12"
+				lg="12">
+				<QIconCardSet bg="#151C25" />
+			</v-col>
 		</v-row>
 		<v-row class="mb-6">
-			<QCard bg="primary-gradient">
-				<div class="flex justify-center">
-					<div class="w-1/2 flex justify-center align-center">
-						<div class="text-left mr-4">
-							<h3>Your Qrla Plaques!</h3>
-							<p>
-								Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto eligendi dignissimos quod rerum sunt natus, dolorem adipisci consectetur cumque quam ut voluptate? Perspiciatis,
-								praesentium illum! Dolorem adipisci voluptatum quas quos!
-							</p>
-							<button>Check</button>
+			<v-col
+				cols="12"
+				lg="12">
+				<QCard bg="dark-primary-gradient">
+					<div class="flex justify-center">
+						<div class="w-1/2 flex justify-center align-center">
+							<div class="text-left mr-4">
+								<h3>Your Qrla Plaques!</h3>
+								<p>
+									Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto eligendi dignissimos quod rerum sunt natus, dolorem adipisci consectetur cumque quam ut voluptate? Perspiciatis,
+									praesentium illum! Dolorem adipisci voluptatum quas quos!
+								</p>
+								<button>Check</button>
+							</div>
+							<img
+								:src="HorizontalPlaque"
+								alt="HorizontalPlaque" />
 						</div>
-						<img
-							:src="HorizontalPlaque"
-							alt="HorizontalPlaque" />
 					</div>
-				</div>
-			</QCard>
+				</QCard>
+			</v-col>
+		</v-row>
+		<v-row class="mb-3">
+			<v-col
+				cols="12"
+				lg="12">
+				<QSubsectionHeader title="QRLA Management Dashboard" />
+			</v-col>
 		</v-row>
 		<v-row class="mb-6">
-			<BaseBreadcrumb title="QRLA Management Dashboard" />
+			<v-col
+				cols="12"
+				lg="6">
+				<QCard bg="default-gray">hello </QCard>
+			</v-col>
+			<v-col
+				cols="12"
+				lg="6">
+				<QCard bg="default-gray">hello </QCard>
+			</v-col>
+		</v-row>
+		<v-row class="mb-3">
+			<v-col
+				cols="12"
+				lg="12">
+				<QSubsectionHeader title="Venue Performance Tracker" />
+			</v-col>
+		</v-row>
+		<v-row class="mb-6">
+			<v-col
+				cols="12"
+				lg="6">
+				<QCard bg="default-gray">hello </QCard>
+			</v-col>
+			<v-col
+				cols="12"
+				lg="6">
+				<QCard bg="default-gray">hello </QCard>
+			</v-col>
+		</v-row>
+		<v-row class="mb-1">
+			<v-col
+				cols="12"
+				lg="12">
+				<QSubsectionHeader title="Block Performance Tracker" />
+			</v-col>
+		</v-row>
+		<v-row class="mb-6">
+			<v-col
+				cols="12"
+				lg="6">
+				<QCard bg="default-gray">hello </QCard>
+			</v-col>
+			<v-col
+				cols="12"
+				lg="6">
+				<QCard bg="default-gray">hello </QCard>
+			</v-col>
 		</v-row>
 	</FullLayout>
 </template>
