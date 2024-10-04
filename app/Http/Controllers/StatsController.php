@@ -32,4 +32,41 @@ class StatsController extends Controller
             return response()->json(['error' => $e->getMessage()], 400);
         }
     }
+
+    public function getAccessesByBlock(Request $request)
+    {
+        $venueId = $request->input('venue_id');
+        $startTime = $request->input('start_time');
+        $endTime = $request->input('end_time');
+
+        if (!$venueId || !$startTime || !$endTime) {
+            return response()->json(['error' => 'Missing required parameters.'], 400);
+        }
+
+        try {
+            $data = $this->statsService->getAccessesByBlock($venueId, $startTime, $endTime);
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    public function getAccessesByDeviceAndBrowser(Request $request)
+    {
+        $venueId = $request->input('venue_id');
+        $blockId = $request->input('block_id');
+        $startTime = $request->input('start_time');
+        $endTime = $request->input('end_time');
+
+        if ((!$venueId && !$blockId) || !$startTime || !$endTime) {
+            return response()->json(['error' => 'Missing required parameters.'], 400);
+        }
+
+        try {
+            $data = $this->statsService->getAccessesByDeviceAndBrowser($venueId, $blockId, $startTime, $endTime);
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
+    }
 }

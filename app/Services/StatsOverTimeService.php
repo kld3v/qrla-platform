@@ -66,6 +66,107 @@ class StatsOverTimeService
         return $result;
     }
 
+    public function getAccessesByBlock($venueId, $startTime, $endTime)
+    {
+        $venue = Venue::findOrFail($venueId);
+
+        // Get all blocks in the venue
+        $blocks = Block::whereHas('stand', function ($query) use ($venueId) {
+            $query->where('venue_id', $venueId);
+        })->get();
+
+        $blockData = [];
+        $totalAccessCount = 0;
+
+        foreach ($blocks as $block) {
+            $markerIds = $this->getMarkerIdsForBlock($block);
+
+            $accessCount = 0;
+            if (!empty($markerIds)) {
+                $accessCount = AccessLog::whereIn('marker_id', $markerIds)
+                    ->whereBetween('accessed_at', [$startTime, $endTime])
+                    ->count();
+            }
+
+            $totalAccessCount += $accessCount;
+
+            $blockData[] = [
+                'block_id' => $block->id,
+                'block_name' => $block->name,
+                'access_count' => $accessCount,
+                // 'access_percent' will be calculated later
+            ];
+        }
+
+        // Calculate access percentages
+        foreach ($blockData as &$data) {
+            if ($totalAccessCount > 0) {
+                $data['access_percent'] = round(($data['access_count'] / $totalAccessCount) * 100, 2);
+            } else {
+                $data['access_percent'] = 0;
+            }
+        }
+
+        // Sort the data by access_count descending
+        usort($blockData, function ($a, $b) {
+            return $b['access_count'] <=> $a['access_count'];
+        });
+
+        return $blockData;
+    }
+
+    public function getAccessesByDeviceAndBrowser($venueId, $blockId, $startTime, $endTime)
+    {
+        if ($venueId) {
+            $venue = Venue::findOrFail($venueId);
+            $markerIds = $this->getMarkerIdsForVenue($venue);
+        } elseif ($blockId) {
+            $block = Block::findOrFail($blockId);
+            $markerIds = $this->getMarkerIdsForBlock($block);
+        } else {
+            throw new \Exception('Either venue_id or block_id must be provided.');
+        }
+
+        if (empty($markerIds)) {
+            $devices = [];
+            $browsers = [];
+        } else {
+            $devices = AccessLog::whereIn('marker_id', $markerIds)
+                ->whereBetween('accessed_at', [$startTime, $endTime])
+                ->select('device', DB::raw('COUNT(*) as access_count'))
+                ->groupBy('device')
+                ->orderBy('access_count', 'desc')
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'device' => $item->device ?: 'Unknown',
+                        'access_count' => $item->access_count,
+                    ];
+                })
+                ->toArray();
+
+            $browsers = AccessLog::whereIn('marker_id', $markerIds)
+                ->whereBetween('accessed_at', [$startTime, $endTime])
+                ->select('browser', DB::raw('COUNT(*) as access_count'))
+                ->groupBy('browser')
+                ->orderBy('access_count', 'desc')
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'browser' => $item->browser ?: 'Unknown',
+                        'access_count' => $item->access_count,
+                    ];
+                })
+                ->toArray();
+        }
+
+        return [
+            'devices' => $devices,
+            'browsers' => $browsers,
+        ];
+    }
+
+
     private function generateTimeGroups($startTime, $endTime, $interval)
     {
         $start = Carbon::parse($startTime);
@@ -152,6 +253,22 @@ class StatsOverTimeService
         return Marker::whereHasMorph('markerable', 'seat', function ($query) use ($block) {
             $query->where('block_id', $block->id);
         })->pluck('id')->toArray();
+    }
+
+    private function getMarkerIdsForVenue($venue)
+    {
+        $seatMarkerIds = $this->getSeatMarkerIdsForVenue($venue);
+        $blockMarkerIds = $this->getBlockMarkerIdsForVenue($venue);
+
+        return array_merge($seatMarkerIds, $blockMarkerIds);
+    }
+
+    private function getMarkerIdsForBlock($block)
+    {
+        $seatMarkerIds = $this->getSeatMarkerIdsForBlock($block);
+        $blockMarkerIds = $block->markers()->pluck('id')->toArray();
+
+        return array_merge($seatMarkerIds, $blockMarkerIds);
     }
 
     private function getAccessCountsOverTime($markerIds, $interval, $startTime, $endTime)

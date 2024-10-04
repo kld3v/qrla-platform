@@ -42,7 +42,7 @@ Route::get('/stats/accesses-over-time', [StatsController::class, 'getAccessesOve
 
 Route::get('/stats/accesses-by-device-browser', [StatsController::class, 'getAccessesByDeviceAndBrowser']);
 
-Route::get('/stats/accesses-by-block', [StatsController::class, 'getAccessesByBlockForVenue']);
+Route::get('/stats/accesses-by-block', [StatsController::class, 'getAccessesByBlock']);
 
 
 // // Route to see all of the stats for a specific venue
