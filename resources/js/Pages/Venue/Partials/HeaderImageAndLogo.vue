@@ -11,11 +11,11 @@ const props = defineProps<{
 		<img
 			:src="bannerUrl"
 			alt="Banner"
-			class="border-2 border-solid border-green-500 h-[300px]" />
+			class="border-b-4 border-solid border-green-500 h-[300px] w-full rounded-tl-lg rounded-tr-lg" />
 		<img
 			:src="logoUrl"
 			alt="Logo"
-			class="border-2 border-solid rounded-full border-green-500 w-[300px] h-[300px] absolute top-[150px] left-[18.66%]" />
+			class="border-4 border-solid rounded-full border-green-500 w-[240px] h-[240px] absolute top-[150px] left-[9.66%]" />
 	</div>
 </template>
 
