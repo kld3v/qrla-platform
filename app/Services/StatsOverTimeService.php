@@ -45,10 +45,10 @@ class StatsOverTimeService
         // Get block access counts over time
         $blockAccessCounts = $this->getAccessCountsOverTime($blockMarkerIds, $interval, $startTime, $endTime);
 
-        // Combine the counts into the desired format
-        $allTimeGroups = array_unique(array_merge(array_keys($seatAccessCounts), array_keys($blockAccessCounts)));
-        sort($allTimeGroups);
+        // Generate all time groups between startTime and endTime
+        $allTimeGroups = $this->generateTimeGroups($startTime, $endTime, $interval);
 
+        // Combine the counts into the desired format
         $result = [];
         foreach ($allTimeGroups as $timeGroup) {
             $seatCount = isset($seatAccessCounts[$timeGroup]) ? $seatAccessCounts[$timeGroup] : 0;
@@ -66,6 +66,47 @@ class StatsOverTimeService
         return $result;
     }
 
+    private function generateTimeGroups($startTime, $endTime, $interval)
+    {
+        $start = Carbon::parse($startTime);
+        $end = Carbon::parse($endTime);
+
+        $allTimeGroups = [];
+        $current = $start->copy();
+
+        $phpDateFormat = $this->phpDateFormatFromMysqlFormat($interval['format']);
+
+        while ($current <= $end) {
+            $timeGroup = $current->format($phpDateFormat);
+            $allTimeGroups[] = $timeGroup;
+
+            // Increment current based on interval unit
+            switch ($interval['unit']) {
+                case 'minute':
+                    $current->addMinute();
+                    break;
+                case 'hour':
+                    $current->addHour();
+                    break;
+                case 'day':
+                    $current->addDay();
+                    break;
+                case 'week':
+                    $current->addWeek();
+                    break;
+                case 'month':
+                    $current->addMonth();
+                    break;
+                case 'year':
+                    $current->addYear();
+                    break;
+                default:
+                    throw new \Exception('Invalid interval unit.');
+            }
+        }
+
+        return $allTimeGroups;
+    }
 
     private function determineInterval($startTime, $endTime)
     {
@@ -131,4 +172,35 @@ class StatsOverTimeService
             ->toArray();
     }
 
+    private function phpDateFormatFromMysqlFormat($mysqlFormat)
+    {
+        $replacements = [
+            '%Y' => 'Y',
+            '%m' => 'm',
+            '%d' => 'd',
+            '%H' => 'H',
+            '%i' => 'i',
+            '%s' => 's',
+            '%M' => 'F',
+            '%b' => 'M',
+            '%h' => 'h',
+            '%p' => 'A',
+            '%a' => 'a',
+            '%W' => 'l',
+            '%w' => 'w',
+            '%U' => 'W',
+            '%y' => 'y',
+            '%C' => '', // Century (not directly supported in PHP)
+            '%e' => 'j',
+            '%f' => 'u',
+            '%k' => 'G',
+            '%l' => 'g',
+            '%r' => 'h:i:s A',
+            '%T' => 'H:i:s',
+            '%S' => 's',
+            '%V' => 'W',
+        ];
+
+        return strtr($mysqlFormat, $replacements);
+    }
 }
