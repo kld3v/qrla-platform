@@ -3,84 +3,70 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
-use App\Models\AccessLog;
-use App\Models\Marker;
-use App\Models\Block;
-use App\Models\Stand;
-use App\Models\Venue;
 use App\Services\StatsOverTimeService;
 
 class StatsController extends Controller
 {
-    public function getAccessesOverTime(Request $request, StatsOverTimeService $statsOverTimeService)
-    {
-        $this->validateRequest($request);
+    protected $statsService;
 
-        $venueId   = $request->input('venue_id');
-        $blockId   = $request->input('block_id');
-        $startTime = Carbon::parse($request->input('start_time'));
-        $endTime   = Carbon::parse($request->input('end_time'));
-        $groupByFormat = $statsOverTimeService->getTimeGroupFormat($startTime, $endTime);
+    public function __construct(StatsOverTimeService $statsService)
+    {
+        $this->statsService = $statsService;
+    }
+
+    public function getAccessesOverTime(Request $request)
+    {
+        $type = $request->input('type'); // 'venue' or 'block'
+        $id = $request->input('id');
+        $startTime = $request->input('start_time');
+        $endTime = $request->input('end_time');
+
+        if (!$type || !$id || !$startTime || !$endTime) {
+            return response()->json(['error' => 'Missing required parameters.'], 400);
+        }
 
         try {
-            $results = $statsOverTimeService->getAccessLogs($venueId, $blockId, $startTime, $endTime, $groupByFormat);
-            return response()->json($results);
+            $data = $this->statsService->getAccessesOverTime($type, $id, $startTime, $endTime);
+            return response()->json($data);
         } catch (\Exception $e) {
-            Log::error('Error fetching access logs', ['exception' => $e->getMessage()]);
-            return response()->json(['error' => 'An error occurred while fetching data.'], 500);
+            return response()->json(['error' => $e->getMessage()], 400);
         }
     }
 
-    public function getAccessesByDeviceAndBrowser(Request $request, StatsOverTimeService $statsOverTimeService)
+    public function getAccessesByBlock(Request $request)
     {
-        $this->validateRequest($request);
+        $venueId = $request->input('venue_id');
+        $startTime = $request->input('start_time');
+        $endTime = $request->input('end_time');
 
-        $venueId   = $request->input('venue_id');
-        $blockId   = $request->input('block_id');
-        $startTime = Carbon::parse($request->input('start_time'));
-        $endTime   = Carbon::parse($request->input('end_time'));
+        if (!$venueId || !$startTime || !$endTime) {
+            return response()->json(['error' => 'Missing required parameters.'], 400);
+        }
 
         try {
-            $results = $statsOverTimeService->getAccessLogsByDeviceAndBrowser($venueId, $blockId, $startTime, $endTime);
-            return response()->json($results);
+            $data = $this->statsService->getAccessesByBlock($venueId, $startTime, $endTime);
+            return response()->json($data);
         } catch (\Exception $e) {
-            Log::error('Error fetching access logs by device and browser', ['exception' => $e->getMessage()]);
-            return response()->json(['error' => 'An error occurred while fetching data.'], 500);
+            return response()->json(['error' => $e->getMessage()], 400);
         }
     }
 
-    public function getAccessesByBlockForVenue(Request $request, StatsOverTimeService $statsOverTimeService)
+    public function getAccessesByDeviceAndBrowser(Request $request)
     {
-        // Validate the request inputs
-        $request->validate([
-            'venue_id'   => 'required|exists:venues,id',
-            'start_time' => 'required|date_format:Y-m-d H:i:s',
-            'end_time'   => 'required|date_format:Y-m-d H:i:s|after:start_time',
-        ]);
+        $venueId = $request->input('venue_id');
+        $blockId = $request->input('block_id');
+        $startTime = $request->input('start_time');
+        $endTime = $request->input('end_time');
 
-        $venueId   = $request->input('venue_id');
-        $startTime = Carbon::parse($request->input('start_time'));
-        $endTime   = Carbon::parse($request->input('end_time'));
+        if ((!$venueId && !$blockId) || !$startTime || !$endTime) {
+            return response()->json(['error' => 'Missing required parameters.'], 400);
+        }
 
         try {
-            $results = $statsOverTimeService->getAccessesByBlockForVenue($venueId, $startTime, $endTime);
-            return response()->json($results);
+            $data = $this->statsService->getAccessesByDeviceAndBrowser($venueId, $blockId, $startTime, $endTime);
+            return response()->json($data);
         } catch (\Exception $e) {
-            Log::error('Error fetching accesses by block for venue', ['exception' => $e->getMessage()]);
-            return response()->json(['error' => 'An error occurred while fetching data.'], 500);
+            return response()->json(['error' => $e->getMessage()], 400);
         }
-    }
-
-    private function validateRequest(Request $request)
-    {
-        return $request->validate([
-            'venue_id' => 'required_without:block_id|exists:venues,id',
-            'block_id' => 'required_without:venue_id|exists:blocks,id',
-            'start_time' => 'required|date_format:Y-m-d H:i:s',
-            'end_time' => 'required|date_format:Y-m-d H:i:s|after:start_time',
-        ]);
     }
 }

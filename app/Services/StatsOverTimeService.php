@@ -4,314 +4,320 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
 use App\Models\AccessLog;
-use App\Models\Seat;
+use App\Models\Venue;
 use App\Models\Block;
+use App\Models\Seat;
+use App\Models\Marker;
+use Illuminate\Support\Facades\Log;
 
 class StatsOverTimeService
 {
-    public function getAccessLogs($venueId, $blockId, Carbon $startTime, Carbon $endTime, $groupByFormat)
+    public function getAccessesOverTime($type, $id, $startTime, $endTime)
     {
-        $query = $this->buildBaseQuery();
+        // Determine the appropriate time interval
+        $interval = $this->determineInterval($startTime, $endTime);
 
-        if ($blockId) {
-            $query = $this->applyBlockFilter($query, $blockId);
-        } elseif ($venueId) {
-            $query = $this->applyVenueFilter($query, $venueId);
+        if ($type === 'venue') {
+            $venue = Venue::findOrFail($id);
+
+            // Get seat markers within the venue
+            $seatMarkerIds = $this->getSeatMarkerIdsForVenue($venue);
+
+            // Get block markers within the venue
+            $blockMarkerIds = $this->getBlockMarkerIdsForVenue($venue);
+
+        } elseif ($type === 'block') {
+            $block = Block::findOrFail($id);
+
+            // Get seat markers within the block
+            $seatMarkerIds = $this->getSeatMarkerIdsForBlock($block);
+
+            // Get block marker IDs (only the current block)
+            $blockMarkerIds = $block->markers()->pluck('id')->toArray();
+        } else {
+            throw new \Exception('Invalid type parameter.');
         }
 
-        $results = $this->fetchResults($query, $startTime, $endTime, $groupByFormat);
+        // Get seat access counts over time
+        $seatAccessCounts = $this->getAccessCountsOverTime($seatMarkerIds, $interval, $startTime, $endTime);
 
-        $completeResults = $this->formatResults($results, $startTime, $endTime, $groupByFormat);
+        // Get block access counts over time
+        $blockAccessCounts = $this->getAccessCountsOverTime($blockMarkerIds, $interval, $startTime, $endTime);
 
-        return $completeResults->values();
+        // Generate all time groups between startTime and endTime
+        $allTimeGroups = $this->generateTimeGroups($startTime, $endTime, $interval);
+
+        // Combine the counts into the desired format
+        $result = [];
+        foreach ($allTimeGroups as $timeGroup) {
+            $seatCount = isset($seatAccessCounts[$timeGroup]) ? $seatAccessCounts[$timeGroup] : 0;
+            $blockCount = isset($blockAccessCounts[$timeGroup]) ? $blockAccessCounts[$timeGroup] : 0;
+            $totalCount = $seatCount + $blockCount;
+
+            $result[] = [
+                'time_group' => $timeGroup,
+                'total_access_count' => $totalCount,
+                'seat_access_count' => $seatCount,
+                'block_access_count' => $blockCount,
+            ];
+        }
+
+        return $result;
     }
 
-    public function getAccessLogsByDeviceAndBrowser($venueId, $blockId, Carbon $startTime, Carbon $endTime)
+    public function getAccessesByBlock($venueId, $startTime, $endTime)
     {
-        $baseQuery = $this->buildBaseQuery();
+        $venue = Venue::findOrFail($venueId);
 
-        if ($blockId) {
-            $baseQuery = $this->applyBlockFilter($baseQuery, $blockId);
-        } elseif ($venueId) {
-            $baseQuery = $this->applyVenueFilter($baseQuery, $venueId);
+        // Get all blocks in the venue
+        $blocks = Block::whereHas('stand', function ($query) use ($venueId) {
+            $query->where('venue_id', $venueId);
+        })->get();
+
+        $blockData = [];
+        $totalAccessCount = 0;
+
+        foreach ($blocks as $block) {
+            $markerIds = $this->getMarkerIdsForBlock($block);
+
+            $accessCount = 0;
+            if (!empty($markerIds)) {
+                $accessCount = AccessLog::whereIn('marker_id', $markerIds)
+                    ->whereBetween('accessed_at', [$startTime, $endTime])
+                    ->count();
+            }
+
+            $totalAccessCount += $accessCount;
+
+            $blockData[] = [
+                'block_id' => $block->id,
+                'block_name' => $block->name,
+                'access_count' => $accessCount,
+                // 'access_percent' will be calculated later
+            ];
         }
 
-        $baseQuery->whereBetween('access_logs.accessed_at', [$startTime, $endTime]);
+        // Calculate access percentages
+        foreach ($blockData as &$data) {
+            if ($totalAccessCount > 0) {
+                $data['access_percent'] = round(($data['access_count'] / $totalAccessCount) * 100, 2);
+            } else {
+                $data['access_percent'] = 0;
+            }
+        }
 
-        // Clone the base query for devices and browsers
-        $deviceQuery = clone $baseQuery;
-        $browserQuery = clone $baseQuery;
+        // Sort the data by access_count descending
+        usort($blockData, function ($a, $b) {
+            return $b['access_count'] <=> $a['access_count'];
+        });
 
-        // Get total accesses per device
-        $deviceResults = $deviceQuery->select(
-                DB::raw('COALESCE(access_logs.device, "Unknown") as device'),
-                DB::raw('COUNT(*) as access_count')
-            )
-            ->groupBy('device')
-            ->orderBy('access_count', 'desc')
-            ->get();
+        return $blockData;
+    }
 
-        // Get total accesses per browser
-        $browserResults = $browserQuery->select(
-                DB::raw('COALESCE(access_logs.browser, "Unknown") as browser'),
-                DB::raw('COUNT(*) as access_count')
-            )
-            ->groupBy('browser')
-            ->orderBy('access_count', 'desc')
-            ->get();
+    public function getAccessesByDeviceAndBrowser($venueId, $blockId, $startTime, $endTime)
+    {
+        if ($venueId) {
+            $venue = Venue::findOrFail($venueId);
+            $markerIds = $this->getMarkerIdsForVenue($venue);
+        } elseif ($blockId) {
+            $block = Block::findOrFail($blockId);
+            $markerIds = $this->getMarkerIdsForBlock($block);
+        } else {
+            throw new \Exception('Either venue_id or block_id must be provided.');
+        }
+
+        if (empty($markerIds)) {
+            $devices = [];
+            $browsers = [];
+        } else {
+            $devices = AccessLog::whereIn('marker_id', $markerIds)
+                ->whereBetween('accessed_at', [$startTime, $endTime])
+                ->select('device', DB::raw('COUNT(*) as access_count'))
+                ->groupBy('device')
+                ->orderBy('access_count', 'desc')
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'device' => $item->device ?: 'Unknown',
+                        'access_count' => $item->access_count,
+                    ];
+                })
+                ->toArray();
+
+            $browsers = AccessLog::whereIn('marker_id', $markerIds)
+                ->whereBetween('accessed_at', [$startTime, $endTime])
+                ->select('browser', DB::raw('COUNT(*) as access_count'))
+                ->groupBy('browser')
+                ->orderBy('access_count', 'desc')
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'browser' => $item->browser ?: 'Unknown',
+                        'access_count' => $item->access_count,
+                    ];
+                })
+                ->toArray();
+        }
 
         return [
-            'devices'  => $deviceResults,
-            'browsers' => $browserResults,
+            'devices' => $devices,
+            'browsers' => $browsers,
         ];
     }
 
-    public function getAccessesByBlockForVenue($venueId, Carbon $startTime, Carbon $endTime)
+
+    private function generateTimeGroups($startTime, $endTime, $interval)
     {
-        // Build the query
-        $accessesPerBlock = AccessLog::query()
-            ->join('markers', 'access_logs.marker_id', '=', 'markers.id')
-            // Join seats when the marker is a seat
-            ->leftJoin('seats', function ($join) {
-                $join->on('markers.markerable_type', '=', DB::raw("'seat'"))
-                     ->on('markers.markerable_id', '=', 'seats.id');
-            })
-            // Join blocks directly or via seats
-            ->join('blocks', function ($join) {
-                $join->on(function ($query) {
-                    $query->where('markers.markerable_type', 'block')
-                          ->whereColumn('markers.markerable_id', 'blocks.id');
-                })->orWhere(function ($query) {
-                    $query->where('markers.markerable_type', 'seat')
-                          ->whereColumn('seats.block_id', 'blocks.id');
-                });
-            })
-            ->join('stands', 'blocks.stand_id', '=', 'stands.id')
-            ->where('stands.venue_id', $venueId)
-            ->whereBetween('access_logs.accessed_at', [$startTime, $endTime])
-            ->groupBy('blocks.id', 'blocks.name')
-            ->select(
-                'blocks.id as block_id',
-                'blocks.name as block_name',
-                DB::raw('COUNT(access_logs.id) as access_count')
-            )
-            ->get();
+        $start = Carbon::parse($startTime);
+        $end = Carbon::parse($endTime);
 
-        // Calculate total accesses
-        $totalAccesses = $accessesPerBlock->sum('access_count');
+        $allTimeGroups = [];
+        $current = $start->copy();
 
-        // Calculate percentages and format results
-        $results = $accessesPerBlock->map(function ($item) use ($totalAccesses) {
-            $percentage = $totalAccesses > 0 ? ($item->access_count / $totalAccesses) * 100 : 0;
+        $phpDateFormat = $this->phpDateFormatFromMysqlFormat($interval['format']);
 
-            return [
-                'block_id'       => $item->block_id,
-                'block_name'     => $item->block_name ?? 'Unknown',
-                'access_count'   => (int) $item->access_count,
-                'access_percent' => round($percentage, 2),
-            ];
-        });
+        while ($current <= $end) {
+            $timeGroup = $current->format($phpDateFormat);
+            $allTimeGroups[] = $timeGroup;
 
-        return $results->sortByDesc('access_count')->values();
-    }
-    /**
-     * Build the base query for fetching access logs.
-     */
-    private function buildBaseQuery()
-    {
-        return AccessLog::query()
-            ->join('markers', 'access_logs.marker_id', '=', 'markers.id');
+            // Increment current based on interval unit
+            switch ($interval['unit']) {
+                case 'minute':
+                    $current->addMinute();
+                    break;
+                case 'hour':
+                    $current->addHour();
+                    break;
+                case 'day':
+                    $current->addDay();
+                    break;
+                case 'week':
+                    $current->addWeek();
+                    break;
+                case 'month':
+                    $current->addMonth();
+                    break;
+                case 'year':
+                    $current->addYear();
+                    break;
+                default:
+                    throw new \Exception('Invalid interval unit.');
+            }
+        }
+
+        return $allTimeGroups;
     }
 
-    /**
-     * Apply block-specific filters to the query.
-     */
-    private function applyBlockFilter($query, $blockId)
+    private function determineInterval($startTime, $endTime)
     {
-        $seatIds = $this->getSeatIdsByBlock($blockId);
+        $start = Carbon::parse($startTime);
+        $end = Carbon::parse($endTime);
+        $diffInSeconds = $start->diffInSeconds($end);
 
-        $query->where(function ($query) use ($blockId, $seatIds) {
-            $query->where(function ($query) use ($blockId) {
-                $query->where('markers.markerable_type', 'block')
-                      ->where('markers.markerable_id', $blockId);
-            })->orWhere(function ($query) use ($seatIds) {
-                $query->where('markers.markerable_type', 'seat')
-                      ->whereIn('markers.markerable_id', $seatIds);
+        if ($diffInSeconds <= 3600) { // 1 hour
+            return ['unit' => 'minute', 'format' => '%Y-%m-%d %H:%i'];
+        } elseif ($diffInSeconds <= 86400) { // 1 day
+            return ['unit' => 'hour', 'format' => '%Y-%m-%d %H:00'];
+        } elseif ($diffInSeconds <= 604800) { // 1 week
+            return ['unit' => 'day', 'format' => '%Y-%m-%d'];
+        } elseif ($diffInSeconds <= 2592000) { // 1 month
+            return ['unit' => 'day', 'format' => '%Y-%m-%d'];
+        } elseif ($diffInSeconds <= 31536000) { // 1 year
+            return ['unit' => 'month', 'format' => '%Y-%m'];
+        } else {
+            return ['unit' => 'year', 'format' => '%Y'];
+        }
+    }
+
+    private function getSeatMarkerIdsForVenue($venue)
+    {
+        return Marker::whereHasMorph('markerable', 'seat', function ($query) use ($venue) {
+            $query->whereHas('block.stand', function ($query) use ($venue) {
+                $query->where('venue_id', $venue->id);
             });
-        });
-
-        return $query;
+        })->pluck('id')->toArray();
     }
 
-    /**
-     * Apply venue-specific filters to the query.
-     */
-    private function applyVenueFilter($query, $venueId)
+    private function getBlockMarkerIdsForVenue($venue)
     {
-        $query->where(function ($query) use ($venueId) {
-            $query->where(function ($query) use ($venueId) {
-                $query->where('markers.markerable_type', 'block')
-                    ->whereIn('markers.markerable_id', function ($subQuery) use ($venueId) {
-                        $subQuery->select('blocks.id')
-                            ->from('blocks')
-                            ->join('stands', 'blocks.stand_id', '=', 'stands.id')
-                            ->where('stands.venue_id', $venueId);
-                    });
-            })->orWhere(function ($query) use ($venueId) {
-                $query->where('markers.markerable_type', 'seat')
-                    ->whereIn('markers.markerable_id', function ($subQuery) use ($venueId) {
-                        $subQuery->select('seats.id')
-                            ->from('seats')
-                            ->join('blocks', 'seats.block_id', '=', 'blocks.id')
-                            ->join('stands', 'blocks.stand_id', '=', 'stands.id')
-                            ->where('stands.venue_id', $venueId);
-                    });
+        return Marker::whereHasMorph('markerable', 'block', function ($query) use ($venue) {
+            $query->whereHas('stand', function ($query) use ($venue) {
+                $query->where('venue_id', $venue->id);
             });
-        });
-    
-        return $query;
-    }
-    /**
-     * Fetch results from the database based on the built query.
-     */
-    private function fetchResults($query, Carbon $startTime, Carbon $endTime, $groupByFormat)
-    {
-        return $query->whereBetween('access_logs.accessed_at', [$startTime, $endTime])
-            ->select(DB::raw("
-                DATE_FORMAT(access_logs.accessed_at, '$groupByFormat') as time_group,
-                COUNT(*) as total_access_count,
-                SUM(CASE WHEN markers.markerable_type = 'seat' THEN 1 ELSE 0 END) as seat_access_count,
-                SUM(CASE WHEN markers.markerable_type = 'block' THEN 1 ELSE 0 END) as block_access_count
-            "))
-            ->groupBy('time_group')
-            ->orderBy('time_group')
-            ->get()
-            ->keyBy('time_group');
+        })->pluck('id')->toArray();
     }
 
-    /**
-     * Format the results to include all time groups, even those with zero counts.
-     */
-    private function formatResults($results, Carbon $startTime, Carbon $endTime, $groupByFormat)
+    private function getSeatMarkerIdsForBlock($block)
     {
-        $allTimeGroups = $this->generateTimeGroups($startTime, $endTime, $groupByFormat);
-
-        return $allTimeGroups->map(function ($timeGroup) use ($results) {
-            $timeGroupKey = $timeGroup->format('Y-m-d H:i:s');
-            $data = $results->get($timeGroupKey, [
-                'time_group'          => $timeGroupKey,
-                'total_access_count'  => 0,
-                'seat_access_count'   => 0,
-                'block_access_count'  => 0,
-            ]);
-
-            return [
-                'time_group'          => $timeGroupKey,
-                'total_access_count'  => (int) $data['total_access_count'],
-                'seat_access_count'   => (int) $data['seat_access_count'],
-                'block_access_count'  => (int) $data['block_access_count'],
-            ];
-        });
+        return Marker::whereHasMorph('markerable', 'seat', function ($query) use ($block) {
+            $query->where('block_id', $block->id);
+        })->pluck('id')->toArray();
     }
 
-    /**
-     * Get seat IDs associated with a specific block.
-     */
-    private function getSeatIdsByBlock($blockId)
+    private function getMarkerIdsForVenue($venue)
     {
-        return Seat::where('block_id', $blockId)->pluck('id');
+        $seatMarkerIds = $this->getSeatMarkerIdsForVenue($venue);
+        $blockMarkerIds = $this->getBlockMarkerIdsForVenue($venue);
+
+        return array_merge($seatMarkerIds, $blockMarkerIds);
     }
 
-    /**
-     * Get seat IDs associated with a specific venue.
-     */
-    private function getSeatIdsByVenue($venueId)
+    private function getMarkerIdsForBlock($block)
     {
-        return Seat::join('blocks', 'seats.block_id', '=', 'blocks.id')
-            ->join('stands', 'blocks.stand_id', '=', 'stands.id')
-            ->where('stands.venue_id', $venueId)
-            ->pluck('seats.id');
+        $seatMarkerIds = $this->getSeatMarkerIdsForBlock($block);
+        $blockMarkerIds = $block->markers()->pluck('id')->toArray();
+
+        return array_merge($seatMarkerIds, $blockMarkerIds);
     }
 
-    /**
-     * Generate all time groups between the start and end times.
-     */
-    private function generateTimeGroups(Carbon $startTime, Carbon $endTime, $groupByFormat): Collection
+    private function getAccessCountsOverTime($markerIds, $interval, $startTime, $endTime)
     {
-        $timeGroups = collect();
-        $current = $this->alignToTimeGroup($startTime->copy(), $groupByFormat);
-    
-        while ($current->lessThanOrEqualTo($endTime)) {
-            $timeGroups->push($current->copy());
-            $current = $this->incrementTime($current, $groupByFormat);
+        if (empty($markerIds)) {
+            return [];
         }
-    
-        return $timeGroups;
-    }
-    
-    private function alignToTimeGroup(Carbon $time, $groupByFormat)
-    {
-        if (strpos($groupByFormat, '%Y-%m-%d %H:%i') !== false) {
-            return $time->startOfMinute();
-        } elseif (strpos($groupByFormat, '%Y-%m-%d %H') !== false) {
-            return $time->startOfHour();
-        } elseif (strpos($groupByFormat, '%Y-%m-%d') !== false) {
-            return $time->startOfDay();
-        } elseif (strpos($groupByFormat, '%Y-%m') !== false) {
-            return $time->startOfMonth();
-        } else {
-            return $time->startOfYear();
-        }
-    }
-    
 
-    /**
-     * Increment the time based on the group by format.
-     */
-    private function incrementTime(Carbon $time, $groupByFormat): Carbon
-    {
-        // Determine the increment based on the groupByFormat
-        if (strpos($groupByFormat, '%Y-%m-%d %H:%i') !== false) {
-            // Minute level
-            return $time->addMinute();
-        } elseif (strpos($groupByFormat, '%Y-%m-%d %H') !== false) {
-            // Hour level
-            return $time->addHour();
-        } elseif (strpos($groupByFormat, '%Y-%m-%d') !== false) {
-            // Day level
-            return $time->addDay();
-        } elseif (strpos($groupByFormat, '%Y-%m') !== false) {
-            // Month level
-            return $time->addMonth();
-        } else {
-            // Year level
-            return $time->addYear();
-        }
+        return AccessLog::whereIn('marker_id', $markerIds)
+            ->whereBetween('accessed_at', [$startTime, $endTime])
+            ->select([
+                DB::raw("DATE_FORMAT(accessed_at, '{$interval['format']}') as time_interval"),
+                DB::raw('COUNT(*) as count'),
+            ])
+            ->groupBy('time_interval')
+            ->orderBy('time_interval')
+            ->pluck('count', 'time_interval')
+            ->toArray();
     }
 
-    /**
-     * Determine the time group format based on the time difference.
-     */
-    public function getTimeGroupFormat(Carbon $startTime, Carbon $endTime)
+    private function phpDateFormatFromMysqlFormat($mysqlFormat)
     {
-        $diffInMinutes = $startTime->diffInMinutes($endTime);
-        $diffInDays    = $startTime->diffInDays($endTime);
-        $diffInMonths  = $startTime->diffInMonths($endTime);
+        $replacements = [
+            '%Y' => 'Y',
+            '%m' => 'm',
+            '%d' => 'd',
+            '%H' => 'H',
+            '%i' => 'i',
+            '%s' => 's',
+            '%M' => 'F',
+            '%b' => 'M',
+            '%h' => 'h',
+            '%p' => 'A',
+            '%a' => 'a',
+            '%W' => 'l',
+            '%w' => 'w',
+            '%U' => 'W',
+            '%y' => 'y',
+            '%C' => '', // Century (not directly supported in PHP)
+            '%e' => 'j',
+            '%f' => 'u',
+            '%k' => 'G',
+            '%l' => 'g',
+            '%r' => 'h:i:s A',
+            '%T' => 'H:i:s',
+            '%S' => 's',
+            '%V' => 'W',
+        ];
 
-        if ($diffInMinutes <= 60) {
-            //NOT WORKING
-            return '%Y-%m-%d %H:%i:00';   //This means we group by the minute
-        } elseif ($diffInMinutes <= 60 * 24) {
-            //NOT WORKING
-            return '%Y-%m-%d %H:00:00';   //This means we group by the hour
-        } elseif ($diffInDays <= 31) {
-            return '%Y-%m-%d 00:00:00';   //This means we group by the days
-        } elseif ($diffInMonths <= 12) {
-            return '%Y-%m-01 00:00:00';   //This means we group by the month
-        } else {
-            return '%Y-01-01 00:00:00';   //This means we group by the year, but thinking probably should still group by month.
-        }
+        return strtr($mysqlFormat, $replacements);
     }
 }
