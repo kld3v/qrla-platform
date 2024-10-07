@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { MailIcon } from 'vue-tabler-icons'
 import { profileDD } from '@/_mockApis/headerData'
+import { Link } from '@inertiajs/vue3'
 </script>
 
 <template>
@@ -53,7 +54,11 @@ import { profileDD } from '@/_mockApis/headerData'
 							color="primary"
 							:to="item.href">
 							<div class="d-flex gap-3 align-center">
-								<p class="text-subtitle-1 heading custom-title">{{ item.title }}</p>
+								<Link
+									:href="route(`${item.route}`)"
+									class="text-subtitle-1 heading custom-title"
+									>{{ item.title }}</Link
+								>
 								<v-chip
 									size="small"
 									color="error"

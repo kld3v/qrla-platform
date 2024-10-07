@@ -18,7 +18,7 @@ import { Icon } from '@iconify/vue'
 			</div>
 		</v-card-item>
 		<img
-			src="@/assets/images/backgrounds/outline_logo.png"
+			src="@/assets/images/QAssets/LOGO.png"
 			alt="matdash-img"
 			class="position-absolute" />
 	</v-card>

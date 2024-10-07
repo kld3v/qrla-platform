@@ -1,38 +1,36 @@
-
 type notificationType = {
-    avatar: string;
-    title: string;
-    subtitle: string;
-    color:string;
-    time:string;
-};
+	avatar: string
+	title: string
+	subtitle: string
+	color: string
+	time: string
+}
 
 type profileType = {
-    title: string;
-    href: string;
-    badge:boolean;
-};
+	title: string
+	href: string
+	badge: boolean
+	route: string
+}
 
 type languageType = {
-    avatar: string;
-    title: string;
-    subtext: string;
-    value: string;
-};
+	avatar: string
+	title: string
+	subtext: string
+	value: string
+}
 
 type appsLinkType = {
-    avatar: string;
-    title: string;
-    subtext: string;
-    color:string;
-    href: string;
-};
-
+	avatar: string
+	title: string
+	subtext: string
+	color: string
+	href: string
+}
 
 type searchType = {
-    title: string;
-    href: string;
-};
-
+	title: string
+	href: string
+}
 
 export type { notificationType, profileType, languageType, appsLinkType, searchType }

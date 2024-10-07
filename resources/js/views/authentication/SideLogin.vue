@@ -11,15 +11,14 @@ import LoginForm from '@/components/auth/LoginForm.vue'
 				cols="12"
 				lg="5"
 				xl="4"
-				class="bg-surface auth">
+				class="bg-white auth">
 				<div class="d-flex justify-center align-center h-100">
 					<div class="mt-xl-0 mt-5 auth-card">
 						<LogoIcon />
-						<h2 class="text-h3 my-3 heading">Sign in</h2>
-						<div class="mb-6">Your Admin Dashboard</div>
+						<h2 class="text-h3 my-3 text-q-color-blue">Sign in</h2>
+						<div class="mb-6 text-q-color-blue">Your Admin Dashboard</div>
 						<LoginForm />
 						<p class="d-flex align-center justify-center textSecondary mt-6 font-weight-medium">
-							New to MatDash?
 							<Link
 								class="pl-0 text-primary opacity-1 pl-2 font-weight-medium text-decoration-none"
 								height="auto"

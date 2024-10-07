@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useAuthStore } from '@/stores/auth'
 import { Form } from 'vee-validate'
 
 /*Social icons*/
@@ -14,11 +13,6 @@ const password = ref('admin123')
 const username = ref('info@wrappixel.com')
 const passwordRules = ref([(v: string) => !!v || 'Password is required', (v: string) => (v && v.length <= 10) || 'Password must be less than 10 characters'])
 const emailRules = ref([(v: string) => !!v || 'E-mail is required', (v: string) => /.+@.+\..+/.test(v) || 'E-mail must be valid'])
-
-function validate(values: any, { setErrors }: any) {
-	const authStore = useAuthStore()
-	return authStore.login(username.value, password.value).catch((error) => setErrors({ apiError: error }))
-}
 </script>
 
 <template>
@@ -64,7 +58,6 @@ function validate(values: any, { setErrors }: any) {
 		</div>
 	</div>
 	<Form
-		@submit="validate"
 		v-slot="{ errors, isSubmitting }"
 		class="mt-5">
 		<v-label class="font-weight-semibold pb-2">Username</v-label>

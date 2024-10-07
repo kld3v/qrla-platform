@@ -106,7 +106,6 @@ const getCart = computed(() => {
 				class="mt-4 dropdown-box px-4 py-3">
 				<div class="d-flex justify-space-between align-center">
 					<RightMobileSidebar />
-					<LanguageDD />
 					<v-btn
 						icon
 						variant="text"

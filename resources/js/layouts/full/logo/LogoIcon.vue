@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import Logoiconimg from '@/assets/images/logos/logo-icon.svg'
+import Logoiconimg from '@/assets/images/QAssets/LOGO.png'
 </script>
 <template>
-	<div class="logo">
+	<div class="w-[32px]">
 		<Link href="/">
 			<img
 				:src="Logoiconimg"
