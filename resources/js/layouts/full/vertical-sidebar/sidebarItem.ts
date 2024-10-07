@@ -18,7 +18,7 @@ export interface menu {
 
 export const sidebarItem: menu[] = [
 	{
-		header: ' ',
+		header: '',
 		id: 1,
 		children: [
 			{

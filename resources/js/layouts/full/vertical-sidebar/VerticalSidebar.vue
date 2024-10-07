@@ -6,6 +6,7 @@ import NavGroup from './NavGroup/index.vue'
 import NavItem from './NavItem/index.vue'
 import NavCollapse from './NavCollapse/NavCollapse.vue'
 import Logo from '../logo/Logo.vue'
+import QCARDCOMPANYLOGO from '@/assets/images/QAssets/levy_logo.png'
 
 const props = defineProps<{
 	isGlobalHome: boolean
@@ -15,7 +16,7 @@ const props = defineProps<{
 // to update with props accordingly
 const sidebarItemsVenue: any[] = [
 	{
-		header: ' ',
+		header: '',
 		id: 1,
 		children: [
 			{
@@ -187,11 +188,23 @@ const sidebarMenu = shallowRef(props.isGlobalHome ? sidebarItem : sidebarItemsVe
 		<!---Navigation -->
 		<!-- ---------------------------------------------- -->
 		<perfect-scrollbar class="scrollnavbar">
-			<div class="px-4 py-0 sidebar-menus">
+			<div class="px-4 py-4 sidebar-menus">
 				<v-list class="py-1">
+					<div class="w-full px-4 flex align-center my-4">
+						<v-avatar
+							v-if="QCARDCOMPANYLOGO"
+							size="40">
+							<img
+								:src="QCARDCOMPANYLOGO"
+								alt="avatar"
+								width="40" />
+						</v-avatar>
+						<p class="h3 ml-4 muted">{{ $page.props.auth.user.name }}</p>
+					</div>
 					<template v-for="(item, i) in sidebarMenu">
 						<template v-if="currentMenu == item.id">
 							<!---Item Sub Header -->
+							<v-divider class="mt-2 mb-2"></v-divider>
 							<NavGroup
 								:item="item"
 								v-if="item.header"
