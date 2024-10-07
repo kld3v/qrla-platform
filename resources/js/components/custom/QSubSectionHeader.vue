@@ -12,7 +12,7 @@ const props = defineProps<{
 
 <template>
 	<v-card
-		elevation="18"
+		flat
 		class="">
 		<div class="px-6 py-4 default-gray">
 			<div class="d-flex justify-space-between align-center">

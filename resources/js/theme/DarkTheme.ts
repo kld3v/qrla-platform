@@ -9,7 +9,7 @@ const DARK_BLUE_THEME: ThemeTypes = {
 	},
 	colors: {
 		primary: '#A2F732',
-		secondary: '#013940',
+		secondary: '#041522',
 		info: '#3CACC8',
 		success: '#13DEB9',
 		warning: '#FFAE1F',
@@ -22,9 +22,11 @@ const DARK_BLUE_THEME: ThemeTypes = {
 		lightwarning: '#4D3A2A',
 		darkprimary: '#2C4E26',
 		darkdefaultgray: '#151c25',
-		textPrimary: '#041522',
-		textSecondary: '#7C8FAC',
-		borderColor: '#333F55',
+		// white text on dark blue bg
+		textPrimary: '#fff',
+		// dark blue on white/green bg
+		textSecondary: '#041522',
+		borderColor: '#babfc3',
 		containerBg: '#03111B',
 		background: '#041522',
 		//bg done

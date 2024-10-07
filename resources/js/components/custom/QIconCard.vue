@@ -9,7 +9,8 @@ const props = defineProps<{
 <template>
 	<v-card
 		elevation="10"
-		class="overflow-hidden">
+		class="overflow-hidden"
+		style="background-color: transparent">
 		<v-card-item style="padding: 0">
 			<div
 				:key="card.bg"
@@ -22,8 +23,8 @@ const props = defineProps<{
 							size="48"
 							:color="card.color"
 							class="rounded-full mr-3">
-							<Icon
-								:icon="card.icon"
+							<img
+								:src="card.icon"
 								height="25" />
 						</v-avatar>
 						<p class="font-black text-xl">{{ card.title }}</p>
@@ -63,6 +64,6 @@ const props = defineProps<{
 }
 
 .dark-primary-gradient {
-	background: linear-gradient(180deg, rgba(var(--v-theme-darkprimary), 0.2) 0, rgba(var(--v-theme-darkprimary), 0.05) 100%);
+	background: linear-gradient(180deg, rgba(var(--v-theme-primary), 0.04) 0, rgba(var(--v-theme-darkprimary), 0.02) 100%);
 }
 </style>

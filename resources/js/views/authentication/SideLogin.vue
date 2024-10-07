@@ -57,7 +57,13 @@ const submit = () => {
 						<Form
 							class="mt-5"
 							@submit="submit">
-							<v-label class="font-weight-semibold pb-2 text-q-color-blue">Username</v-label>
+							<v-label class="font-weight-semibold pb-2 opacity-1"
+								><p
+									style="opacity: 1"
+									class="!text-q-color-blue">
+									Username
+								</p></v-label
+							>
 							<VTextField
 								v-model="form.email"
 								:rules="emailRules"
@@ -68,7 +74,7 @@ const submit = () => {
 							<InputError
 								class=""
 								:message="form.errors.email" />
-							<v-label class="font-weight-semibold pb-2">Password</v-label>
+							<v-label class="font-weight-semibold pb-2 opacity-1">Password</v-label>
 							<VTextField
 								v-model="form.password"
 								:rules="passwordRules"
