@@ -21,11 +21,11 @@ const DARK_BLUE_THEME: ThemeTypes = {
 		lightinfo: '#274A60',
 		lightwarning: '#4D3A2A',
 		darkprimary: '#2C4E26',
-		darkdefaultgray: '#151c25',
+		darkdefaultgray: '#141C24',
 		// white text on dark blue bg
 		textPrimary: '#fff',
 		// dark blue on white/green bg
-		textSecondary: '#041522',
+		textSecondary: '#fff',
 		borderColor: '#babfc3',
 		containerBg: '#03111B',
 		background: '#041522',

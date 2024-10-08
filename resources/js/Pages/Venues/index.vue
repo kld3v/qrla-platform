@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import ProfitCard from '@/components/dashboards/dashboard2/ProfitCard.vue'
 import QCardBanner from '@/components/widgets/banners/QCardBanner.vue'
-import QIconCard from '@/components/custom/QIconCard.vue'
+import QIconCard from '@/components/QComponents/QIconCard.vue'
 import FullLayout from '@/layouts/full/FullLayout.vue'
 import QFiltering from '@/views/tables/datatables/QFiltering.vue'
-import QSubsectionHeader from '@/components/custom/QSubSectionHeader.vue'
+import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
 import { ref } from 'vue'
 import { QCardType } from '@/types'
 import QCARDAVATAR from '@/assets/images/profile/user-1.jpg'

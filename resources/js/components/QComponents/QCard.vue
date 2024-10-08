@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { QCardType } from '@/types'
-import { Icon } from '@iconify/vue'
+
 const props = defineProps<{
 	bg: QCardType['bg'] | 'default-gray'
 }>()
@@ -9,7 +9,7 @@ const props = defineProps<{
 <template>
 	<v-sheet
 		:class="bg"
-		elevation="20"
+		elevation="12"
 		class="py-8 px-8 rounded-md text-center h-full">
 		<slot></slot>
 	</v-sheet>

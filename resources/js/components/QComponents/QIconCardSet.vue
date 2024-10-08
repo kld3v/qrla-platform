@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { IconcardData } from '@/_mockApis/components/dashboard/dashboard3'
 import { Icon } from '@iconify/vue'
 import { computed } from 'vue'
 
@@ -21,6 +22,10 @@ const props = defineProps<{
 const bgClass = computed(() => {
 	return props.bg ? `bg-[${props.bg}]` : ''
 })
+
+const colsLength = computed(() => {
+	return props.IconCardData.length
+})
 </script>
 
 <template>
@@ -28,7 +33,7 @@ const bgClass = computed(() => {
 		elevation="10"
 		class="overflow-hidden">
 		<v-card-item :class="bgClass">
-			<div class="grid grid-cols-5 gap-4">
+			<div :class="`grid grid-cols-${colsLength} gap-4`">
 				<div
 					v-for="card in props.IconCardData"
 					:key="card.bg"
