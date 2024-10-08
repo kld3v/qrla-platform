@@ -228,3 +228,9 @@ const sidebarMenu = shallowRef(props.isGlobalHome ? sidebarItem : sidebarItemsVe
 		</perfect-scrollbar>
 	</v-navigation-drawer>
 </template>
+
+<style>
+.muted {
+	color: rgba(var(--v-theme-muted));
+}
+</style>

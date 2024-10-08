@@ -47,3 +47,12 @@ html {
 		max-width: 800px;
 	}
 }
+
+.q-btn-green {
+	background-color: rgba(var(--v-theme-primary), 1) !important;
+	color: rgba(var(--v-theme-textSecondary), 1) !important;
+}
+
+.q-text-qrla_green {
+	color: rgba(var(--v-theme-primary), 1) !important;
+}

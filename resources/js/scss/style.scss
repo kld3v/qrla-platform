@@ -1,6 +1,5 @@
 @import './variables';
 @import 'vuetify/styles.scss';
-@import './override';
 @import './layout/text';
 @import './layout/reboot';
 @import './layout/container';
@@ -44,3 +43,5 @@
 @import 'pages/editor';
 
 @import 'vue3-perfect-scrollbar/dist/vue3-perfect-scrollbar.css';
+
+@import './override';

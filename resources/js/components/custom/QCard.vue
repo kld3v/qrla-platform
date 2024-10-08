@@ -7,21 +7,12 @@ const props = defineProps<{
 </script>
 
 <template>
-	<v-card
-		elevation="10"
-		class="overflow-hidden">
-		<v-card-item style="padding: 0">
-			<div
-				:key="bg"
-				class="flex-1-0">
-				<v-sheet
-					:class="bg"
-					class="py-8 px-8 rounded-md text-center !flex flex-row justify-between align-center">
-					<slot></slot>
-				</v-sheet>
-			</div>
-		</v-card-item>
-	</v-card>
+	<v-sheet
+		:class="bg"
+		elevation="20"
+		class="py-8 px-8 rounded-md text-center h-full">
+		<slot></slot>
+	</v-sheet>
 </template>
 
 <style lang="scss" scoped>

@@ -9,6 +9,7 @@ type IconCardObject = {
 	title: string
 	data: any
 	link: string
+	image?: string
 }
 const props = defineProps<{
 	bg: string
@@ -34,7 +35,7 @@ const bgClass = computed(() => {
 					class="flex-1-0">
 					<v-sheet
 						:class="card.bg"
-						class="py-8 px-3 rounded-md text-center">
+						class="py-8 px-3 rounded-md text-center !flex flex-col align-center justify-center h-full">
 						<v-avatar
 							v-if="card.icon"
 							size="48"
@@ -45,8 +46,10 @@ const bgClass = computed(() => {
 								height="25" />
 						</v-avatar>
 						<img
-							src=""
-							alt="" />
+							v-if="card.image"
+							:src="card.image"
+							alt="Image"
+							class="h-[80px] mb-4" />
 						<p class="mb-1">{{ card.title }}</p>
 						<h3 class="text-h3 heading mb-5">{{ card.data }}</h3>
 						<Link
