@@ -19,12 +19,13 @@ class VenueController extends Controller
 
         $total_venues = $user->venues()->count();
 
+        $total_plaques = $venues->sum('plaques');
+        $total_accesses = $venues->sum('accesses');
 
-        //TODO: REMOVE ALL HARDCODED DATA
         $row_2_data = [
             'total_venues'  => $total_venues,
-            'total_plaques' => 100, // Hardcoded for now
-            'total_visits'  => 200, // Hardcoded for now
+            'total_plaques' => $total_plaques,
+            'total_visits'  => $total_accesses,
         ];
 
         return Inertia::render('JoelTemplates/Venues/Index', [

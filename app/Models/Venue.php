@@ -25,11 +25,18 @@ class Venue extends Model
         'contact_email',
         'contact_phone',
         'management',
+        'accesses',
+        'plaques'
     ];
 
     public function users()
     {
         return $this->belongsToMany(User::class, 'venue_user');
+    }
+
+    public function organisation()
+    {
+        return $this->belongsTo(Organisation::class);
     }
     
 
