@@ -24,7 +24,7 @@ class Venue extends Model
         'long_description',
         'contact_email',
         'contact_phone',
-        'management',
+        'organisation_id',
         'accesses',
         'plaques'
     ];
