@@ -13,26 +13,27 @@ class VenueController extends Controller
 
     public function index()
     {
-        $user = auth()->user();
+        $user = auth()->user()->load('organisation', 'venues');
+    
+        $venues = $user->venues;
 
-        $venues = $user->venues()->get();
-
-        $total_venues = $user->venues()->count();
-
+        $total_venues = $venues->count();
         $total_plaques = $venues->sum('plaques');
         $total_accesses = $venues->sum('accesses');
-
-        $row_2_data = [
+    
+        $stats = [
             'total_venues'  => $total_venues,
             'total_plaques' => $total_plaques,
             'total_visits'  => $total_accesses,
         ];
-
+    
         return Inertia::render('JoelTemplates/Venues/Index', [
-            'venues'     => $venues,
-            'row_2_data' => $row_2_data,
+            'user' => $user,
+            'stats' => $stats,
+            'venues' => $venues,
         ]);
     }
+    
 
     public function show(Venue $venue)
     {
