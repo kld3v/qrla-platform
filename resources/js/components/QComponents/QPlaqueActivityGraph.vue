@@ -84,11 +84,11 @@ const areaChart = {
 
 		{
 			name: 'Taps',
-			data: [35, 45, 40, 50, 35, 55, 40, 45],
+			data: [35, 45, 40, 50, 35, 55, 40, 45, 100, 90, 10],
 		},
 		{
 			name: 'Scans',
-			data: [100, 75, 80, 40, 20, 40, 0, 25],
+			data: [100, 75, 80, 40, 20, 40, 0, 25, 100, 90, 50],
 		},
 	],
 }
@@ -102,7 +102,7 @@ const areaChart = {
 				<div class="d-flex gap-3 align-center">
 					<v-avatar
 						size="48"
-						class="rounded-md bg-primary">
+						class="rounded-md q-primary-gradient">
 						<Icon
 							icon="solar:layers-linear"
 							class="text-primary"
@@ -123,13 +123,13 @@ const areaChart = {
 					<div class="d-flex align-center gap-2">
 						<v-avatar
 							size="8"
-							class="bg-error rounded-circle"></v-avatar>
+							class="!bg-[#635bff] rounded-circle"></v-avatar>
 						<span class="textSecondary">Taps</span>
 					</div>
 					<div class="d-flex align-center gap-2">
 						<v-avatar
 							size="8"
-							class="!bg-[#14E9E2] rounded-circle"></v-avatar>
+							class="bg-success rounded-circle"></v-avatar>
 						<span class="textSecondary">Scans</span>
 					</div>
 				</div>

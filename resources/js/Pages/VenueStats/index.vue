@@ -8,6 +8,8 @@ import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.
 import QCard from '@/components/QComponents/QCard.vue'
 import QIconCardSet from '@/components/QComponents/QIconCardSet.vue'
 import QPlaqueActivityGraph from '@/components/QComponents/QPlaqueActivityGraph.vue'
+import PlaqueGraphStatsIcons from './Partials/PlaqueGraphStatsIcons.vue'
+import GraphTimeScaleMenu from './Partials/GraphTimeScaleMenu.vue'
 
 const props = defineProps<{
 	venue: VenuePageProps
@@ -27,7 +29,7 @@ const IconCardData = [
 	},
 	{
 		bg: 'info-gradient',
-		icon: 'solar:recive-twice-square-linear',
+		icon: 'streamline:wave-signal-solid',
 		color: 'warning',
 		title: 'Venue Type',
 		data: 'Sport',
@@ -84,6 +86,7 @@ const IconCardData = [
 				cols="12"
 				lg="12">
 				<QCard bg="default-gray">
+					<GraphTimeScaleMenu />
 					<v-row>
 						<v-col
 							cols="12"
@@ -95,15 +98,9 @@ const IconCardData = [
 						</v-col>
 						<v-col
 							cols="12"
-							lg="4">
-							<v-avatar
-								size="48"
-								class="rounded-md q-primary-gradient">
-								<Icon
-									icon="solar:layers-linear"
-									class="text-primary"
-									height="25" />
-							</v-avatar>
+							lg="4"
+							class="flex flex-col justify-center gap-y-8">
+							<PlaqueGraphStatsIcons />
 						</v-col>
 					</v-row>
 				</QCard>

@@ -61,6 +61,10 @@ html {
 	background: linear-gradient(180deg, rgba(var(--v-theme-primary), 0.28) 0, rgba(var(--v-theme-primary), 0.05) 100%) !important;
 }
 
+.q-dark-primary-gradient {
+	background: linear-gradient(180deg, rgba(var(--v-theme-darkprimary), 0.2) 0, rgba(var(--v-theme-darkprimary), 0.05) 100%) !important;
+}
+
 .warning-gradient {
 	background: linear-gradient(180deg, rgba(var(--v-theme-warning), 0.12) 0, rgba(var(--v-theme-warning), 0.03) 100%);
 }

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import QSubsectionHeader from '@/components/custom/QSubSectionHeader.vue'
+import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
 import FullLayout from '@/layouts/full/FullLayout.vue'
-import HeaderImageAndLogo from '@/components/custom/HeaderImageAndLogo.vue'
+import HeaderImageAndLogo from '@/components/QComponents/HeaderImageAndLogo.vue'
 import { ref } from 'vue'
 import { VenuePageProps } from '@/types/Venue'
-import VenueTitleAndAddress from '@/components/custom/VenueTitleAndAddress.vue'
-import QIconCardSet from '@/components/custom/QIconCardSet.vue'
-import QCard from '@/components/custom/QCard.vue'
+import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.vue'
+import QIconCardSet from '@/components/QComponents/QIconCardSet.vue'
+import QCard from '@/components/QComponents/QCard.vue'
 import HorizontalPlaque from '@/assets/images/QAssets/chelspng 1horizontal_plaque.png'
 const props = defineProps<{
 	venue: VenuePageProps
@@ -36,7 +36,7 @@ const isGlobalHome = ref(false)
 			<v-col
 				cols="12"
 				lg="12">
-				<QIconCardSet bg="#151C25" />
+				<!-- <QIconCardSet bg="#151C25" /> -->
 			</v-col>
 		</v-row>
 		<v-row class="mb-6">
