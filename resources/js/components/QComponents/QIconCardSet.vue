@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { IconcardData } from '@/_mockApis/components/dashboard/dashboard3'
 import { Icon } from '@iconify/vue'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 type IconCardObject = {
 	bg: string
@@ -12,19 +12,34 @@ type IconCardObject = {
 	link: string
 	image?: string
 }
+
 const props = defineProps<{
 	bg: string
 	IconCardData: IconCardObject[]
 }>()
 
-// TODO this will be passed as props eventually.
-
 const bgClass = computed(() => {
 	return props.bg ? `bg-[${props.bg}]` : ''
 })
 
-const colsLength = computed(() => {
-	return props.IconCardData.length
+const colsLength = ref(props.IconCardData.length)
+
+// Tailwind classes for different grid columns
+const gridColsClass = computed(() => {
+	switch (colsLength.value) {
+		case 1:
+			return 'grid-cols-1'
+		case 2:
+			return 'grid-cols-2'
+		case 3:
+			return 'grid-cols-3'
+		case 4:
+			return 'grid-cols-4'
+		case 5:
+			return 'grid-cols-5'
+		default:
+			return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+	}
 })
 </script>
 
@@ -33,7 +48,7 @@ const colsLength = computed(() => {
 		elevation="10"
 		class="overflow-hidden">
 		<v-card-item :class="bgClass">
-			<div :class="`grid grid-cols-${colsLength} gap-4`">
+			<div :class="`grid ${gridColsClass} gap-4`">
 				<div
 					v-for="card in props.IconCardData"
 					:key="card.bg"
@@ -60,9 +75,9 @@ const colsLength = computed(() => {
 						<Link
 							v-if="card.link"
 							:href="card.link"
-							class="bg-surface mt-3 rounded-sm text-decoration-none text-body-2 font-weight-semibold btn-white elevation-9"
-							>View Details</Link
-						>
+							class="bg-surface mt-3 rounded-sm text-decoration-none text-body-2 font-weight-semibold btn-white elevation-9">
+							View Details
+						</Link>
 					</v-sheet>
 				</div>
 			</div>
