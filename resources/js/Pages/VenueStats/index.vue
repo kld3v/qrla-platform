@@ -111,12 +111,34 @@ const IconCardData = [
 			<v-col
 				cols="12"
 				lg="6">
-				<QCard bg="default-gray"> </QCard>
+				<QCard
+					bg="default-gray"
+					class="flex flex-col gap-y-2">
+					<h3 class="q-text-qrla_green h3 mb-2">Device Stats</h3>
+					<p class="text-subtitle-1 mb-2">Most used devices by customers.</p>
+					<v-row>
+						<v-col
+							cols="12"
+							lg="12">
+							<QCard bg="dark-primary-gradient">
+								<ul>
+									<li>AppleiOS</li>
+									<li>Android</li>
+								</ul>
+							</QCard>
+						</v-col>
+					</v-row>
+				</QCard>
 			</v-col>
 			<v-col
 				cols="12"
 				lg="3">
-				<QCard bg="default-gray"> </QCard>
+				<QCard
+					bg="default-gray"
+					class="text-left">
+					<h3 class="q-text-qrla_green h3">Browser Stats</h3>
+					<p class="text-subtitle-1">Most used browsers by customers.</p>
+				</QCard>
 			</v-col>
 			<v-col
 				cols="12"

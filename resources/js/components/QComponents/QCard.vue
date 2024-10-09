@@ -10,7 +10,7 @@ const props = defineProps<{
 	<v-sheet
 		:class="bg"
 		elevation="12"
-		class="py-8 px-8 rounded-md text-center h-full relative">
+		class="py-8 px-8 rounded-md h-full">
 		<slot></slot>
 	</v-sheet>
 </template>
