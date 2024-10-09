@@ -39,6 +39,8 @@ class VenueController extends Controller
     {
         $this->authorize('view', $venue);
 
+        $venue->load('organisation');
+
         return inertia('Venues/Show', [
             'venue' => $venue
         ]);
