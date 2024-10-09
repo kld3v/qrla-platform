@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import QSubsectionHeader from '@/components/custom/QSubSectionHeader.vue'
+import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
 import FullLayout from '@/layouts/full/FullLayout.vue'
-import HeaderImageAndLogo from '@/components/custom/HeaderImageAndLogo.vue'
+import HeaderImageAndLogo from '@/components/QComponents/HeaderImageAndLogo.vue'
 import { ref } from 'vue'
 import { VenuePageProps } from '@/types/Venue'
-import VenueTitleAndAddress from '@/components/custom/VenueTitleAndAddress.vue'
-import QCard from '@/components/custom/QCard.vue'
+import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.vue'
+import QCard from '@/components/QComponents/QCard.vue'
 import QPRIVACYASSET from '@/assets/images/QAssets/PlaqueManagement/privacy_asset.svg'
 import QSETTINGASSET from '@/assets/images/QAssets/PlaqueManagement/settings_asset.svg'
 
