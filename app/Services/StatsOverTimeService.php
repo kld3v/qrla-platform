@@ -126,45 +126,59 @@ class StatsOverTimeService
         } else {
             throw new \Exception('Either venue_id or block_id must be provided.');
         }
-
+    
         if (empty($markerIds)) {
             $devices = [];
             $browsers = [];
         } else {
-            $devices = AccessLog::whereIn('marker_id', $markerIds)
-                ->whereBetween('accessed_at', [$startTime, $endTime])
-                ->select('device', DB::raw('COUNT(*) as access_count'))
+            // Prepare base query
+            $baseQuery = AccessLog::whereIn('marker_id', $markerIds);
+    
+            if ($startTime && $endTime) {
+                $baseQuery->whereBetween('accessed_at', [$startTime, $endTime]);
+            }
+    
+            // Get total access count
+            $totalAccessCount = $baseQuery->count();
+    
+            // Clone queries for devices and browsers
+            $deviceQuery = clone $baseQuery;
+            $browserQuery = clone $baseQuery;
+    
+            // Get device counts and calculate percentages
+            $devices = $deviceQuery->select('device', DB::raw('COUNT(*) as access_count'))
                 ->groupBy('device')
                 ->orderBy('access_count', 'desc')
                 ->get()
-                ->map(function ($item) {
+                ->map(function ($item) use ($totalAccessCount) {
+                    $percentage = $totalAccessCount > 0 ? ($item->access_count / $totalAccessCount) * 100 : 0;
                     return [
                         'device' => $item->device ?: 'Unknown',
-                        'access_count' => $item->access_count,
+                        'access_percentage' => round($percentage, 2),
                     ];
                 })
                 ->toArray();
-
-            $browsers = AccessLog::whereIn('marker_id', $markerIds)
-                ->whereBetween('accessed_at', [$startTime, $endTime])
-                ->select('browser', DB::raw('COUNT(*) as access_count'))
+    
+            // Get browser counts and calculate percentages
+            $browsers = $browserQuery->select('browser', DB::raw('COUNT(*) as access_count'))
                 ->groupBy('browser')
                 ->orderBy('access_count', 'desc')
                 ->get()
-                ->map(function ($item) {
+                ->map(function ($item) use ($totalAccessCount) {
+                    $percentage = $totalAccessCount > 0 ? ($item->access_count / $totalAccessCount) * 100 : 0;
                     return [
                         'browser' => $item->browser ?: 'Unknown',
-                        'access_count' => $item->access_count,
+                        'access_percentage' => round($percentage, 2),
                     ];
                 })
                 ->toArray();
         }
-
+    
         return [
             'devices' => $devices,
             'browsers' => $browsers,
         ];
-    }
+    }    
 
 
     private function generateTimeGroups($startTime, $endTime, $interval)

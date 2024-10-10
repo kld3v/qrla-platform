@@ -57,11 +57,11 @@ class StatsController extends Controller
         $blockId = $request->input('block_id');
         $startTime = $request->input('start_time');
         $endTime = $request->input('end_time');
-
-        if ((!$venueId && !$blockId) || !$startTime || !$endTime) {
-            return response()->json(['error' => 'Missing required parameters.'], 400);
+    
+        if (!$venueId && !$blockId) {
+            return response()->json(['error' => 'Either venue_id or block_id must be provided.'], 400);
         }
-
+    
         try {
             $data = $this->statsService->getAccessesByDeviceAndBrowser($venueId, $blockId, $startTime, $endTime);
             return response()->json($data);
@@ -69,4 +69,5 @@ class StatsController extends Controller
             return response()->json(['error' => $e->getMessage()], 400);
         }
     }
+    
 }
