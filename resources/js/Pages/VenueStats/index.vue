@@ -17,6 +17,8 @@ import QDonutChart from '../../components/QComponents/QDonutChart.vue'
 import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
 // import FIREFOXICON from '@/assets/images/svgs/.svg'
 // import SAFARIICON from '@/assets/images/svgs/.svg'
+import STADIUMCHAIRS from '@/assets/images/QAssets/VenuePerformance/asset1.png'
+import BlockPerformanceRow from './Partials/BlockPerformanceRow.vue'
 const props = defineProps<{
 	venue: VenuePageProps
 }>()
@@ -58,6 +60,8 @@ const IconCardData = [
 		link: '',
 	},
 ]
+
+const colors = ['primary', 'warning', 'success', 'purple']
 </script>
 <template>
 	<FullLayout :isGlobalHome="isGlobalHome">
@@ -92,7 +96,7 @@ const IconCardData = [
 				cols="12"
 				lg="12">
 				<QCard bg="default-gray">
-					<GraphTimeScaleMenu />
+					<GraphTimeScaleMenu class="flex gap-6 absolute right-20" />
 					<v-row>
 						<v-col
 							cols="12"
@@ -214,12 +218,51 @@ const IconCardData = [
 				lg="12">
 				<QCard bg="default-gray">
 					<div class="flex justify-space-between align-center w-full">
-						<h3 class="q-text-qrla_green h3 mb-2">Block Activity</h3>
+						<div class="mb-4">
+							<h3 class="q-text-qrla_green h3 mb-2">Block Activity</h3>
+							<GraphTimeScaleMenu />
+						</div>
 						<QMenusAnchor
 							menu-location="start"
 							dropdown-button-color="secondary"
 							:dropdown-options="['Aug 2023', 'Sept 2023']"></QMenusAnchor>
 					</div>
+					<v-row>
+						<v-col
+							cols="12"
+							lg="6">
+							<QCard bg="dark-primary-gradient">
+								<p class="h4 mb-4">Top Performing Blocks</p>
+								<BlockPerformanceRow
+									v-for="(item, index) in 4"
+									:key="index"
+									:visits="10"
+									:percent-of-total="20"
+									:progress-bar-color="colors[index]" />
+							</QCard>
+						</v-col>
+						<v-col
+							cols="12"
+							lg="6"></v-col>
+					</v-row>
+					<v-row>
+						<v-col
+							cols="12"
+							lg="12">
+							<QCard bg="dark-primary-gradient">
+								<p class="h4 mb-4">Block Performance Tracker</p>
+								<img
+									:src="STADIUMCHAIRS"
+									alt="Stadium Chairs"
+									class="w-full mb-4" />
+								<v-btn
+									color="primary"
+									class="w-full">
+									View Individual Block Performance
+								</v-btn>
+							</QCard>
+						</v-col>
+					</v-row>
 				</QCard>
 			</v-col>
 		</v-row>

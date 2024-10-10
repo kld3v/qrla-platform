@@ -1,10 +1,11 @@
 <template>
-	<div class="flex gap-6 absolute right-20">
+	<div class="flex gap-6">
 		<v-btn
 			v-for="option in timeRangeOptions"
 			:key="option.value"
 			size="40"
 			tile
+			style="font-weight: 100; width: 48px"
 			:class="['rounded-md', selectedRange === option.value ? 'bg-primary' : 'q-dark-primary-gradient']"
 			@click="selectRange(option.value)">
 			{{ option.label }}

@@ -10,15 +10,14 @@ const props = defineProps<{
 const option = ref()
 const items = ref([{ title: 'Click Me' }, { title: 'Click Me' }, { title: 'Click Me' }, { title: 'Click Me 2' }])
 
-const locations = ref(['top', 'bottom', 'start', 'end', 'center'])
-const location = ref('Sept 2023')
+const location = ref(props.dropdownOptions[0])
 </script>
 
 <template>
 	<div class="text-center mt-4 w-[180px]">
 		<v-select
 			v-model="location"
-			:items="locations"
-			label="Location"></v-select>
+			:items="dropdownOptions"
+			label="Month"></v-select>
 	</div>
 </template>
