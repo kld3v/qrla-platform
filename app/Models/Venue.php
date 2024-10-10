@@ -27,11 +27,12 @@ class Venue extends Model
         'management',
     ];
 
+
     public function users()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class, 'venue_user');
     }
-
+    
     public function blocks()
     {
         return $this->hasMany(Block::class);

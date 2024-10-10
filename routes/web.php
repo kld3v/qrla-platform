@@ -8,20 +8,14 @@ use App\Http\Controllers\VenueController;
 use App\Http\Controllers\BlockController;
 use App\Http\Controllers\MarkerController;
 
-Route::get('/', function () {
+Route::get('/', function () {       
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
+Route::middleware('auth')->group(function (): void {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -42,9 +36,33 @@ Route::get('/venues/{venue}/blocks/{name}', [BlockController::class, 'show'])->n
 // // Route to see all of the stats for a specific venue
 // Route::get('/venues/{venue}/stats', [VenueStatsController::class, 'show'])->name('venues.stats');
 
+// To be corrected accordingly 
+Route::get('/VenueStats', function(){
+    return Inertia('VenueStats/index', [
+        'venue' => "data"
+    ]);
+});
+
+
 // // Route to see all of the stats for a specific block by block name within a venue
 // Route::get('/venues/{venue}/blocks/{block_name}/stats', [BlockStatsController::class, 'show'])->name('blocks.stats');
 
-Route::get('/{short_code}', [MarkerController::class, 'handleMarkerRedirect'])->name('markers.redirect');
+// To be corrected accordingly 
+Route::get('/PlaqueManagement', function(){
+    return Inertia('PlaqueManagement/index', [
+        'venue' => "data"
+    ]);
+});
+
+
+// To be corrected accordingly 
+Route::get('/BlockStats', function(){
+    return Inertia('BlockStats/index', [
+        'venue' => "data"
+    ]);
+});
+
 
 require __DIR__.'/auth.php';
+
+Route::get('/{short_code}', [MarkerController::class, 'handleMarkerRedirect'])->name('markers.redirect');

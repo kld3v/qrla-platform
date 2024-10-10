@@ -47,6 +47,6 @@ class User extends Authenticatable
 
     public function venues()
     {
-        return $this->belongsToMany(Venue::class);
+        return $this->belongsToMany(Venue::class, 'venue_user');
     }
 }
