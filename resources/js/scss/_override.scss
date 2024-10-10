@@ -84,3 +84,16 @@ html {
 .purple-gradient {
 	background: linear-gradient(180deg, rgba(var(--v-theme-purple), 0.12) 0, rgba(var(--v-theme-purple), 0.03) 100%) !important;
 }
+
+// To edit the table on the block stats page so the footer isn't placed at the end.
+.block-stats-table {
+	.v-data-table-footer {
+		justify-content: center !important;
+	}
+	.v-data-table-footer__info {
+		justify-content: center !important;
+	}
+	.v-data-table-footer__pagination {
+		margin-inline-start: 0 !important;
+	}
+}

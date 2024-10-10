@@ -18,6 +18,7 @@ import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
 // import FIREFOXICON from '@/assets/images/svgs/.svg'
 // import SAFARIICON from '@/assets/images/svgs/.svg'
 import STADIUMCHAIRS from '@/assets/images/QAssets/VenuePerformance/asset1.png'
+import QSelectableTable from '@/components/QComponents/QSelectableTable.vue'
 
 const props = defineProps<{
 	venue: VenuePageProps
@@ -103,9 +104,16 @@ const colors = ['primary', 'warning', 'success', 'purple']
 					<v-row>
 						<v-col
 							cols="12"
-							lg="6">
+							lg="4">
 							<QCard bg="dark-primary-gradient">
-								<p class="h4 mb-4">Top Performing Blocks</p>
+								<QSelectableTable
+									:block-data="[
+										{
+											name: 'East Stand',
+											code: 'EU1',
+											circleColor: 'primary',
+										},
+									]" />
 							</QCard>
 						</v-col>
 						<v-col
