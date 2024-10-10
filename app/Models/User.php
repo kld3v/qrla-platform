@@ -44,9 +44,4 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-
-    public function venues()
-    {
-        return $this->belongsToMany(Venue::class, 'venue_user');
-    }
 }

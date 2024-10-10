@@ -4,7 +4,6 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Database\Eloquent\Relations\Relation;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,18 +21,5 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Vite::prefetch(concurrency: 3);
-
-
-        //This is quite cool and I probably will forget it so making a note
-        // Relation::enforceMorphMap: This function defines custom
-        // mappings for polymorphic relationships.
-        // Instead of storing the fully qualified class
-        // names (App\Models\Seat or App\Models\Block),
-        // it will store the simpler strings 'seat' and 'block'
-        // in the markerable_type column of your markers table.
-        Relation::enforceMorphMap([
-            'seat' => 'App\Models\Seat',
-            'block' => 'App\Models\Block',
-        ]);
     }
 }
