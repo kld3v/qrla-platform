@@ -49,6 +49,8 @@ Route::get('/stats/accesses-by-device-browser', [StatsController::class, 'getAcc
 
 Route::get('/stats/accesses-by-block', [StatsController::class, 'getAccessesByBlock']);
 
+Route::get('/stats/accesses-by-marker-type', [StatsController::class, 'getAccessesByMarkerType']);
+
 
 require __DIR__.'/auth.php';
 

@@ -16,22 +16,30 @@ class StatsController extends Controller
 
     public function getAccessesOverTime(Request $request)
     {
-        $type = $request->input('type'); // 'venue' or 'block'
-        $id = $request->input('id');
+        $venueId = $request->input('venue_id');
+        $blockId = $request->input('block_id');
         $startTime = $request->input('start_time');
         $endTime = $request->input('end_time');
-
-        if (!$type || !$id || !$startTime || !$endTime) {
+    
+        if ((!$venueId && !$blockId) || !$startTime || !$endTime) {
             return response()->json(['error' => 'Missing required parameters.'], 400);
         }
-
+    
         try {
-            $data = $this->statsService->getAccessesOverTime($type, $id, $startTime, $endTime);
+            if ($venueId) {
+                $data = $this->statsService->getAccessesOverTime('venue', $venueId, $startTime, $endTime);
+            } elseif ($blockId) {
+                $data = $this->statsService->getAccessesOverTime('block', $blockId, $startTime, $endTime);
+            } else {
+                throw new \Exception('Either venue_id or block_id must be provided.');
+            }
+    
             return response()->json($data);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
     }
+    
 
     public function getAccessesByBlock(Request $request)
     {
@@ -70,4 +78,23 @@ class StatsController extends Controller
         }
     }
     
+    public function getAccessesByMarkerType(Request $request)
+    {
+        $venueId = $request->input('venue_id');
+        $blockId = $request->input('block_id');
+        $startTime = $request->input('start_time');
+        $endTime = $request->input('end_time');
+
+        if (!$venueId && !$blockId) {
+            return response()->json(['error' => 'Either venue_id or block_id must be provided.'], 400);
+        }
+
+        try {
+            $data = $this->statsService->getAccessesByMarkerType($venueId, $blockId, $startTime, $endTime);
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
+    }
+
 }

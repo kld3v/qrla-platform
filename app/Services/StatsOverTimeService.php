@@ -178,9 +178,68 @@ class StatsOverTimeService
             'devices' => $devices,
             'browsers' => $browsers,
         ];
-    }    
+    }
 
+    public function getAccessesByMarkerType($venueId, $blockId, $startTime, $endTime)
+    {
+        if ($venueId) {
+            $venue = Venue::findOrFail($venueId);
+            $seatMarkerIds = $this->getSeatMarkerIdsForVenue($venue);
+            $blockMarkerIds = $this->getBlockMarkerIdsForVenue($venue);
+        } elseif ($blockId) {
+            $block = Block::findOrFail($blockId);
+            $seatMarkerIds = $this->getSeatMarkerIdsForBlock($block);
+            $blockMarkerIds = $block->markers()->pluck('id')->toArray();
+        } else {
+            throw new \Exception('Either venue_id or block_id must be provided.');
+        }
 
+        $seatAccessCount = 0;
+        $blockAccessCount = 0;
+
+        if (!empty($seatMarkerIds)) {
+            $seatQuery = AccessLog::whereIn('marker_id', $seatMarkerIds);
+            if ($startTime && $endTime) {
+                $seatQuery->whereBetween('accessed_at', [$startTime, $endTime]);
+            }
+            $seatAccessCount = $seatQuery->count();
+        }
+
+        if (!empty($blockMarkerIds)) {
+            $blockQuery = AccessLog::whereIn('marker_id', $blockMarkerIds);
+            if ($startTime && $endTime) {
+                $blockQuery->whereBetween('accessed_at', [$startTime, $endTime]);
+            }
+            $blockAccessCount = $blockQuery->count();
+        }
+
+        $totalAccessCount = $seatAccessCount + $blockAccessCount;
+
+        $result = [];
+
+        if ($totalAccessCount > 0) {
+            $seatPercentage = ($seatAccessCount / $totalAccessCount) * 100;
+            $blockPercentage = ($blockAccessCount / $totalAccessCount) * 100;
+        } else {
+            $seatPercentage = 0;
+            $blockPercentage = 0;
+        }
+
+        $result[] = [
+            'marker_type' => 'seat',
+            'access_percentage' => round($seatPercentage, 2),
+        ];
+
+        $result[] = [
+            'marker_type' => 'block',
+            'access_percentage' => round($blockPercentage, 2),
+        ];
+
+        return $result;
+    }
+    
+
+    //HELPER FUNCTIONS BELOW
     private function generateTimeGroups($startTime, $endTime, $interval)
     {
         $start = Carbon::parse($startTime);
