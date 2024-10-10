@@ -4,27 +4,19 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\Venue;
-use App\Models\CronJob;
+use App\Traits\TracksCronJob;
 use Carbon\Carbon;
 
 class CountPlaques extends Command
 {
+    use TracksCronJob;
+
     protected $signature = 'venue:count-plaques';
     protected $description = 'Count the number of plaques (markers for seats) associated with each venue';
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     public function handle()
     {
-        $startTime = Carbon::now();
-        $cronJob = CronJob::create([
-            'name' => $this->signature,
-            'started_at' => $startTime,
-            'status' => 'running'
-        ]);
+        $startTime = $this->startCronJob($this->signature);
 
         try {
             $venues = Venue::all();
@@ -46,18 +38,9 @@ class CountPlaques extends Command
                 $venue->update(['plaques' => $plaqueCount]);
             }
 
-            $cronJob->update([
-                'status' => 'success',
-                'completed_at' => Carbon::now(),
-                'runtime' => $startTime->diffInSeconds(Carbon::now()),
-            ]);
+            $this->completeCronJob();
         } catch (\Exception $e) {
-            $cronJob->update([
-                'status' => 'failed',
-                'completed_at' => Carbon::now(),
-                'runtime' => $startTime->diffInSeconds(Carbon::now()),
-                'error_message' => $e->getMessage(),
-            ]);
+            $this->failCronJob($e);
         }
 
         return 0;

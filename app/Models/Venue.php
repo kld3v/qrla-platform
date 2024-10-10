@@ -26,7 +26,8 @@ class Venue extends Model
         'contact_phone',
         'organisation_id',
         'accesses',
-        'plaques'
+        'plaques',
+        'access_rate'
     ];
 
     public function users()

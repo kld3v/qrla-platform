@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('venues', function (Blueprint $table) {
-            $table->unsignedBigInteger('accesses')->default(0);
-            $table->unsignedBigInteger('plaques')->default(0);
+            $table->unsignedBigInteger('accesses')->default(0)->after('contact_phone');
+            $table->unsignedBigInteger('plaques')->default(0)->after('accesses');
         });
     }
 

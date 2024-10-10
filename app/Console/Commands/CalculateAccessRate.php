@@ -8,21 +8,19 @@ use App\Models\AccessLog;
 use App\Traits\TracksCronJob;
 use Carbon\Carbon;
 
-class CountAccesses extends Command
+class CalculateAccessRate extends Command
 {
     use TracksCronJob;
 
-    protected $signature = 'venue:count-accesses';
-    protected $description = 'Count the total number of accesses for each venue since the last cron run and update the venue table';
+    protected $signature = 'venue:calculate-access-rate';
+    protected $description = 'Calculate the access rate for each venue over the past week and store it';
 
     public function handle()
     {
         $startTime = $this->startCronJob($this->signature);
 
         try {
-            $lastCronJob = $this->getLastSuccessfulCronJob($this->signature);
-
-            $lastRun = $lastCronJob ? Carbon::parse($lastCronJob->ended_at) : AccessLog::min('accessed_at') ?? Carbon::now();
+            $oneWeekAgo = Carbon::now()->subDays(7);
 
             $venues = Venue::all();
 
@@ -36,11 +34,17 @@ class CountAccesses extends Command
                         return $block->markers->pluck('id')->merge($block->seats->flatMap->markers->pluck('id'));
                     });
 
-                $newAccessCount = AccessLog::whereIn('marker_id', $markerIds)
-                    ->where('accessed_at', '>=', $lastRun)
+                    $accessCount = AccessLog::whereIn('marker_id', $markerIds)
+                    ->where('accessed_at', '>=', $oneWeekAgo)
                     ->count();
 
-                $venue->increment('accesses', $newAccessCount);
+                $plaqueCount = $venue->plaques;
+
+                $accessRate = ($plaqueCount > 0) ? ($accessCount / $plaqueCount) * 100 : 0;
+
+                $venue->update([
+                    'access_rate' => $accessRate
+                ]);
             }
 
             $this->completeCronJob();
