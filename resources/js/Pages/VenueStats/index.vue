@@ -10,7 +10,13 @@ import QIconCardSet from '@/components/QComponents/QIconCardSet.vue'
 import QPlaqueActivityGraph from '@/components/QComponents/QPlaqueActivityGraph.vue'
 import PlaqueGraphStatsIcons from './Partials/PlaqueGraphStatsIcons.vue'
 import GraphTimeScaleMenu from './Partials/GraphTimeScaleMenu.vue'
-
+import APPLEICON from '@/assets/images/svgs/appleIcon.svg'
+import ANDROIDICONGREEN from '@/assets/images/svgs/androidIcon.svg'
+import GOOGLEICON from '@/assets/images/svgs/icon-chrome.svg'
+import QDonutChart from '../../components/QComponents/QDonutChart.vue'
+import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
+// import FIREFOXICON from '@/assets/images/svgs/.svg'
+// import SAFARIICON from '@/assets/images/svgs/.svg'
 const props = defineProps<{
 	venue: VenuePageProps
 }>()
@@ -110,7 +116,7 @@ const IconCardData = [
 		<v-row class="mb-6">
 			<v-col
 				cols="12"
-				lg="6">
+				lg="4">
 				<QCard
 					bg="default-gray"
 					class="flex flex-col gap-y-2">
@@ -121,10 +127,24 @@ const IconCardData = [
 							cols="12"
 							lg="12">
 							<QCard bg="dark-primary-gradient">
-								<ul>
-									<li>AppleiOS</li>
-									<li>Android</li>
-								</ul>
+								<div class="flex justify-space-between align-center">
+									<span class="flex align-center">
+										<img
+											:src="APPLEICON"
+											alt="Green Apple Icon" />
+										<p class="ml-4 mt-2 muted">Apple</p></span
+									>
+									<p>{{ venue.city }} 23%</p>
+								</div>
+								<div class="flex justify-space-between align-center mt-4">
+									<span class="flex align-center">
+										<img
+											:src="ANDROIDICONGREEN"
+											alt="Green Android Icon" />
+										<p class="ml-4 mt-1 muted">Android</p></span
+									>
+									<p>{{ venue.city }} 43%</p>
+								</div>
 							</QCard>
 						</v-col>
 					</v-row>
@@ -132,18 +152,59 @@ const IconCardData = [
 			</v-col>
 			<v-col
 				cols="12"
-				lg="3">
+				lg="4">
 				<QCard
 					bg="default-gray"
 					class="text-left">
-					<h3 class="q-text-qrla_green h3">Browser Stats</h3>
-					<p class="text-subtitle-1">Most used browsers by customers.</p>
+					<h3 class="q-text-qrla_green h3 mb-2">Browser Stats</h3>
+					<p class="text-subtitle-1 mb-2">Most used browsers by customers.</p>
+					<v-row>
+						<v-col
+							cols="12"
+							lg="12">
+							<QCard bg="dark-primary-gradient">
+								<div class="flex justify-space-between align-center">
+									<span class="flex align-center">
+										<img
+											:src="GOOGLEICON"
+											alt="Green Apple Icon" />
+										<p class="ml-4 mt-2 muted">Google</p></span
+									>
+									<p>{{ venue.city }} 23%</p>
+								</div>
+								<div class="flex justify-space-between align-center mt-4">
+									<span class="flex align-center">
+										<img
+											:src="GOOGLEICON"
+											alt="Green Android Icon" />
+										<p class="ml-4 mt-1 muted">Android</p></span
+									>
+									<p>{{ venue.city }} 43%</p>
+								</div>
+								<div class="flex justify-space-between align-center mt-4">
+									<span class="flex align-center">
+										<img
+											:src="GOOGLEICON"
+											alt="Green Android Icon" />
+										<p class="ml-4 mt-1 muted">Android</p></span
+									>
+									<p>{{ venue.city }} 43%</p>
+								</div>
+							</QCard>
+						</v-col>
+					</v-row>
 				</QCard>
 			</v-col>
 			<v-col
 				cols="12"
-				lg="3">
-				<QCard bg="default-gray"> </QCard>
+				lg="4">
+				<QCard bg="default-gray">
+					<div class="flex justify-space-between align-center w-full">
+						<h3 class="q-text-qrla_green h3 mb-2">Tap or Scan %</h3>
+						<p class="text-subtitle-1">All time</p>
+					</div>
+					<QDonutChart :labels="['Taps', 'Scans']" />
+				</QCard>
 			</v-col>
 		</v-row>
 
@@ -151,7 +212,15 @@ const IconCardData = [
 			<v-col
 				cols="12"
 				lg="12">
-				<QCard bg="default-gray"> </QCard>
+				<QCard bg="default-gray">
+					<div class="flex justify-space-between align-center w-full">
+						<h3 class="q-text-qrla_green h3 mb-2">Block Activity</h3>
+						<QMenusAnchor
+							menu-location="start"
+							dropdown-button-color="secondary"
+							:dropdown-options="['Aug 2023', 'Sept 2023']"></QMenusAnchor>
+					</div>
+				</QCard>
 			</v-col>
 		</v-row>
 	</FullLayout>
