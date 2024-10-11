@@ -28,6 +28,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Onboard the venues
+Route::post('/venues/onboard', [VenueController::class, 'onboardVenue']);
+
 // Route to see all of the venue data associated with the authenticated user
 Route::get('/venues', [VenueController::class, 'index'])->name('venues.index');
 

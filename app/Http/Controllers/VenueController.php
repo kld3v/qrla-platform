@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Venue;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Jobs\ProcessVenueOnboardingJob;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class VenueController extends Controller
 {
@@ -44,5 +47,49 @@ class VenueController extends Controller
         return inertia('Venues/Show', [
             'venue' => $venue
         ]);
+    }
+
+    public function onboardVenue(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name'               => 'required|string',
+            'address_line1'      => 'required|string',
+            'city'               => 'required|string',
+            'country'            => 'required|string',
+            'postcode'           => 'required|string',
+            'type'               => 'required|string',
+            'logo_url'           => 'nullable|url',
+            'banner_url'         => 'nullable|url',
+            'capacity'           => 'required|integer',
+            'status'             => 'required|string',
+            'short_description'  => 'nullable|string',
+            'long_description'   => 'nullable|string',
+            'contact_email'      => 'required|email',
+            'contact_phone'      => 'required|string',
+            'organisation_id'    => 'required|integer|exists:organisations,id',
+            'base_url'           => 'required|url',
+            'venue_data_file'    => 'required|file|mimes:xlsx,xls,csv',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Validation failed',
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+
+        // Store the uploaded file temporarily
+        $filePath = $request->file('venue_data_file')->store('venue_data_files');
+
+        ProcessVenueOnboardingJob::dispatch(
+            $request->except('venue_data_file'),
+            $filePath
+        );
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Venue onboarding has started. You will be notified upon completion.',
+        ], 202);
     }
 }
