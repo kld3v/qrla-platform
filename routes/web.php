@@ -43,6 +43,8 @@ Route::get('/venues/{venue}/plaque-management', [BlockController::class, 'index'
 // // Route to get stats associated with a specific venue
 // Route::get('/venues/{venue}/stats', [::class, ''])->name('');
 
+// Route::get('/venues/{venue}/block-stats', [::class, ''])->name('');
+
 // // Route to get stats associated with a specific block
 // Route::get('/venues/{venue}/blocks/{block}/stats', [::class, ''])->name('');
 

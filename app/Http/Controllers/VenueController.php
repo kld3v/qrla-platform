@@ -8,7 +8,8 @@ use App\Models\Venue;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Jobs\ProcessVenueOnboardingJob;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+
 
 class VenueController extends Controller
 {
@@ -70,7 +71,8 @@ class VenueController extends Controller
             'base_url'           => 'required|url',
             'venue_data_file'    => 'required|file|mimes:xlsx,xls,csv',
         ]);
-
+    
+        // Log the validation result
         if ($validator->fails()) {
             return response()->json([
                 'status'  => 'error',
@@ -78,18 +80,29 @@ class VenueController extends Controller
                 'errors'  => $validator->errors(),
             ], 422);
         }
+    
+        try {
+            $filePath = $request->file('venue_data_file')->store('venue_data_files');
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'File upload failed',
+            ], 500);
+        }
 
-        // Store the uploaded file temporarily
-        $filePath = $request->file('venue_data_file')->store('venue_data_files');
-
-        ProcessVenueOnboardingJob::dispatch(
-            $request->except('venue_data_file'),
-            $filePath
-        );
-
+        try {
+            dispatch(new ProcessVenueOnboardingJob($request->except('venue_data_file'), $filePath));
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Failed to dispatch venue onboarding job',
+            ], 500);
+        }
+    
         return response()->json([
             'status'  => 'success',
             'message' => 'Venue onboarding has started. You will be notified upon completion.',
         ], 202);
     }
 }
+
