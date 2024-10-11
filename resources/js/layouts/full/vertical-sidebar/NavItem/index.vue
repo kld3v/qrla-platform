@@ -17,9 +17,9 @@ const props = defineProps({ item: Object, level: Number })
 		<!---If icon-->
 		<template v-slot:prepend>
 			<Icon
-				:icon="'solar:' + item.icon"
-				height="18"
-				width="18"
+				:icon="item.icon"
+				height="22"
+				width="22"
 				:level="level"
 				class="dot"
 				:class="'text-' + item.BgColor" />

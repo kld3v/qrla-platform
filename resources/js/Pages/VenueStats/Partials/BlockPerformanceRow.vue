@@ -8,7 +8,9 @@
 			<p class="h4 align-self-end">{{ percentOfTotal }}%</p>
 		</div>
 		<div class="h-[8px] rounded-md mt-1 bg-white">
-			<div :class="computedProgressBarClass"></div>
+			<div
+				:class="computedProgressBarClass"
+				:style="{ width: `${percentOfTotal}%` }"></div>
 		</div>
 	</div>
 </template>
@@ -21,8 +23,9 @@ const props = defineProps<{
 	percentOfTotal: number
 	progressBarColor: string
 }>()
+
 const computedProgressBarClass = computed(() => {
-	return `w-[${props.percentOfTotal}%] bg-${props.progressBarColor} rounded-md h-[8px]`
+	return `bg-${props.progressBarColor} rounded-md h-[8px]`
 })
 </script>
 

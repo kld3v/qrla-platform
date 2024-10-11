@@ -19,6 +19,8 @@ import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
 // import SAFARIICON from '@/assets/images/svgs/.svg'
 import STADIUMCHAIRS from '@/assets/images/QAssets/VenuePerformance/asset1.png'
 import BlockPerformanceRow from './Partials/BlockPerformanceRow.vue'
+import { Icon } from '@iconify/vue'
+
 const props = defineProps<{
 	venue: VenuePageProps
 }>()
@@ -29,31 +31,31 @@ const isGlobalHome = ref(false)
 const IconCardData = [
 	{
 		bg: 'primary-gradient',
-		icon: 'solar:dollar-minimalistic-linear',
+		icon: 'lucide:nfc',
 		color: 'primary',
 		title: 'Venue Capacity',
 		data: '16,689',
 		link: '',
 	},
 	{
-		bg: 'info-gradient',
-		icon: 'streamline:wave-signal-solid',
-		color: 'warning',
+		bg: 'purple-gradient',
+		icon: 'iconamoon:eye',
+		color: 'purple',
 		title: 'Venue Type',
 		data: 'Sport',
 		link: '',
 	},
 	{
 		bg: 'success-gradient',
-		icon: 'ic:outline-backpack',
-		color: 'secondary',
+		icon: 'uil:qrcode-scan',
+		color: 'success',
 		title: 'QRLA Plaques',
 		data: '450',
 		link: '',
 	},
 	{
 		bg: 'error-gradient',
-		icon: 'ic:baseline-sync-problem',
+		icon: 'ph:chart-line-up',
 		color: 'error',
 		title: 'Managed By',
 		data: 'Levy UK & Ireland',
@@ -219,7 +221,7 @@ const colors = ['primary', 'warning', 'success', 'purple']
 				<QCard bg="default-gray">
 					<div class="flex justify-space-between align-center w-full">
 						<div class="mb-4">
-							<h3 class="q-text-qrla_green h3 mb-2">Block Activity</h3>
+							<h3 class="q-text-qrla_green h3 mb-6">Block Activity</h3>
 							<GraphTimeScaleMenu />
 						</div>
 						<QMenusAnchor
@@ -237,7 +239,7 @@ const colors = ['primary', 'warning', 'success', 'purple']
 									v-for="(item, index) in 4"
 									:key="index"
 									:visits="10"
-									:percent-of-total="20"
+									:percent-of-total="20 * (index + 1)"
 									:progress-bar-color="colors[index]" />
 							</QCard>
 						</v-col>
@@ -250,7 +252,13 @@ const colors = ['primary', 'warning', 'success', 'purple']
 							cols="12"
 							lg="12">
 							<QCard bg="dark-primary-gradient">
-								<p class="h4 mb-4">Block Performance Tracker</p>
+								<div class="flex justify-space-between align-center">
+									<p class="h4 mb-4">Block Performance Tracker</p>
+									<Icon
+										icon="material-symbols:stairs-outline"
+										height="25"
+										class="text-primary" />
+								</div>
 								<img
 									:src="STADIUMCHAIRS"
 									alt="Stadium Chairs"
