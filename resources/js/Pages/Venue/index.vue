@@ -13,10 +13,13 @@ import QPLAQUEMANAGEMENTDASHBOARDIMAGE from '@/assets/images/QAssets/Venues/asse
 import QVENUEPERFORMANCEIMAGE from '@/assets/images/QAssets/Venues/asset2.png'
 import QBLOCKPERFORMANCEIMAGE from '@/assets/images/QAssets/Venues/asset3.png'
 import { Link } from '@inertiajs/vue3'
+import { Icon } from '@iconify/vue'
 
 const props = defineProps<{
 	venue: VenuePageProps
 }>()
+
+console.log(props)
 
 const isGlobalHome = ref(false)
 
@@ -104,9 +107,13 @@ const IconCardData = [
 				<QCard bg="dark-primary-gradient">
 					<div class="flex justify-center gap-x-8 align-center">
 						<div class="text-left flex flex-col gap-4 max-w-[400px]">
-							<h3>Your Qrla Plaques!</h3>
-							<p>Your plaques have been scanned a total of //$InsertDataProp$// times at {{ venue.name }}!</p>
-							<v-btn class="q-btn-green w-full">Check</v-btn>
+							<h3 class="h3">Your Qrla Plaques!</h3>
+							<p
+								class="h3"
+								style="font-weight: 100">
+								Your plaques have been scanned a total of //$InsertDataProp$// times at {{ venue.name }}!
+							</p>
+							<v-btn class="bg-primary w-1/4">Check</v-btn>
 						</div>
 						<img
 							:src="HorizontalPlaque"
@@ -134,7 +141,7 @@ const IconCardData = [
 							:src="QPLAQUEMANAGEMENTDASHBOARDIMAGE"
 							class="w-full" />
 						<Link :href="route('venues.index')">
-							<v-btn class="q-btn-green w-full">Manage Plaques</v-btn>
+							<v-btn class="bg-primary w-full">Manage Plaques</v-btn>
 						</Link>
 					</div>
 				</QCard>
@@ -144,7 +151,13 @@ const IconCardData = [
 				lg="6">
 				<QCard bg="default-gray">
 					<div class="text-left gap-4 flex flex-col h-full">
-						<h3 class="h3 q-text-qrla_green">What is the QRLA management dashboard?</h3>
+						<div class="flex justify-space-between align-center">
+							<h3 class="h3 q-text-qrla_green">What is the QRLA management dashboard?</h3>
+							<Icon
+								icon="heroicons:squares-plus"
+								height="25"
+								class="text-primary" />
+						</div>
 
 						<p>View and manage all your plaques from one central dashboard, making amendments and edits easy and efficient.</p>
 
@@ -168,7 +181,13 @@ const IconCardData = [
 				lg="6">
 				<QCard bg="default-gray">
 					<div class="text-left gap-4 flex flex-col h-full">
-						<h3 class="h3 q-text-qrla_green">What is the Venue Performance Tracker?</h3>
+						<div class="flex justify-space-between align-center">
+							<h3 class="h3 q-text-qrla_green">What is the Venue Performance Tracker?</h3>
+							<Icon
+								icon="ph:chart-line-up"
+								height="25"
+								class="text-primary" />
+						</div>
 						<p>Track how well your QRLA plaques are performing across your entire venue with the Venue Performance Tracker.</p>
 						<p>View total number of views via QRLA plaques, including breakdowns of visits by Tap or Scan.</p>
 						<p>Get insights on how QRLA visits have changed over time, by viewing QRLA data across a variety of timescales.</p>
@@ -186,7 +205,7 @@ const IconCardData = [
 							:src="QVENUEPERFORMANCEIMAGE"
 							class="w-full" />
 						<Link :href="route('venues.index')">
-							<v-btn class="q-btn-green w-full">View Plaque Performance</v-btn>
+							<v-btn class="bg-primary w-full">View Plaque Performance</v-btn>
 						</Link>
 					</div></QCard
 				>
@@ -210,7 +229,7 @@ const IconCardData = [
 							:src="QBLOCKPERFORMANCEIMAGE"
 							class="w-full" />
 						<Link :href="route('venues.index')">
-							<v-btn class="q-btn-green w-full">View Block Performance</v-btn>
+							<v-btn class="bg-primary w-full">View Block Performance</v-btn>
 						</Link>
 					</div></QCard
 				>
@@ -220,7 +239,13 @@ const IconCardData = [
 				lg="6">
 				<QCard bg="default-gray">
 					<div class="text-left gap-4 flex flex-col h-full">
-						<h3 class="h3 q-text-qrla_green">What is the Block Performance Tracker?</h3>
+						<div class="flex justify-space-between align-center">
+							<h3 class="h3 q-text-qrla_green">What is the Block Performance Tracker?</h3>
+							<Icon
+								icon="material-symbols:stairs-outline"
+								height="25"
+								class="text-primary" />
+						</div>
 						<p>View how well your QRLA plaques are performing in specific blocks with the Block Performance Tracker.</p>
 						<p>The Block Performance Tracker gives you a more detailed breakdown of where your QRLA plques are being used most in your venue.</p>
 					</div>

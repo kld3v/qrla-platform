@@ -23,67 +23,8 @@ export const sidebarItem: menu[] = [
 		children: [
 			{
 				title: 'Home',
-				icon: 'home-line-duotone',
+				icon: 'solar:home-line-duotone',
 				to: '/venues',
-			},
-		],
-	},
-	{
-		header: 'QRLA v.2 Features',
-		id: 1,
-		children: [
-			{
-				title: 'Seat Activity',
-				icon: 'calendar-mark-line-duotone',
-				to: '/apps/calendar',
-				disabled: true,
-			},
-			{
-				title: 'Calendar',
-				icon: 'airbuds-case-minimalistic-line-duotone',
-				to: '/apps/kanban',
-				disabled: true,
-			},
-			{
-				title: 'Event Day Data',
-				icon: 'chat-round-line-line-duotone',
-				to: '/apps/chats',
-				disabled: true,
-			},
-			{
-				title: 'Taskboard',
-				icon: 'document-text-line-duotone',
-				to: '/apps/notes',
-				disabled: true,
-			},
-		],
-	},
-]
-
-export const sidebarItemsVenue: menu[] = [
-	{
-		header: ' ',
-		id: 1,
-		children: [
-			{
-				title: 'Venue Home',
-				icon: 'home-line-duotone',
-				to: '/venues',
-			},
-			{
-				title: 'Plaque Management Dashboard',
-				icon: 'home-line-duotone',
-				to: '/PlaqueManagement',
-			},
-			{
-				title: 'Venue Performance Tracker',
-				icon: 'home-line-duotone',
-				to: '/VenueStats',
-			},
-			{
-				title: 'Block Performance Tracker',
-				icon: 'home-line-duotone',
-				to: '/BlockStats',
 			},
 		],
 	},

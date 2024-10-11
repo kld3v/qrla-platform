@@ -10,11 +10,14 @@ export type VenuePageProps = {
 	id: number
 	logo_url: string
 	long_description: string
-	management: string
 	name: string
 	postcode: string
 	short_description: string
 	status: 'Active' | 'Inactive'
 	type: string
 	updated_at: Date
+	organisation_id: number
+	accesses: number
+	plaques: number
+	access_rate: number
 }

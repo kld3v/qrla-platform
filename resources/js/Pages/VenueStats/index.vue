@@ -105,6 +105,7 @@ const colors = ['primary', 'warning', 'success', 'purple']
 							lg="8"
 							class="text-left flex flex-col gap-y-2">
 							<h3 class="q-text-qrla_green h3">QRLA Plaque Activity</h3>
+							<!-- /access-over-time -->
 							<p class="text-subtitle-1">Overview of Tap or Scans through plaques</p>
 							<QPlaqueActivityGraph />
 						</v-col>
@@ -127,6 +128,7 @@ const colors = ['primary', 'warning', 'success', 'purple']
 					bg="default-gray"
 					class="flex flex-col gap-y-2">
 					<h3 class="q-text-qrla_green h3 mb-2">Device Stats</h3>
+					<!-- accesses-by-device-browser -->
 					<p class="text-subtitle-1 mb-2">Most used devices by customers.</p>
 					<v-row>
 						<v-col
@@ -207,6 +209,7 @@ const colors = ['primary', 'warning', 'success', 'purple']
 				<QCard bg="default-gray">
 					<div class="flex justify-space-between align-center w-full">
 						<h3 class="q-text-qrla_green h3 mb-2">Tap or Scan %</h3>
+						<!-- accesses-by-marker-type leave as all time -->
 						<p class="text-subtitle-1">All time</p>
 					</div>
 					<QDonutChart :labels="['Taps', 'Scans']" />
@@ -235,6 +238,7 @@ const colors = ['primary', 'warning', 'success', 'purple']
 							lg="6">
 							<QCard bg="dark-primary-gradient">
 								<p class="h4 mb-4">Top Performing Blocks</p>
+								<!-- accesses-by-block -->
 								<BlockPerformanceRow
 									v-for="(item, index) in 4"
 									:key="index"
