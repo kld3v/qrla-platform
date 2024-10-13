@@ -115,7 +115,7 @@ class StatsOverTimeService
         return $blockData;
     }
 
-    public function getAccessesByDeviceAndBrowser($venueId, $blockId, $startTime, $endTime)
+    public function getAccessesByOsAndBrowser($venueId, $blockId, $startTime, $endTime)
     {
         if ($venueId) {
             $venue = Venue::findOrFail($venueId);
@@ -128,7 +128,7 @@ class StatsOverTimeService
         }
     
         if (empty($markerIds)) {
-            $devices = [];
+            $osData = [];
             $browsers = [];
         } else {
             // Prepare base query
@@ -141,19 +141,19 @@ class StatsOverTimeService
             // Get total access count
             $totalAccessCount = $baseQuery->count();
     
-            // Clone queries for devices and browsers
-            $deviceQuery = clone $baseQuery;
+            // Clone queries for OS and browsers
+            $osQuery = clone $baseQuery;
             $browserQuery = clone $baseQuery;
     
-            // Get device counts and calculate percentages
-            $devices = $deviceQuery->select('device', DB::raw('COUNT(*) as access_count'))
-                ->groupBy('device')
+            // Get OS counts and calculate percentages
+            $osData = $osQuery->select('os', DB::raw('COUNT(*) as access_count'))
+                ->groupBy('os')
                 ->orderBy('access_count', 'desc')
                 ->get()
                 ->map(function ($item) use ($totalAccessCount) {
                     $percentage = $totalAccessCount > 0 ? ($item->access_count / $totalAccessCount) * 100 : 0;
                     return [
-                        'device' => $item->device ?: 'Unknown',
+                        'os' => $item->os ?: 'Unknown',
                         'access_percentage' => round($percentage, 2),
                     ];
                 })
@@ -175,10 +175,11 @@ class StatsOverTimeService
         }
     
         return [
-            'devices' => $devices,
+            'os' => $osData,
             'browsers' => $browsers,
         ];
     }
+    
 
     public function getAccessesByMarkerType($venueId, $blockId, $startTime, $endTime)
     {

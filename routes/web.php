@@ -50,7 +50,7 @@ Route::get('/venues/{venue}/plaque-management', [BlockController::class, 'index'
 
 Route::get('/stats/accesses-over-time', [StatsController::class, 'getAccessesOverTime']);
 
-Route::get('/stats/accesses-by-device-browser', [StatsController::class, 'getAccessesByDeviceAndBrowser']);
+Route::get('/stats/accesses-by-os-browser', [StatsController::class, 'getAccessesByOsAndBrowser']);
 
 Route::get('/stats/accesses-by-block', [StatsController::class, 'getAccessesByBlock']);
 

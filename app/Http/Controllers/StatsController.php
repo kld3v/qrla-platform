@@ -59,7 +59,7 @@ class StatsController extends Controller
         }
     }
 
-    public function getAccessesByDeviceAndBrowser(Request $request)
+    public function getAccessesByOsAndBrowser(Request $request)
     {
         $venueId = $request->input('venue_id');
         $blockId = $request->input('block_id');
@@ -71,12 +71,12 @@ class StatsController extends Controller
         }
     
         try {
-            $data = $this->statsService->getAccessesByDeviceAndBrowser($venueId, $blockId, $startTime, $endTime);
+            $data = $this->statsService->getAccessesByOsAndBrowser($venueId, $blockId, $startTime, $endTime);
             return response()->json($data);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
-    }
+    }    
     
     public function getAccessesByMarkerType(Request $request)
     {
