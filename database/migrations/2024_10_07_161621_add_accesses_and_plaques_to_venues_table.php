@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('venues', function (Blueprint $table) {
-            $table->unsignedBigInteger('accesses')->default(0)->after('contact_phone');
-            $table->unsignedBigInteger('plaques')->default(0)->after('accesses');
+            $table->unsignedBigInteger('plaques')->default(0)->after('contact_phone');
         });
     }
 
@@ -23,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('venues', function (Blueprint $table) {
-            $table->dropColumn(['accesses', 'plaques']);
+            $table->dropColumn(['plaques']);
         });
     }
 };

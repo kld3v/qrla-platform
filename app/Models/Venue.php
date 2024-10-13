@@ -25,7 +25,6 @@ class Venue extends Model
         'contact_email',
         'contact_phone',
         'organisation_id',
-        'accesses',
         'plaques',
         'access_rate'
     ];
@@ -60,4 +59,10 @@ class Venue extends Model
     {
         return $this->hasMany(Stand::class);
     }
+
+    public function accessCounts()
+    {
+        return $this->morphMany(AccessCount::class, 'countable');
+    }
+
 }
