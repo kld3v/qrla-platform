@@ -21,22 +21,22 @@ const sidebarItemsVenue: any[] = [
 		children: [
 			{
 				title: 'Venue Home',
-				icon: 'home-line-duotone',
+				icon: 'material-symbols:stadium-outline-rounded',
 				to: `/venues/${props.venueId}`,
 			},
 			{
 				title: 'Plaque Management Dashboard',
-				icon: 'home-line-duotone',
+				icon: 'heroicons:squares-plus',
 				to: '/PlaqueManagement',
 			},
 			{
 				title: 'Venue Performance Tracker',
-				icon: 'home-line-duotone',
+				icon: 'ph:chart-line-up',
 				to: '/VenueStats',
 			},
 			{
 				title: 'Block Performance Tracker',
-				icon: 'home-line-duotone',
+				icon: 'material-symbols:stairs-outline',
 				to: '/BlockStats',
 			},
 		],
@@ -47,25 +47,25 @@ const sidebarItemsVenue: any[] = [
 		children: [
 			{
 				title: 'Seat Activity',
-				icon: 'calendar-mark-line-duotone',
+				icon: 'mdi:person-check-outline',
 				to: '/apps/calendar',
 				disabled: true,
 			},
 			{
 				title: 'Calendar',
-				icon: 'airbuds-case-minimalistic-line-duotone',
+				icon: 'mdi:calendar-blank-outline',
 				to: '/apps/kanban',
 				disabled: true,
 			},
 			{
 				title: 'Event Day Data',
-				icon: 'chat-round-line-line-duotone',
+				icon: 'mynaui:ticket',
 				to: '/apps/chats',
 				disabled: true,
 			},
 			{
 				title: 'Taskboard',
-				icon: 'document-text-line-duotone',
+				icon: 'charm:circle-tick',
 				to: '/apps/notes',
 				disabled: true,
 			},

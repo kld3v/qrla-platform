@@ -11,6 +11,7 @@ type IconCardObject = {
 	data: any
 	link: string
 	image?: string
+	delta?: number
 }
 
 const props = defineProps<{
@@ -71,7 +72,10 @@ const gridColsClass = computed(() => {
 							alt="Image"
 							class="h-[80px] mb-4" />
 						<p class="mb-1">{{ card.title }}</p>
-						<h3 class="text-h3 heading mb-5">{{ card.data }}</h3>
+						<div class="flex gap-x-2 align-center justify-center">
+							<h3 class="text-h3 heading">{{ card.data }}</h3>
+							<p v-if="card.delta">{{ card.delta > 0 ? '+' : null }}{{ card.delta }}%</p>
+						</div>
 						<Link
 							v-if="card.link"
 							:href="card.link"

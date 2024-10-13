@@ -9,6 +9,8 @@ export type ThemeTypes = {
 		success?: string
 		warning?: string
 		error?: string
+		purple?: string
+		white?: string
 		lightprimary?: string
 		lightsecondary?: string
 		lightsuccess?: string
