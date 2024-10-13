@@ -11,6 +11,7 @@ use App\Models\AccessCount;
 use App\Traits\TracksCronJob;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 class CountAccesses extends Command
 {
@@ -28,13 +29,10 @@ class CountAccesses extends Command
             $lastCronJob = $this->getLastSuccessfulCronJob($this->signature);
             $lastRun = $lastCronJob ? Carbon::parse($lastCronJob->ended_at) : AccessLog::min('accessed_at') ?? Carbon::now();
 
-            // Fetch all venues
+            // Fetch all venues with related data
             $venues = Venue::with([
                 'stands.blocks.markers',
                 'stands.blocks.seats.markers',
-                'stands.blocks' => function ($query) {
-                    $query->with('markers', 'seats.markers');
-                },
             ])->get();
 
             foreach ($venues as $venue) {
@@ -67,7 +65,7 @@ class CountAccesses extends Command
                 // Update or create AccessCount for venue via block markers
                 $venueBlockAccessCountModel = AccessCount::firstOrCreate(
                     [
-                        'countable_type' => Venue::class,
+                        'countable_type' => 'venue',
                         'countable_id'   => $venue->id,
                         'marker_type'    => 'block',
                     ],
@@ -83,7 +81,7 @@ class CountAccesses extends Command
                 // Update or create AccessCount for venue via seat markers
                 $venueSeatAccessCountModel = AccessCount::firstOrCreate(
                     [
-                        'countable_type' => Venue::class,
+                        'countable_type' => 'venue',
                         'countable_id'   => $venue->id,
                         'marker_type'    => 'seat',
                     ],
@@ -118,7 +116,7 @@ class CountAccesses extends Command
                         // Update or create AccessCount for block via block markers
                         $blockBlockAccessCountModel = AccessCount::firstOrCreate(
                             [
-                                'countable_type' => Block::class,
+                                'countable_type' => 'block',
                                 'countable_id'   => $block->id,
                                 'marker_type'    => 'block',
                             ],
@@ -134,7 +132,7 @@ class CountAccesses extends Command
                         // Update or create AccessCount for block via seat markers
                         $blockSeatAccessCountModel = AccessCount::firstOrCreate(
                             [
-                                'countable_type' => Block::class,
+                                'countable_type' => 'block',
                                 'countable_id'   => $block->id,
                                 'marker_type'    => 'seat',
                             ],
