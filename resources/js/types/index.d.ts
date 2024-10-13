@@ -29,5 +29,6 @@ export type VenuesTableData = {
 	type: string
 	location: string
 	status: 'active' | 'inactive'
-	actions: unknown
+	action: 'view'
+	id: string
 }

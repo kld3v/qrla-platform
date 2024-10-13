@@ -97,3 +97,16 @@ html {
 		margin-inline-start: 0 !important;
 	}
 }
+
+// To fix the white fill when you :focus the text box in the venues filter table
+.v-text-field .v-field--no-label input,
+.v-text-field .v-field--active input {
+	background-color: rgb(var(--v-theme-dark-default-gray)) !important;
+	outline: none !important;
+}
+// Likewise to fix the blue outline on focus.
+#venues-filter-table {
+	--tw-ring-color: transparent !important;
+	border-color: transparent !important;
+	--tw-ring-shadow: transparent !important;
+}

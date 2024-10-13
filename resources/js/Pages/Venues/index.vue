@@ -11,10 +11,13 @@ import QCARDAVATAR from '@/assets/images/profile/user-1.jpg'
 import QCARDCOMPANYLOGO from '@/assets/images/QAssets/levy_logo.png'
 import QCARDSTADICON from '@/assets/images/svgs/stadium_icon.svg'
 import QCARDGRAPHICON from '@/assets/images/svgs/graph_rising.svg'
+import { VenuePageProps } from '@/types/Venue'
 
-const props = defineProps({})
+const props = defineProps<{
+	venues: VenuePageProps
+}>()
 const isGlobalHome = ref(true)
-
+console.log(props.venues)
 const cards: QCardType[] = [
 	{ bg: 'dark-primary-gradient', icon: QCARDSTADICON, title: 'Total Venues', dataValue: 2, color: 'primary' },
 	{ bg: 'dark-primary-gradient', icon: 'mdi-account-group', title: 'Total Plaques', dataValue: 450, color: 'primary' },

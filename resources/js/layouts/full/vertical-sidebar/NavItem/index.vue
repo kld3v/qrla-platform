@@ -12,7 +12,6 @@ const props = defineProps({ item: Object, level: Number })
 		:href="item.type === 'external' ? item.to : ''"
 		rounded
 		:disabled="item.disabled"
-		:target="item.type === 'external' ? '_blank' : ''"
 		v-scroll-to="{ el: '#top' }">
 		<!---If icon-->
 		<template v-slot:prepend>
@@ -24,7 +23,7 @@ const props = defineProps({ item: Object, level: Number })
 				class="dot"
 				:class="'text-' + item.BgColor" />
 		</template>
-		<v-list-item-title class="muted !whitespace-pre-wrap"
+		<v-list-item-title class="!whitespace-pre-wrap"
 			><Link :href="item.to">{{ item.title }}</Link></v-list-item-title
 		>
 		<!---If Caption-->

@@ -1,17 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue'
-import UiParentCard from '@/components/shared/UiParentCard.vue'
-import { BasicDatatables, UppercaseFilter } from '@/_mockApis/components/datatable/dataTable'
 import { VenuesTableData } from '@/types'
+import { Link } from '@inertiajs/vue3'
 
 const filterable = ref('')
 const venues = ref<VenuesTableData[]>([
-	{ venue: 'Stanford', type: 'sports', location: 'London, UK', status: 'active', actions: ['view', 'delete'] },
-	{ venue: 'Stanford', type: 'sports', location: 'London, UK', status: 'active', actions: ['view', 'delete'] },
-	{ venue: 'Wembley', type: 'sports', location: 'London, UK', status: 'active', actions: ['view', 'delete'] },
-	{ venue: 'Stanford', type: 'sports', location: 'London, UK', status: 'active', actions: ['view', 'delete'] },
-	{ venue: 'Stanford', type: 'sports', location: 'London, UK', status: 'active', actions: ['view', 'delete'] },
+	{ venue: 'Stanford', type: 'sports', location: 'London, UK', status: 'active', action: 'view', id: '1' },
+	{ venue: 'Stanford', type: 'sports', location: 'London, UK', status: 'active', action: 'view', id: '1' },
+	{ venue: 'Wembley', type: 'sports', location: 'London, UK', status: 'active', action: 'view', id: '1' },
+	{ venue: 'Stanford', type: 'sports', location: 'London, UK', status: 'active', action: 'view', id: '1' },
+	{ venue: 'Stanford', type: 'sports', location: 'London, UK', status: 'active', action: 'view', id: '1' },
 ])
 </script>
 <template>
@@ -23,10 +21,9 @@ const venues = ref<VenuesTableData[]>([
 			<v-text-field
 				v-model="filterable"
 				prepend-inner-icon="mdi-magnify"
-				density="compact"
 				label="Search"
-				single-line
-				variant="outlined"></v-text-field>
+				id="venues-filter-table"
+				class="search"></v-text-field>
 			<v-spacer></v-spacer>
 		</v-card-title>
 
@@ -72,19 +69,14 @@ const venues = ref<VenuesTableData[]>([
 						size="small"></v-chip>
 				</div>
 			</template>
-			<template v-slot:item.actions="{ item }">
-				<div>
-					<v-icon
-						color="#635BFF"
+			<template v-slot:item.action="{ item }">
+				<Link :href="`/venues/${item.id}`">
+					<v-btn
+						color="primary"
 						class="text-24 mr-3"
-						>mdi-eye</v-icon
+						>{{ item.action }}</v-btn
 					>
-					<v-icon
-						color="#29343D"
-						class="text-24"
-						>mdi-delete</v-icon
-					>
-				</div>
+				</Link>
 			</template>
 		</v-data-table>
 	</v-card>
@@ -96,10 +88,5 @@ const venues = ref<VenuesTableData[]>([
 
 .muted {
 	color: rgba(var(--v-theme-muted));
-}
-
-.search {
-	color: white;
-	background-color: #041522 !important;
 }
 </style>
