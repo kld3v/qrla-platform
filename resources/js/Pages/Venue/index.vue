@@ -17,6 +17,7 @@ import { Icon } from '@iconify/vue'
 
 const props = defineProps<{
 	venue: VenuePageProps
+	stats: any
 }>()
 
 console.log(props)
