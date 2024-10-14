@@ -45,8 +45,15 @@ class User extends Authenticatable
         ];
     }
 
+    public function organisation()
+    {
+        return $this->belongsTo(Organisation::class);
+    }
+    
     public function venues()
     {
         return $this->belongsToMany(Venue::class, 'venue_user');
-    }
+    }    
 }
+
+

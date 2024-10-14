@@ -24,13 +24,20 @@ class Venue extends Model
         'long_description',
         'contact_email',
         'contact_phone',
-        'management',
+        'organisation_id',
+        'plaques',
+        'access_rate'
     ];
 
 
     public function users()
     {
         return $this->belongsToMany(User::class, 'venue_user');
+    }
+
+    public function organisation()
+    {
+        return $this->belongsTo(Organisation::class);
     }
     
     public function blocks()
@@ -47,4 +54,15 @@ class Venue extends Model
     {
         return $this->hasMany(Logo::class);
     }
+
+    public function stands()
+    {
+        return $this->hasMany(Stand::class);
+    }
+
+    public function accessCounts()
+    {
+        return $this->morphMany(AccessCount::class, 'countable');
+    }
+
 }

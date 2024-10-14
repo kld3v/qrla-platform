@@ -30,4 +30,10 @@ class Block extends Model
     {
         return $this->morphMany(Marker::class, 'markerable');
     }
+
+    public function accessCounts()
+    {
+        return $this->morphMany(AccessCount::class, 'countable');
+    }
+
 }
