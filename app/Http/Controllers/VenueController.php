@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 
 
+
 class VenueController extends Controller
 {
     use AuthorizesRequests;

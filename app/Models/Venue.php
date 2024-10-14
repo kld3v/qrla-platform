@@ -29,6 +29,7 @@ class Venue extends Model
         'access_rate'
     ];
 
+
     public function users()
     {
         return $this->belongsToMany(User::class, 'venue_user');
@@ -39,7 +40,6 @@ class Venue extends Model
         return $this->belongsTo(Organisation::class);
     }
     
-
     public function blocks()
     {
         return $this->hasMany(Block::class);

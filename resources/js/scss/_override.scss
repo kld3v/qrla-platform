@@ -1,0 +1,99 @@
+html {
+	.bg-success {
+		color: white !important;
+	}
+
+	.bg-primary {
+		color: $darkBlue !important;
+	}
+
+	.bg-secondary {
+		color: $white !important;
+	}
+
+	.bg-warning {
+		color: $white !important;
+	}
+	.bg-info {
+		color: $white !important;
+	}
+	.bg-success {
+		color: $white !important;
+	}
+	.bg-error {
+		color: $white !important;
+	}
+	.bg-lightprimary-100 {
+		background-color: rgb(var(--v-theme-lightprimary), 0.4) !important;
+	}
+}
+
+.round-40 {
+	height: 40px;
+	width: 40px;
+}
+
+.border,
+.v-divider {
+	border-color: rgba(var(--v-border-color), 1) !important;
+}
+
+.avtar-border {
+	border: 2px solid rgb(var(--v-theme-surface)) !important;
+}
+
+.v-dialog {
+	&.dialog-mw {
+		max-width: 800px;
+	}
+}
+
+.q-btn-green {
+	background-color: rgba(var(--v-theme-primary), 1) !important;
+	color: rgba(var(--v-theme-textSecondary), 1) !important;
+}
+
+.q-text-qrla_green {
+	color: rgba(var(--v-theme-primary), 1) !important;
+}
+
+.q-primary-gradient {
+	background: linear-gradient(180deg, rgba(var(--v-theme-primary), 0.28) 0, rgba(var(--v-theme-primary), 0.05) 100%) !important;
+}
+
+.q-dark-primary-gradient {
+	background: linear-gradient(180deg, rgba(var(--v-theme-darkprimary), 0.2) 0, rgba(var(--v-theme-darkprimary), 0.05) 100%) !important;
+}
+
+.warning-gradient {
+	background: linear-gradient(180deg, rgba(var(--v-theme-warning), 0.12) 0, rgba(var(--v-theme-warning), 0.03) 100%);
+}
+
+.secondary-gradient {
+	background: linear-gradient(180deg, rgba(var(--v-theme-secondary), 0.12) 0, rgba(var(--v-theme-secondary), 0.03) 100%);
+}
+
+.error-gradient {
+	background: linear-gradient(180deg, rgba(var(--v-theme-error), 0.12) 0, rgba(var(--v-theme-error), 0.03) 100%);
+}
+
+.success-gradient {
+	background: linear-gradient(180deg, rgba(var(--v-theme-success), 0.12) 0, rgba(var(--v-theme-success), 0.03) 100%);
+}
+
+.purple-gradient {
+	background: linear-gradient(180deg, rgba(var(--v-theme-purple), 0.12) 0, rgba(var(--v-theme-purple), 0.03) 100%) !important;
+}
+
+// To edit the table on the block stats page so the footer isn't placed at the end.
+.block-stats-table {
+	.v-data-table-footer {
+		justify-content: center !important;
+	}
+	.v-data-table-footer__info {
+		justify-content: center !important;
+	}
+	.v-data-table-footer__pagination {
+		margin-inline-start: 0 !important;
+	}
+}
