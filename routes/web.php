@@ -33,18 +33,13 @@ Route::middleware('auth')->group(function (): void {
 
     // Route to manage plaques ssociated with a specific venue
     Route::get('/venues/{venue}/plaque-management', [BlockController::class, 'index'])->name('blocks.index');
+    
+    // Route to get stats associated with a specific venue
+    Route::get('/venues/{venue}/stats', [VenueController::class, 'showStats'])->name('venues.showStats');
 
-
+    Route::get('/venues/{venue}/block-stats', [BlockController::class, 'showStats'])->name('blocks.showStats');
 });
 
-
-// // Route to get stats associated with a specific venue
-// Route::get('/venues/{venue}/stats', [::class, ''])->name('');
-
-// Route::get('/venues/{venue}/block-stats', [::class, ''])->name('');
-
-// // Route to get stats associated with a specific block
-// Route::get('/venues/{venue}/blocks/{block}/stats', [::class, ''])->name('');
 
 Route::get('/stats/accesses-over-time', [StatsController::class, 'getAccessesOverTime']);
 

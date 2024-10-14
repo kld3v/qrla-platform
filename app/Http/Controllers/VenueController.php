@@ -73,6 +73,29 @@ class VenueController extends Controller
         ]);
     }
 
+    public function showStats(Venue $venue)
+    {
+        $this->authorize('view', $venue);
+    
+        $venue->load('blocks');
+    
+        $totalSeatVisits = $venue->seatAccessCounts()->sum('total_count');
+        $totalBlockVisits = $venue->blockAccessCounts()->sum('total_count');
+        $totalVisits = $totalSeatVisits + $totalBlockVisits;
+
+        $stats = [
+            'total_seat_visits' => $totalSeatVisits,
+            'total_block_visits' => $totalBlockVisits,
+            'total_visits' => $totalVisits,
+        ];
+    
+        return Inertia::render('VenueStats/index', [
+            'venue' => $venue,
+            'stats' => $stats,
+        ]);
+    }
+    
+
     public function onboardVenue(Request $request)
     {
         $validator = Validator::make($request->all(), [

@@ -5,6 +5,7 @@ use App\Models\Venue;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Models\Block;
 
 class BlockController extends Controller
 {
@@ -24,6 +25,28 @@ class BlockController extends Controller
         return Inertia::render('Blocks/Index', [
             'venue' => $venue,
             'stands' => $stands,
+        ]);
+    }
+
+    public function showStats(Block $block)
+    {
+        $venue = $block->stand->venue;
+
+        $this->authorize('viewBlocks', $venue);
+    
+        $totalSeatVisits = $block->seatAccessCounts()->sum('total_count');
+        $totalBlockVisits = $block->blockAccessCounts()->sum('total_count');
+        $totalVisits = $totalSeatVisits + $totalBlockVisits;
+
+        $stats = [
+            'total_seat_visits' => $totalSeatVisits,
+            'total_block_visits' => $totalBlockVisits,
+            'total_visits' => $totalVisits,
+        ];
+    
+        return Inertia::render('BlockStats/index', [
+            'block' => $block,
+            'stats' => $stats,
         ]);
     }
 }
