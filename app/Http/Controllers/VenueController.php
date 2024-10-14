@@ -32,7 +32,7 @@ class VenueController extends Controller
             'total_visits'  => $total_accesses,
         ];
     
-        return Inertia::render('JoelTemplates/Venues/Index', [
+        return Inertia::render('Venues/Index', [
             'user' => $user,
             'stats' => $stats,
             'venues' => $venues,
@@ -106,4 +106,3 @@ class VenueController extends Controller
         ], 202);
     }
 }
-
