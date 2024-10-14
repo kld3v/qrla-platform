@@ -28,26 +28,36 @@ class BlockController extends Controller
         ]);
     }
 
-    public function showStats(Block $block)
+    public function showStats(Request $request, Venue $venue)
     {
-        $venue = $block->stand->venue;
-
         $this->authorize('viewBlocks', $venue);
     
-        $totalSeatVisits = $block->seatAccessCounts()->sum('total_count');
-        $totalBlockVisits = $block->blockAccessCounts()->sum('total_count');
-        $totalVisits = $totalSeatVisits + $totalBlockVisits;
-
-        $stats = [
-            'total_seat_visits' => $totalSeatVisits,
-            'total_block_visits' => $totalBlockVisits,
-            'total_visits' => $totalVisits,
-        ];
+        $stands = $venue->stands()
+                        ->with(['blocks' => function ($query) {
+                            $query->select('id', 'name', 'stand_id');
+                        }])
+                        ->select('id', 'name', 'venue_id')
+                        ->get();
     
+        foreach ($stands as $stand) {
+            foreach ($stand->blocks as $block) {
+                $totalSeatVisits = $block->seatAccessCounts()->sum('total_count');
+                $totalBlockVisits = $block->blockAccessCounts()->sum('total_count');
+                $totalVisits = $totalSeatVisits + $totalBlockVisits;
+    
+                $block->stats = [
+                    'total_seat_visits' => $totalSeatVisits,
+                    'total_block_visits' => $totalBlockVisits,
+                    'total_visits' => $totalVisits,
+                ];
+            }
+        }
+
         return Inertia::render('BlockStats/index', [
-            'block' => $block,
-            'stats' => $stats,
+            'venue' => $venue,
+            'stands' => $stands,
         ]);
     }
+    
 }
 
