@@ -22,7 +22,7 @@ class BlockController extends Controller
                         ->select('id', 'name', 'venue_id')
                         ->get();
 
-        return Inertia::render('Blocks/Index', [
+        return Inertia::render('Blocks/index', [
             'venue' => $venue,
             'stands' => $stands,
         ]);
