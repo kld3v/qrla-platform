@@ -7,6 +7,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\VenueController;
 use App\Http\Controllers\BlockController;
 use App\Http\Controllers\MarkerController;
+use App\Http\Controllers\StatsController;
 
 Route::get('/', function () {       
     return Inertia::render('Welcome', [
@@ -21,48 +22,36 @@ Route::middleware('auth')->group(function (): void {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Onboard the venues
+Route::post('/venues/onboard', [VenueController::class, 'onboardVenue']);
+
 // Route to see all of the venue data associated with the authenticated user
 Route::get('/venues', [VenueController::class, 'index'])->name('venues.index');
 
 // Route to see an overview of a specific venue
 Route::get('/venues/{venue}', [VenueController::class, 'show'])->name('venues.show');
 
-// Route to see all blocks associated with a specific venue
-Route::get('/venues/{venue}/blocks', [BlockController::class, 'index'])->name('blocks.index');
+// Route to manage plaques ssociated with a specific venue
+Route::get('/venues/{venue}/plaque-management', [BlockController::class, 'index'])->name('blocks.index');
 
-// Route to see a specific block within a venue by block name
-Route::get('/venues/{venue}/blocks/{name}', [BlockController::class, 'show'])->name('blocks.show');
+// // Route to get stats associated with a specific venue
+// Route::get('/venues/{venue}/stats', [::class, ''])->name('');
 
-// // Route to see all of the stats for a specific venue
-// Route::get('/venues/{venue}/stats', [VenueStatsController::class, 'show'])->name('venues.stats');
+// Route::get('/venues/{venue}/block-stats', [::class, ''])->name('');
 
-// To be corrected accordingly 
-Route::get('/VenueStats', function(){
-    return Inertia('VenueStats/index', [
-        'venue' => "data"
-    ]);
-});
+// // Route to get stats associated with a specific block
+// Route::get('/venues/{venue}/blocks/{block}/stats', [::class, ''])->name('');
 
+Route::get('/stats/accesses-over-time', [StatsController::class, 'getAccessesOverTime']);
 
-// // Route to see all of the stats for a specific block by block name within a venue
-// Route::get('/venues/{venue}/blocks/{block_name}/stats', [BlockStatsController::class, 'show'])->name('blocks.stats');
+Route::get('/stats/accesses-by-os-browser', [StatsController::class, 'getAccessesByOsAndBrowser']);
 
-// To be corrected accordingly 
-Route::get('/PlaqueManagement', function(){
-    return Inertia('PlaqueManagement/index', [
-        'venue' => "data"
-    ]);
-});
+Route::get('/stats/accesses-by-block', [StatsController::class, 'getAccessesByBlock']);
 
-
-// To be corrected accordingly 
-Route::get('/BlockStats', function(){
-    return Inertia('BlockStats/index', [
-        'venue' => "data"
-    ]);
-});
+Route::get('/stats/accesses-by-marker-type', [StatsController::class, 'getAccessesByMarkerType']);
 
 
 require __DIR__.'/auth.php';
 
 Route::get('/{short_code}', [MarkerController::class, 'handleMarkerRedirect'])->name('markers.redirect');
+

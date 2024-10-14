@@ -9,22 +9,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('markers', function (Blueprint $table) {
-            $table->id();
-            $table->string('short_code')->unique();
-            $table->morphs('markerable');
-            $table->timestamps();
+        Schema::table('venues', function (Blueprint $table) {
+            $table->unsignedBigInteger('plaques')->default(0)->after('contact_phone');
         });
     }
-    
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('markers');
+        Schema::table('venues', function (Blueprint $table) {
+            $table->dropColumn(['plaques']);
+        });
     }
 };

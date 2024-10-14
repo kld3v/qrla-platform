@@ -27,3 +27,4 @@ class BlockController extends Controller
         ]);
     }
 }
+

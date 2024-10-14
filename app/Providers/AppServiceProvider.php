@@ -34,6 +34,7 @@ class AppServiceProvider extends ServiceProvider
         Relation::enforceMorphMap([
             'seat' => 'App\Models\Seat',
             'block' => 'App\Models\Block',
+            'venue' => 'App\Models\Venue',
         ]);
     }
 }
