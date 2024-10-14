@@ -13,11 +13,10 @@ import QCARDSTADICON from '@/assets/images/svgs/stadium_icon.svg'
 import QCARDGRAPHICON from '@/assets/images/svgs/graph_rising.svg'
 
 const props = defineProps<{
-	venues: any
-	stats: any
+
 }>()
 const isGlobalHome = ref(true)
-console.log(props)
+// console.log(props)
 const cards: QCardType[] = [
 	{ bg: 'dark-primary-gradient', icon: QCARDSTADICON, title: 'Total Venues', dataValue: 2, color: 'primary' },
 	{ bg: 'dark-primary-gradient', icon: 'mdi-account-group', title: 'Total Plaques', dataValue: 450, color: 'primary' },
