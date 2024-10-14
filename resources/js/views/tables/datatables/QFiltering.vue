@@ -4,12 +4,16 @@ import { VenuesTableData } from '@/types'
 import { Link } from '@inertiajs/vue3'
 
 const filterable = ref('')
-const venues = ref<VenuesTableData[]>([
-	{ venue: 'Stanford', type: 'sports', location: 'London, UK', status: 'active', action: 'view', id: '1' },
-	{ venue: 'Stanford', type: 'sports', location: 'London, UK', status: 'active', action: 'view', id: '1' },
-	{ venue: 'Wembley', type: 'sports', location: 'London, UK', status: 'active', action: 'view', id: '1' },
-	{ venue: 'Stanford', type: 'sports', location: 'London, UK', status: 'active', action: 'view', id: '1' },
-	{ venue: 'Stanford', type: 'sports', location: 'London, UK', status: 'active', action: 'view', id: '1' },
+const props = defineProps<{
+	venues: VenuesTableData[]
+}>()
+const align = 'start'
+const headers = ref([
+	{ title: 'Venue', value: 'venue' },
+	{ title: 'Type', value: 'type' },
+	{ title: 'Location', value: 'location' },
+	{ title: 'Status', value: 'status' },
+	{ title: 'Action', value: 'action' },
 ])
 </script>
 <template>
@@ -31,6 +35,7 @@ const venues = ref<VenuesTableData[]>([
 			v-model:search="filterable"
 			class="default-gray"
 			:items="venues"
+			:headers="headers"
 			hover>
 			<!-- <template v-slot:item.image="{ item }">
 							<v-card
@@ -62,8 +67,8 @@ const venues = ref<VenuesTableData[]>([
 			<template v-slot:item.status="{ item }">
 				<div>
 					<v-chip
-						:color="item.status === 'active' ? 'success' : 'error'"
-						:text="item.status === 'active' ? 'Active' : 'Inactive'"
+						:color="item.status === 'Active' ? 'success' : 'error'"
+						:text="item.status === 'Active' ? 'Active' : 'Inactive'"
 						class="text-uppercase"
 						label
 						size="small"></v-chip>

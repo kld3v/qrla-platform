@@ -7,10 +7,12 @@ import NavItem from './NavItem/index.vue'
 import NavCollapse from './NavCollapse/NavCollapse.vue'
 import Logo from '../logo/Logo.vue'
 import QCARDCOMPANYLOGO from '@/assets/images/QAssets/levy_logo.png'
+import { NavOptions } from '@/types'
 
 const props = defineProps<{
 	isGlobalHome: boolean
 	venueId?: number
+	nav: NavOptions
 }>()
 
 // to update with props accordingly
@@ -23,21 +25,25 @@ const sidebarItemsVenue: any[] = [
 				title: 'Venue Home',
 				icon: 'material-symbols:stadium-outline-rounded',
 				to: `/venues/${props.venueId}`,
+				nav: 'venue_home',
 			},
 			{
 				title: 'Plaque Management Dashboard',
 				icon: 'heroicons:squares-plus',
-				to: '/PlaqueManagement',
+				to: `/venues/${props.venueId}/plaque-management`,
+				nav: 'plaque_management',
 			},
 			{
 				title: 'Venue Performance Tracker',
 				icon: 'ph:chart-line-up',
-				to: '/VenueStats',
+				to: `/venues/${props.venueId}/stats`,
+				nav: 'venue_performance',
 			},
 			{
 				title: 'Block Performance Tracker',
 				icon: 'material-symbols:stairs-outline',
-				to: '/BlockStats',
+				to: `/venues/${props.venueId}/block-stats`,
+				nav: 'block_performance',
 			},
 		],
 	},
@@ -72,41 +78,6 @@ const sidebarItemsVenue: any[] = [
 		],
 	},
 ]
-
-const findTitleByPath = (items: any, path: any) => {
-	let title = ''
-
-	for (const item of items) {
-		if (item.to === path) {
-			title = item.id
-			break
-		} else if (item.children) {
-			for (const child of item.children) {
-				if (child.to === path) {
-					title = item.id
-					break
-				} else if (child.children) {
-					for (const grandChild of child.children) {
-						if (grandChild.to === path) {
-							title = item.id
-							break
-						}
-					}
-				}
-			}
-		}
-	}
-
-	return title
-}
-
-const foundId = findTitleByPath(sidebarItem, window.location.pathname)
-const getCurrent = foundId ? foundId : 1
-const currentMenu = ref<any>(getCurrent)
-function showData(data: any) {
-	currentMenu.value = data
-	//customizer.SET_MINI_SIDEBAR(!customizer.mini_sidebar)
-}
 
 // MiniSidebar Icons End
 const customizer = useCustomizerStore()
@@ -147,25 +118,23 @@ const sidebarMenu = shallowRef(props.isGlobalHome ? sidebarItem : sidebarItemsVe
 						<p class="h3 ml-4 muted">{{ $page.props.auth.user.name }}</p>
 					</div>
 					<template v-for="(item, i) in sidebarMenu">
-						<template v-if="currentMenu == item.id">
-							<!---Item Sub Header -->
-							<v-divider class="mt-2 mb-2"></v-divider>
-							<NavGroup
-								:item="item"
-								v-if="item.header"
-								:key="item.title" />
-							<!---If Has Child -->
-							<template v-for="sItem in item.children">
-								<NavCollapse
-									class="leftPadding"
-									:item="sItem"
-									:level="0"
-									v-if="sItem.children" />
-								<NavItem
-									:item="sItem"
-									class="leftPadding v-list-item--active"
-									v-else />
-							</template>
+						<!---Item Sub Header -->
+						<v-divider class="mt-2 mb-2"></v-divider>
+						<NavGroup
+							:item="item"
+							v-if="item.header"
+							:key="item.title" />
+						<!---If Has Child -->
+						<template v-for="sItem in item.children">
+							<NavCollapse
+								class="leftPadding"
+								:item="sItem"
+								:level="0"
+								v-if="sItem.children" />
+							<NavItem
+								:item="sItem"
+								:class="['leftPadding mb-2', sItem.nav === props.nav ? 'v-list-item--active' : '']"
+								v-else />
 						</template>
 					</template>
 				</v-list>

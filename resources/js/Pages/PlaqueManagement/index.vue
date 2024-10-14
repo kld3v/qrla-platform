@@ -8,15 +8,21 @@ import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.
 import QCard from '@/components/QComponents/QCard.vue'
 import QPRIVACYASSET from '@/assets/images/QAssets/PlaqueManagement/privacy_asset.svg'
 import QSETTINGASSET from '@/assets/images/QAssets/PlaqueManagement/settings_asset.svg'
+import { NavOptions } from '@/types'
 
 const props = defineProps<{
 	venue: VenuePageProps
+	stands: any
+	nav: NavOptions
 }>()
-
+console.log(props)
 const isGlobalHome = ref(false)
 </script>
 <template>
-	<FullLayout :isGlobalHome="isGlobalHome">
+	<FullLayout
+		:isGlobalHome="isGlobalHome"
+		:venue="venue"
+		:nav="nav">
 		<HeaderImageAndLogo
 			:bannerUrl="venue.banner_url"
 			:logoUrl="venue.logo_url"

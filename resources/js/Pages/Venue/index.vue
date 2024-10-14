@@ -14,22 +14,24 @@ import QVENUEPERFORMANCEIMAGE from '@/assets/images/QAssets/Venues/asset2.png'
 import QBLOCKPERFORMANCEIMAGE from '@/assets/images/QAssets/Venues/asset3.png'
 import { Link } from '@inertiajs/vue3'
 import { Icon } from '@iconify/vue'
+import { NavOptions } from '@/types'
 
 const props = defineProps<{
 	venue: VenuePageProps
+	nav: NavOptions
 }>()
 
 console.log(props)
 
 const isGlobalHome = ref(false)
-
+const { capacity, type, plaques, access_rate } = props.venue
 // to be relpaced with prop data
 const IconCardData = [
 	{
 		bg: 'dark-primary-gradient',
 		color: 'primary',
 		title: 'Venue Capacity',
-		data: '16,689',
+		data: capacity,
 		link: '',
 		image: QCARDSTADICON,
 	},
@@ -38,7 +40,7 @@ const IconCardData = [
 
 		color: 'warning',
 		title: 'Venue Type',
-		data: 'Sport',
+		data: type,
 		link: '',
 		image: QCARDSTADICON,
 	},
@@ -47,7 +49,7 @@ const IconCardData = [
 
 		color: 'secondary',
 		title: 'QRLA Plaques',
-		data: '450',
+		data: plaques,
 		link: '',
 		image: QCARDSTADICON,
 	},
@@ -56,7 +58,7 @@ const IconCardData = [
 
 		color: 'error',
 		title: 'Managed By',
-		data: 'Levy UK & Ireland',
+		data: props.venue.organisation.name,
 		link: '',
 		image: QCARDSTADICON,
 	},
@@ -65,7 +67,7 @@ const IconCardData = [
 
 		color: 'success',
 		title: 'Activity Level',
-		data: '+86%',
+		data: parseFloat(access_rate).toFixed(1) + '%',
 		link: '',
 		image: QCARDSTADICON,
 	},
@@ -74,7 +76,8 @@ const IconCardData = [
 <template>
 	<FullLayout
 		:isGlobalHome="isGlobalHome"
-		:venue="venue">
+		:venue="venue"
+		:nav="nav">
 		<HeaderImageAndLogo
 			:bannerUrl="venue.banner_url"
 			:logoUrl="venue.logo_url"
@@ -113,7 +116,14 @@ const IconCardData = [
 								style="font-weight: 100">
 								Your plaques have been scanned a total of //$InsertDataProp$// times at {{ venue.name }}!
 							</p>
-							<v-btn class="bg-primary w-1/4">Check</v-btn>
+							<Link
+								:href="
+									route('blocks.index', {
+										venue: props.venue.id,
+									})
+								">
+								<v-btn class="bg-primary w-1/4">Check</v-btn>
+							</Link>
 						</div>
 						<img
 							:src="HorizontalPlaque"

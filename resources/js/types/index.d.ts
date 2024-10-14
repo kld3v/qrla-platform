@@ -28,7 +28,9 @@ export type VenuesTableData = {
 	venue: unknown
 	type: string
 	location: string
-	status: 'active' | 'inactive'
+	status: 'Active' | 'Inactive'
 	action: 'view'
-	id: string
+	id: number
 }
+
+export type NavOptions = 'venue_home' | 'plaque_management' | 'venue_performance' | 'block_performance' | 'home'

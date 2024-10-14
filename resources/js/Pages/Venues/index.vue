@@ -1,3 +1,4 @@
+z
 <script setup lang="ts">
 import ProfitCard from '@/components/dashboards/dashboard2/ProfitCard.vue'
 import QCardBanner from '@/components/widgets/banners/QCardBanner.vue'
@@ -6,7 +7,7 @@ import FullLayout from '@/layouts/full/FullLayout.vue'
 import QFiltering from '@/views/tables/datatables/QFiltering.vue'
 import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
 import { ref } from 'vue'
-import { QCardType } from '@/types'
+import { QCardType, VenuesTableData } from '@/types'
 import QCARDAVATAR from '@/assets/images/profile/user-1.jpg'
 import QCARDCOMPANYLOGO from '@/assets/images/QAssets/levy_logo.png'
 import QCARDSTADICON from '@/assets/images/svgs/stadium_icon.svg'
@@ -14,15 +15,30 @@ import QCARDGRAPHICON from '@/assets/images/svgs/graph_rising.svg'
 import { VenuePageProps } from '@/types/Venue'
 
 const props = defineProps<{
-	venues: VenuePageProps
+	venues: VenuePageProps[]
+	stats: any
 }>()
 const isGlobalHome = ref(true)
-console.log(props.venues)
+console.log(props)
 const cards: QCardType[] = [
-	{ bg: 'dark-primary-gradient', icon: QCARDSTADICON, title: 'Total Venues', dataValue: 2, color: 'primary' },
-	{ bg: 'dark-primary-gradient', icon: 'mdi-account-group', title: 'Total Plaques', dataValue: 450, color: 'primary' },
-	{ bg: 'dark-primary-gradient', icon: QCARDGRAPHICON, title: 'Total Visits', dataValue: 387, color: 'primary' },
+	{ bg: 'dark-primary-gradient', icon: QCARDSTADICON, title: 'Total Venues', dataValue: props.stats?.total_venues, color: 'primary' },
+	{ bg: 'dark-primary-gradient', icon: 'mdi-account-group', title: 'Total Plaques', dataValue: props.stats?.total_plaques, color: 'primary' },
+	{ bg: 'dark-primary-gradient', icon: QCARDGRAPHICON, title: 'Total Visits', dataValue: props.stats?.total_visits, color: 'primary' },
 ]
+
+const filterVenues = (array: VenuePageProps[]): VenuesTableData[] => {
+	return array.map((el) => {
+		return {
+			venue: el.name,
+			type: el.type,
+			location: el.city + ', ' + el.country,
+			status: el.status,
+			action: 'view',
+			id: el.id,
+		}
+	})
+}
+console.log(filterVenues(props.venues))
 </script>
 <template>
 	<FullLayout :isGlobalHome="isGlobalHome">
@@ -67,7 +83,7 @@ const cards: QCardType[] = [
 			<v-col
 				cols="12"
 				lg="12">
-				<QFiltering />
+				<QFiltering :venues="filterVenues(props.venues)" />
 			</v-col>
 		</v-row>
 	</FullLayout>

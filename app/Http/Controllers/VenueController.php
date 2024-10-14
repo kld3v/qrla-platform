@@ -32,10 +32,11 @@ class VenueController extends Controller
             'total_visits'  => $total_accesses,
         ];
     
-        return Inertia::render('Venues/Index', [
+        return Inertia::render('Venues/index', [
             'user' => $user,
             'stats' => $stats,
             'venues' => $venues,
+            'nav'=> 'home'
         ]);
     }
     
@@ -46,8 +47,9 @@ class VenueController extends Controller
 
         $venue->load('organisation');
 
-        return inertia('Venues/Show', [
-            'venue' => $venue
+        return inertia('Venue/index', [
+            'venue' => $venue,
+            'nav'=>'venue_home'
         ]);
     }
 

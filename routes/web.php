@@ -54,4 +54,3 @@ Route::get('/stats/accesses-by-marker-type', [StatsController::class, 'getAccess
 require __DIR__.'/auth.php';
 
 Route::get('/{short_code}', [MarkerController::class, 'handleMarkerRedirect'])->name('markers.redirect');
-
