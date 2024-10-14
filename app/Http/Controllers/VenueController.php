@@ -151,4 +151,3 @@ class VenueController extends Controller
         ], 202);
     }
 }
-
