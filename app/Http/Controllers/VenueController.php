@@ -21,23 +21,38 @@ class VenueController extends Controller
         $user = auth()->user()->load('organisation', 'venues');
     
         $venues = $user->venues;
-
+    
+        if ($venues->count() === 1) {
+            $venue = $venues->first();
+            return redirect()->route('venues.show', ['venue' => $venue->id]);
+        }
+    
         $total_venues = $venues->count();
         $total_plaques = $venues->sum('plaques');
-        $total_accesses = $venues->sum('accesses');
+    
+        $total_accesses = $venues->sum(function ($venue) {
+            return $venue->totalAccessCounts();
+        });
+    
+        $total_access_rate = $venues->sum(function ($venue) {
+            return $venue->access_rate;
+        });
+    
+        $average_access_rate = $total_venues > 0 ? $total_access_rate / $total_venues : 0;
     
         $stats = [
-            'total_venues'  => $total_venues,
-            'total_plaques' => $total_plaques,
-            'total_visits'  => $total_accesses,
+            'total_venues'        => $total_venues,
+            'total_plaques'       => $total_plaques,
+            'total_visits'        => $total_accesses,
+            'average_access_rate' => $average_access_rate,
         ];
     
-        return Inertia::render('JoelTemplates/Venues/Index', [
-            'user' => $user,
+        return Inertia::render('Venues/index', [
             'stats' => $stats,
             'venues' => $venues,
         ]);
     }
+    
     
 
     public function show(Venue $venue)
@@ -46,10 +61,40 @@ class VenueController extends Controller
 
         $venue->load('organisation');
 
-        return inertia('Venues/Show', [
-            'venue' => $venue
+        $accesses = $venue->totalAccessCounts();
+
+        $stats = [
+            'accesses' => $accesses,
+        ];
+
+        return inertia('Venue/index', [
+            'venue' => $venue,
+            'stats' => $stats,
         ]);
     }
+
+    public function showStats(Venue $venue)
+    {
+        $this->authorize('view', $venue);
+    
+        $venue->load('blocks');
+    
+        $totalSeatVisits = $venue->seatAccessCounts()->sum('total_count');
+        $totalBlockVisits = $venue->blockAccessCounts()->sum('total_count');
+        $totalVisits = $totalSeatVisits + $totalBlockVisits;
+
+        $stats = [
+            'total_seat_visits' => $totalSeatVisits,
+            'total_block_visits' => $totalBlockVisits,
+            'total_visits' => $totalVisits,
+        ];
+    
+        return Inertia::render('VenueStats/index', [
+            'venue' => $venue,
+            'stats' => $stats,
+        ]);
+    }
+    
 
     public function onboardVenue(Request $request)
     {
@@ -106,4 +151,3 @@ class VenueController extends Controller
         ], 202);
     }
 }
-
