@@ -10,8 +10,7 @@ import QIconCardSet from '@/components/QComponents/QIconCardSet.vue'
 import QPlaqueActivityGraph from '@/components/QComponents/QPlaqueActivityGraph.vue'
 
 import GraphTimeScaleMenu from '@/components/QComponents/QGraphTimeScaleMenu.vue'
-import APPLEICON from '@/assets/images/svgs/appleIcon.svg'
-import ANDROIDICONGREEN from '@/assets/images/svgs/androidIcon.svg'
+
 import GOOGLEICON from '@/assets/images/svgs/icon-chrome.svg'
 import QDonutChart from '../../components/QComponents/QDonutChart.vue'
 import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
@@ -20,6 +19,7 @@ import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
 import STADIUMCHAIRS from '@/assets/images/QAssets/VenuePerformance/asset1.png'
 import QSelectableTable from '@/components/QComponents/QSelectableTable.vue'
 import { Block, NavOptions, QColors, Stand } from '@/types'
+import DeviceStats from './Partials/DeviceStats.vue'
 
 const props = defineProps<{
 	venue: VenuePageProps
@@ -194,38 +194,9 @@ const returnSelectedStandBlocks = computed(() =>
 			<v-col
 				cols="12"
 				lg="4">
-				<QCard
-					bg="default-gray"
-					class="flex flex-col gap-y-2">
-					<h3 class="q-text-qrla_green h3 mb-2">Device Stats</h3>
-					<p class="text-subtitle-1 mb-2">Most used devices by customers.</p>
-					<v-row>
-						<v-col
-							cols="12"
-							lg="12">
-							<QCard bg="dark-primary-gradient">
-								<div class="flex justify-space-between align-center">
-									<span class="flex align-center">
-										<img
-											:src="APPLEICON"
-											alt="Green Apple Icon" />
-										<p class="ml-4 mt-2 muted">Apple</p></span
-									>
-									<p>{{ venue.city }} 23%</p>
-								</div>
-								<div class="flex justify-space-between align-center mt-4">
-									<span class="flex align-center">
-										<img
-											:src="ANDROIDICONGREEN"
-											alt="Green Android Icon" />
-										<p class="ml-4 mt-1 muted">Android</p></span
-									>
-									<p>{{ venue.city }} 43%</p>
-								</div>
-							</QCard>
-						</v-col>
-					</v-row>
-				</QCard>
+				<DeviceStats
+					:selected-item="selectedBlock"
+					id-type="block" />
 			</v-col>
 			<v-col
 				cols="12"
