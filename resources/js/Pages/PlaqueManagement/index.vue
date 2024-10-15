@@ -21,15 +21,36 @@ const props = defineProps<{
 
 console.log(props)
 const selectedStand = ref<Stand>(props.stands[0])
+const changeSelectedStand = (standName: string) => {
+	for (const stand of props.stands) {
+		if (standName === stand.name) {
+			selectedStand.value = stand
+			console.log('Stand Updated')
+			return
+		}
+	}
+}
 
 const selectedBlock = ref<Block>(props.stands[0].blocks[0])
-const returnSelectedStandBlocks = computed(() =>
+const changeSelectedBlock = (blockId: number): void => {
+	for (const block of selectedStand.value.blocks) {
+		if (blockId === block.id) {
+			selectedBlock.value = block
+			console.log('Block Updated')
+			console.log(selectedBlock.value)
+			return
+		}
+	}
+}
+
+const returnSelectedStandBlocksForTable = computed(() =>
 	selectedStand.value.blocks.map((el) => {
 		const circleColor: QColors = 'primary'
 		return {
 			code: el.name,
 			name: selectedStand.value.name,
 			circleColor: circleColor,
+			id: el.id,
 		}
 	})
 )
@@ -65,9 +86,11 @@ const returnSelectedStandBlocks = computed(() =>
 							<h3 class="q-text-qrla_green h3 mb-2">Select Block End Destination URL To Edit</h3>
 						</div>
 						<QMenusAnchor
+							:changeSelectedStand="changeSelectedStand"
 							:label="'Stand'"
 							menu-location="start"
 							dropdown-button-color="secondary"
+							:initialSelectedItem="selectedStand.name"
 							:dropdown-options="[...props.stands.map((el: Stand) => el.name)]"></QMenusAnchor>
 					</div>
 					<v-row>
@@ -75,7 +98,10 @@ const returnSelectedStandBlocks = computed(() =>
 							cols="12"
 							lg="4">
 							<QCard bg="dark-primary-gradient">
-								<QSelectableTable :block-data="returnSelectedStandBlocks" />
+								<QSelectableTable
+									:update-selected-block="changeSelectedBlock"
+									:block-data="returnSelectedStandBlocksForTable"
+									select-strategy="all" />
 							</QCard>
 						</v-col>
 						<v-col

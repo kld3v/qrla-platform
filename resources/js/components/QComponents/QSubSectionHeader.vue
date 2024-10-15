@@ -16,7 +16,7 @@ const props = defineProps<{
 		class="">
 		<div class="px-6 py-4 default-gray">
 			<div class="d-flex justify-space-between align-center">
-				<h2 class="text-h2">{{ title }}</h2>
+				<h1 class="h1">{{ title }}</h1>
 			</div>
 		</div>
 	</v-card>

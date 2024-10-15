@@ -30,9 +30,26 @@ const props = defineProps<{
 console.log(props)
 
 const selectedStand = ref<Stand>(props.stands[0])
-
+const changeSelectedStand = (standName: string): void => {
+	for (const stand of props.stands) {
+		if (standName === stand.name) {
+			selectedStand.value = stand
+			console.log('Stand Updated')
+			return
+		}
+	}
+}
 const selectedBlock = ref<Block>(props.stands[0].blocks[0])
-
+const changeSelectedBlock = (blockId: number): void => {
+	for (const block of selectedStand.value.blocks) {
+		if (blockId === block.id) {
+			selectedBlock.value = block
+			console.log('Block Updated')
+			console.log(selectedBlock.value)
+			return
+		}
+	}
+}
 // to be relpaced with prop data
 const IconCardData = ref<any>([
 	{
@@ -80,11 +97,10 @@ const returnSelectedStandBlocks = computed(() =>
 			code: el.name,
 			name: selectedStand.value.name,
 			circleColor: circleColor,
+			id: el.id,
 		}
 	})
 )
-
-const updateSelectedStand = computed(() => {})
 </script>
 <template>
 	<FullLayout
@@ -107,6 +123,7 @@ const updateSelectedStand = computed(() => {})
 				<QSubsectionHeader title="Block Performance Tracker" />
 			</v-col>
 		</v-row>
+
 		<v-row class="mb-6">
 			<v-col
 				cols="12"
@@ -121,14 +138,19 @@ const updateSelectedStand = computed(() => {})
 							menu-location="start"
 							dropdown-button-color="secondary"
 							:label="'Stand'"
+							:initialSelectedItem="selectedStand.name"
+							:change-selected-stand="changeSelectedStand"
 							:dropdown-options="[...props.stands.map((el: Stand) => el.name)]"></QMenusAnchor>
 					</div>
 					<v-row>
 						<v-col
 							cols="12"
-							lg="4">
+							lg="6">
 							<QCard bg="dark-primary-gradient">
-								<QSelectableTable :block-data="returnSelectedStandBlocks" />
+								<QSelectableTable
+									:update-selected-block="changeSelectedBlock"
+									select-strategy="single"
+									:block-data="returnSelectedStandBlocks" />
 							</QCard>
 						</v-col>
 						<v-col
@@ -138,17 +160,16 @@ const updateSelectedStand = computed(() => {})
 				</QCard>
 			</v-col>
 		</v-row>
-
 		<v-row class="mb-6">
 			<v-col
 				cols="12"
 				lg="12">
 				<QIconCardSet
+					:block-name="selectedBlock.name"
 					:IconCardData="IconCardData"
 					bg="#151C25" />
 			</v-col>
 		</v-row>
-
 		<v-row class="mb-6">
 			<v-col
 				cols="12"

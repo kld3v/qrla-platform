@@ -1,17 +1,23 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref, watch, watchEffect } from 'vue'
 
 const props = defineProps<{
 	menuLocation: 'top' | 'bottom' | 'start' | 'end' | 'center'
 	dropdownButtonColor: string
 	dropdownOptions: string[]
 	label: string
+	initialSelectedItem: any
+	changeSelectedStand?: (standName: string) => void
 }>()
 
-const option = ref()
-const items = ref([{ title: 'Click Me' }, { title: 'Click Me' }, { title: 'Click Me' }, { title: 'Click Me 2' }])
+const location = ref(props.initialSelectedItem)
 
-const location = ref(props.dropdownOptions[0])
+watch(
+	() => location.value,
+	() => {
+		if (props.changeSelectedStand) props.changeSelectedStand(location.value)
+	}
+)
 </script>
 
 <template>
