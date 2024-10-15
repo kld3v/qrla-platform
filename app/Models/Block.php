@@ -36,4 +36,21 @@ class Block extends Model
         return $this->morphMany(AccessCount::class, 'countable');
     }
 
+    public function seatAccessCounts()
+    {
+        return $this->accessCounts()->where('marker_type', 'seat');
+    }
+
+    public function blockAccessCounts()
+    {
+        return $this->accessCounts()->where('marker_type', 'block');
+    }
+    
+    public function totalAccessCounts()
+    {
+        $seatCount = $this->seatAccessCounts()->sum('total_count');
+        $blockCount = $this->blockAccessCounts()->sum('total_count');
+        return $seatCount + $blockCount;
+    }
+
 }

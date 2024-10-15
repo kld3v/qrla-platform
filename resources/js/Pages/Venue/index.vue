@@ -21,7 +21,7 @@ const props = defineProps<{
 	nav: NavOptions
 }>()
 
-console.log(props)
+// console.log(props)
 
 const isGlobalHome = ref(false)
 const { capacity, type, plaques, access_rate } = props.venue
