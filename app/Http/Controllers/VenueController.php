@@ -71,6 +71,7 @@ class VenueController extends Controller
         return inertia('Venue/index', [
             'venue' => $venue,
             'stats' => $stats,
+            'nav'=>'venue_home'
         ]);
     }
 

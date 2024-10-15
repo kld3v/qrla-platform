@@ -57,6 +57,7 @@ class BlockController extends Controller
         return Inertia::render('BlockStats/index', [
             'venue' => $venue,
             'stands' => $stands,
+            'nav'=>'block_performance'
         ]);
     }
     

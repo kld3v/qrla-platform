@@ -2,25 +2,41 @@
 import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
 import FullLayout from '@/layouts/full/FullLayout.vue'
 import HeaderImageAndLogo from '@/components/QComponents/HeaderImageAndLogo.vue'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { VenuePageProps } from '@/types/Venue'
 import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.vue'
 import QCard from '@/components/QComponents/QCard.vue'
 import QPRIVACYASSET from '@/assets/images/QAssets/PlaqueManagement/privacy_asset.svg'
 import QSETTINGASSET from '@/assets/images/QAssets/PlaqueManagement/settings_asset.svg'
-import { NavOptions } from '@/types'
+import { Block, NavOptions, QColors, Stand } from '@/types'
+import QGraphTimeScaleMenu from '@/components/QComponents/QGraphTimeScaleMenu.vue'
+import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
+import QSelectableTable from '@/components/QComponents/QSelectableTable.vue'
 
 const props = defineProps<{
 	venue: VenuePageProps
-	stands: any
+	stands: Stand[]
 	nav: NavOptions
 }>()
+
 console.log(props)
-const isGlobalHome = ref(false)
+const selectedStand = ref<Stand>(props.stands[0])
+
+const selectedBlock = ref<Block>(props.stands[0].blocks[0])
+const returnSelectedStandBlocks = computed(() =>
+	selectedStand.value.blocks.map((el) => {
+		const circleColor: QColors = 'primary'
+		return {
+			code: el.name,
+			name: selectedStand.value.name,
+			circleColor: circleColor,
+		}
+	})
+)
 </script>
 <template>
 	<FullLayout
-		:isGlobalHome="isGlobalHome"
+		:isGlobalHome="nav === 'home'"
 		:venue="venue"
 		:nav="nav">
 		<HeaderImageAndLogo
@@ -32,6 +48,43 @@ const isGlobalHome = ref(false)
 			:address-line1="venue.address_line1"
 			:city="venue.city"
 			class="mb-12" />
+		<v-row class="mb-3">
+			<v-col
+				cols="12"
+				lg="12">
+				<QSubsectionHeader title="Select Your Blocks" />
+			</v-col>
+		</v-row>
+		<v-row class="mb-6">
+			<v-col
+				cols="12"
+				lg="12">
+				<QCard bg="default-gray">
+					<div class="flex justify-space-between align-center w-full">
+						<div class="mb-4">
+							<h3 class="q-text-qrla_green h3 mb-2">Select Block End Destination URL To Edit</h3>
+						</div>
+						<QMenusAnchor
+							:label="'Stand'"
+							menu-location="start"
+							dropdown-button-color="secondary"
+							:dropdown-options="[...props.stands.map((el: Stand) => el.name)]"></QMenusAnchor>
+					</div>
+					<v-row>
+						<v-col
+							cols="12"
+							lg="4">
+							<QCard bg="dark-primary-gradient">
+								<QSelectableTable :block-data="returnSelectedStandBlocks" />
+							</QCard>
+						</v-col>
+						<v-col
+							cols="12"
+							lg="6"></v-col>
+					</v-row>
+				</QCard>
+			</v-col>
+		</v-row>
 		<v-row class="mb-6">
 			<v-col
 				cols="12"
@@ -50,7 +103,7 @@ const isGlobalHome = ref(false)
 							alt="Edit Settings Icon" />
 						<h3 class="h3 q-text-qrla_green">Change Link Destination</h3>
 						<p>Dynamically edit the end URL of the QRLA plaque.</p>
-						<v-btn class="q-btn-green">Change</v-btn>
+						<v-btn class="q-btn-green">Edit</v-btn>
 					</div>
 				</QCard>
 			</v-col>
@@ -64,28 +117,13 @@ const isGlobalHome = ref(false)
 							alt="Edit Verification Icon" />
 						<h3 class="h3 q-text-qrla_green">Edit Verification Page</h3>
 						<p>Redesign the QRLA safety page by uploading a new brand logo.</p>
-						<v-btn class="q-btn-green">Edit</v-btn>
+						<v-btn
+							disabled
+							class="q-btn-green"
+							>Coming Soon</v-btn
+						>
 					</div>
 				</QCard>
-			</v-col>
-		</v-row>
-		<v-row class="mb-3">
-			<v-col
-				cols="12"
-				lg="12">
-				<QSubsectionHeader title="Select Your Blocks" />
-			</v-col>
-		</v-row>
-		<v-row class="mb-6">
-			<v-col
-				cols="12"
-				lg="6">
-				<QCard bg="default-gray">hello </QCard>
-			</v-col>
-			<v-col
-				cols="12"
-				lg="6">
-				<QCard bg="default-gray">hello </QCard>
 			</v-col>
 		</v-row>
 	</FullLayout>

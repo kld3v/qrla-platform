@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { BasicDatatables } from '@/_mockApis/components/datatable/dataTable'
 import { QCardType, QColors } from '@/types'
 const page = ref({ title: 'Data Tables Selection' })
 const selected = ref()
 
 /*Header Data*/
-const headers: any = ref([{ title: 'Select All', align: 'start', key: 'name' }])
+const headers: any = ref([{ title: 'Blocks', align: 'start', key: 'name' }])
 
 type BlockDataObject = {
 	circleColor: QColors

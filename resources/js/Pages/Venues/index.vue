@@ -17,6 +17,7 @@ import { VenuePageProps } from '@/types/Venue'
 const props = defineProps<{
 	venues: VenuePageProps[]
 	stats: any
+	nav: 'home'
 }>()
 const isGlobalHome = ref(true)
 console.log(props)
@@ -41,7 +42,9 @@ const filterVenues = (array: VenuePageProps[]): VenuesTableData[] => {
 console.log(filterVenues(props.venues))
 </script>
 <template>
-	<FullLayout :isGlobalHome="isGlobalHome">
+	<FullLayout
+		:isGlobalHome="isGlobalHome"
+		:nav="nav">
 		<v-row class="mb-6">
 			<v-col
 				cols="12"

@@ -1,3 +1,5 @@
+import { NavOptions } from '@/types'
+
 export interface menu {
 	header?: string
 	title?: string
@@ -14,6 +16,7 @@ export interface menu {
 	disabled?: boolean
 	type?: string
 	subCaption?: string
+	nav?: NavOptions
 }
 
 export const sidebarItem: menu[] = [
@@ -25,6 +28,7 @@ export const sidebarItem: menu[] = [
 				title: 'Home',
 				icon: 'solar:home-line-duotone',
 				to: '/venues',
+				nav: 'home',
 			},
 		],
 	},

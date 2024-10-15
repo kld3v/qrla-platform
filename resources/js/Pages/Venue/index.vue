@@ -21,7 +21,7 @@ const props = defineProps<{
 	nav: NavOptions
 }>()
 
-// console.log(props)
+console.log(props)
 
 const isGlobalHome = ref(false)
 const { capacity, type, plaques, access_rate } = props.venue
@@ -114,7 +114,7 @@ const IconCardData = [
 							<p
 								class="h3"
 								style="font-weight: 100">
-								Your plaques have been scanned a total of //$InsertDataProp$// times at {{ venue.name }}!
+								Your plaques have been scanned a total of {{ venue.id }} times at {{ venue.name }}!
 							</p>
 							<Link
 								:href="
@@ -150,7 +150,7 @@ const IconCardData = [
 						<img
 							:src="QPLAQUEMANAGEMENTDASHBOARDIMAGE"
 							class="w-full" />
-						<Link :href="route('venues.index')">
+						<Link :href="route('blocks.index', { venue: venue.id })">
 							<v-btn class="bg-primary w-full">Manage Plaques</v-btn>
 						</Link>
 					</div>
@@ -214,7 +214,7 @@ const IconCardData = [
 						<img
 							:src="QVENUEPERFORMANCEIMAGE"
 							class="w-full" />
-						<Link :href="route('venues.index')">
+						<Link :href="route('venues.showStats', { venue: venue.id })">
 							<v-btn class="bg-primary w-full">View Plaque Performance</v-btn>
 						</Link>
 					</div></QCard
@@ -238,7 +238,12 @@ const IconCardData = [
 						<img
 							:src="QBLOCKPERFORMANCEIMAGE"
 							class="w-full" />
-						<Link :href="route('venues.index')">
+						<Link
+							:href="
+								route('blocks.showStats', {
+									venue: venue.id,
+								})
+							">
 							<v-btn class="bg-primary w-full">View Block Performance</v-btn>
 						</Link>
 					</div></QCard

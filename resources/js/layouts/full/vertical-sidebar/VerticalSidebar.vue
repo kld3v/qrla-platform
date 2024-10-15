@@ -56,6 +56,7 @@ const sidebarItemsVenue: any[] = [
 				icon: 'mdi:person-check-outline',
 				to: '/apps/calendar',
 				disabled: true,
+				nav: 'none',
 			},
 			{
 				title: 'Calendar',

@@ -5,6 +5,7 @@ const props = defineProps<{
 	menuLocation: 'top' | 'bottom' | 'start' | 'end' | 'center'
 	dropdownButtonColor: string
 	dropdownOptions: string[]
+	label: string
 }>()
 
 const option = ref()
@@ -18,6 +19,6 @@ const location = ref(props.dropdownOptions[0])
 		<v-select
 			v-model="location"
 			:items="dropdownOptions"
-			label="Month"></v-select>
+			:label="label"></v-select>
 	</div>
 </template>

@@ -2,7 +2,7 @@
 import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
 import FullLayout from '@/layouts/full/FullLayout.vue'
 import HeaderImageAndLogo from '@/components/QComponents/HeaderImageAndLogo.vue'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { VenuePageProps } from '@/types/Venue'
 import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.vue'
 import QCard from '@/components/QComponents/QCard.vue'
@@ -19,21 +19,28 @@ import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
 // import SAFARIICON from '@/assets/images/svgs/.svg'
 import STADIUMCHAIRS from '@/assets/images/QAssets/VenuePerformance/asset1.png'
 import QSelectableTable from '@/components/QComponents/QSelectableTable.vue'
+import { Block, NavOptions, QColors, Stand } from '@/types'
 
 const props = defineProps<{
 	venue: VenuePageProps
+	stands: Stand[]
+	nav: NavOptions
 }>()
 
-const isGlobalHome = ref(false)
+console.log(props)
+
+const selectedStand = ref<Stand>(props.stands[0])
+
+const selectedBlock = ref<Block>(props.stands[0].blocks[0])
 
 // to be relpaced with prop data
-const IconCardData = [
+const IconCardData = ref<any>([
 	{
 		bg: 'primary-gradient',
 		icon: 'lucide:nfc',
 		color: 'primary',
 		title: 'Total Visits',
-		data: '16,689',
+		data: selectedBlock.value.stats.total_visits,
 		link: '',
 		delta: 40,
 	},
@@ -42,7 +49,7 @@ const IconCardData = [
 		icon: 'streamline:wave-signal-solid',
 		color: 'purple',
 		title: 'Visits By Tap',
-		data: 'Sport',
+		data: selectedBlock.value.stats.total_seat_visits,
 		link: '',
 		delta: -23,
 	},
@@ -51,7 +58,7 @@ const IconCardData = [
 		icon: 'uil:qrcode-scan',
 		color: 'success',
 		title: 'Visits By Scan',
-		data: '450',
+		data: selectedBlock.value.stats.total_block_visits,
 		link: '',
 		delta: 12,
 	},
@@ -64,12 +71,26 @@ const IconCardData = [
 		link: '',
 		delta: 40,
 	},
-]
+])
 
-const colors = ['primary', 'warning', 'success', 'purple']
+const returnSelectedStandBlocks = computed(() =>
+	selectedStand.value.blocks.map((el) => {
+		const circleColor: QColors = 'primary'
+		return {
+			code: el.name,
+			name: selectedStand.value.name,
+			circleColor: circleColor,
+		}
+	})
+)
+
+const updateSelectedStand = computed(() => {})
 </script>
 <template>
-	<FullLayout :isGlobalHome="isGlobalHome">
+	<FullLayout
+		:isGlobalHome="nav === 'home'"
+		:venue="venue"
+		:nav="nav">
 		<HeaderImageAndLogo
 			:bannerUrl="venue.banner_url"
 			:logoUrl="venue.logo_url"
@@ -93,27 +114,21 @@ const colors = ['primary', 'warning', 'success', 'purple']
 				<QCard bg="default-gray">
 					<div class="flex justify-space-between align-center w-full">
 						<div class="mb-4">
-							<h3 class="q-text-qrla_green h3 mb-2">Select Block To View</h3>
-							<GraphTimeScaleMenu />
+							<h2 class="q-text-qrla_green h2 mb-2">Select Block To View</h2>
+							<!-- <GraphTimeScaleMenu /> -->
 						</div>
 						<QMenusAnchor
 							menu-location="start"
 							dropdown-button-color="secondary"
-							:dropdown-options="['Aug 2023', 'Sept 2023']"></QMenusAnchor>
+							:label="'Stand'"
+							:dropdown-options="[...props.stands.map((el: Stand) => el.name)]"></QMenusAnchor>
 					</div>
 					<v-row>
 						<v-col
 							cols="12"
 							lg="4">
 							<QCard bg="dark-primary-gradient">
-								<QSelectableTable
-									:block-data="[
-										{
-											name: 'East Stand',
-											code: 'EU1',
-											circleColor: 'primary',
-										},
-									]" />
+								<QSelectableTable :block-data="returnSelectedStandBlocks" />
 							</QCard>
 						</v-col>
 						<v-col
