@@ -11,7 +11,6 @@ import QPlaqueActivityGraph from '@/components/QComponents/QPlaqueActivityGraph.
 
 import GraphTimeScaleMenu from '@/components/QComponents/QGraphTimeScaleMenu.vue'
 
-import GOOGLEICON from '@/assets/images/svgs/icon-chrome.svg'
 import QDonutChart from '../../components/QComponents/QDonutChart.vue'
 import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
 // import FIREFOXICON from '@/assets/images/svgs/.svg'
@@ -20,6 +19,9 @@ import STADIUMCHAIRS from '@/assets/images/QAssets/VenuePerformance/asset1.png'
 import QSelectableTable from '@/components/QComponents/QSelectableTable.vue'
 import { Block, NavOptions, QColors, Stand } from '@/types'
 import DeviceStats from './Partials/DeviceStats.vue'
+import TapOrScanDonut from './Partials/TapOrScanDonut.vue'
+import BrowserStats from './Partials/BrowserStats.vue'
+import PlaqueTimeGraph from './Partials/PlaqueTimeGraph.vue'
 
 const props = defineProps<{
 	venue: VenuePageProps
@@ -174,85 +176,32 @@ const returnSelectedStandBlocks = computed(() =>
 			<v-col
 				cols="12"
 				lg="12">
-				<QCard bg="default-gray">
-					<GraphTimeScaleMenu class="flex gap-6 absolute right-20" />
-					<v-row>
-						<v-col
-							cols="12"
-							lg="8"
-							class="text-left flex flex-col gap-y-2">
-							<h3 class="q-text-qrla_green h3">QRLA Plaque Activity</h3>
-							<p class="text-subtitle-1">Overview of Tap or Scans through plaques</p>
-							<QPlaqueActivityGraph />
-						</v-col>
-					</v-row>
-				</QCard>
+				<PlaqueTimeGraph />
 			</v-col>
 		</v-row>
-
 		<v-row class="mb-6">
 			<v-col
 				cols="12"
 				lg="4">
-				<DeviceStats
-					:selected-item="selectedBlock"
-					id-type="block" />
+				<Suspense>
+					<DeviceStats
+						:selected-item="selectedBlock"
+						id-type="block" />
+				</Suspense>
 			</v-col>
 			<v-col
 				cols="12"
 				lg="4">
-				<QCard
-					bg="default-gray"
-					class="text-left">
-					<h3 class="q-text-qrla_green h3 mb-2">Browser Stats</h3>
-					<p class="text-subtitle-1 mb-2">Most used browsers by customers.</p>
-					<v-row>
-						<v-col
-							cols="12"
-							lg="12">
-							<QCard bg="dark-primary-gradient">
-								<div class="flex justify-space-between align-center">
-									<span class="flex align-center">
-										<img
-											:src="GOOGLEICON"
-											alt="Green Apple Icon" />
-										<p class="ml-4 mt-2 muted">Google</p></span
-									>
-									<p>{{ venue.city }} 23%</p>
-								</div>
-								<div class="flex justify-space-between align-center mt-4">
-									<span class="flex align-center">
-										<img
-											:src="GOOGLEICON"
-											alt="Green Android Icon" />
-										<p class="ml-4 mt-1 muted">Android</p></span
-									>
-									<p>{{ venue.city }} 43%</p>
-								</div>
-								<div class="flex justify-space-between align-center mt-4">
-									<span class="flex align-center">
-										<img
-											:src="GOOGLEICON"
-											alt="Green Android Icon" />
-										<p class="ml-4 mt-1 muted">Android</p></span
-									>
-									<p>{{ venue.city }} 43%</p>
-								</div>
-							</QCard>
-						</v-col>
-					</v-row>
-				</QCard>
+				<Suspense>
+					<BrowserStats
+						:selected-item="selectedBlock"
+						id-type="block" />
+				</Suspense>
 			</v-col>
 			<v-col
 				cols="12"
 				lg="4">
-				<QCard bg="default-gray">
-					<div class="flex justify-space-between align-center w-full">
-						<h3 class="q-text-qrla_green h3 mb-2">Tap or Scan %</h3>
-						<p class="text-subtitle-1">All time</p>
-					</div>
-					<QDonutChart :labels="['Taps', 'Scans']" />
-				</QCard>
+				<TapOrScanDonut :data="[selectedBlock.stats.total_block_visits, selectedBlock.stats.total_seat_visits]" />
 			</v-col>
 		</v-row>
 	</FullLayout>

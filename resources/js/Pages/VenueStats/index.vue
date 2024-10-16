@@ -20,9 +20,11 @@ import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
 import STADIUMCHAIRS from '@/assets/images/QAssets/VenuePerformance/asset1.png'
 import BlockPerformanceRow from './Partials/BlockPerformanceRow.vue'
 import { Icon } from '@iconify/vue'
+import { NavOptions } from '@/types'
 
 const props = defineProps<{
 	venue: VenuePageProps
+	nav: NavOptions
 }>()
 
 const isGlobalHome = ref(false)
@@ -66,7 +68,10 @@ const IconCardData = [
 const colors = ['primary', 'warning', 'success', 'purple']
 </script>
 <template>
-	<FullLayout :isGlobalHome="isGlobalHome">
+	<FullLayout
+		:isGlobalHome="isGlobalHome"
+		:venue="venue"
+		:nav="nav">
 		<HeaderImageAndLogo
 			:bannerUrl="venue.banner_url"
 			:logoUrl="venue.logo_url"

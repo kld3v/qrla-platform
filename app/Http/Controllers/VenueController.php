@@ -79,7 +79,7 @@ class VenueController extends Controller
     {
         $this->authorize('view', $venue);
     
-        $venue->load('blocks');
+        $venue->load('stands.blocks');
     
         $totalSeatVisits = $venue->seatAccessCounts()->sum('total_count');
         $totalBlockVisits = $venue->blockAccessCounts()->sum('total_count');
@@ -94,6 +94,8 @@ class VenueController extends Controller
         return Inertia::render('VenueStats/index', [
             'venue' => $venue,
             'stats' => $stats,
+            'nav'=>'venue_performance'
+
         ]);
     }
     

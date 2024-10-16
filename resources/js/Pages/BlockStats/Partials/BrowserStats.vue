@@ -1,9 +1,9 @@
 <template>
 	<QCard
 		bg="default-gray"
-		class="flex flex-col gap-y-2">
-		<h3 class="q-text-qrla_green h3 mb-2">Device Stats</h3>
-		<p class="text-subtitle-1 mb-2">Most used devices by customers.</p>
+		class="text-left">
+		<h3 class="q-text-qrla_green h3 mb-2">Browser Stats</h3>
+		<p class="text-subtitle-1 mb-2">Most used browsers by customers.</p>
 		<v-row>
 			<v-col
 				cols="12"
@@ -12,20 +12,29 @@
 					<div class="flex justify-space-between align-center">
 						<span class="flex align-center">
 							<img
-								:src="APPLEICON"
+								:src="GOOGLEICON"
 								alt="Green Apple Icon" />
-							<p class="ml-4 mt-2 muted">Apple</p></span
+							<p class="ml-4 mt-2 muted">Chrome</p></span
 						>
-						<p>{{ stats.apple ? stats.apple : '0' }} %</p>
+						<p>{{ stats.chrome ? stats.chrome : 0 }} %</p>
 					</div>
 					<div class="flex justify-space-between align-center mt-4">
 						<span class="flex align-center">
 							<img
-								:src="ANDROIDICONGREEN"
+								:src="GOOGLEICON"
 								alt="Green Android Icon" />
-							<p class="ml-4 mt-1 muted">Android</p></span
+							<p class="ml-4 mt-1 muted">Firefox</p></span
 						>
-						<p>{{ stats.android ? stats.android : '0' }} %</p>
+						<p>{{ stats.firefox ? stats.firefox : 0 }} %</p>
+					</div>
+					<div class="flex justify-space-between align-center mt-4">
+						<span class="flex align-center">
+							<img
+								:src="GOOGLEICON"
+								alt="Green Android Icon" />
+							<p class="ml-4 mt-1 muted">Edge</p></span
+						>
+						<p>{{ stats.edge ? stats.edge : 0 }} %</p>
 					</div>
 				</QCard>
 			</v-col>
@@ -34,8 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import APPLEICON from '@/assets/images/svgs/appleIcon.svg'
-import ANDROIDICONGREEN from '@/assets/images/svgs/androidIcon.svg'
+import GOOGLEICON from '@/assets/images/svgs/icon-chrome.svg'
 import { Block } from '@/types'
 import QCard from '@/components/QComponents/QCard.vue'
 import { ref, watch } from 'vue'
@@ -50,8 +58,9 @@ const props = defineProps<{
 }>()
 
 const stats = ref({
-	apple: 0,
-	android: 0,
+	chrome: 0,
+	firefox: 0,
+	edge: 0,
 })
 
 watch(
@@ -60,10 +69,10 @@ watch(
 		if (newVal && newVal.id !== oldVal?.id) {
 			// Check if the value has actually changed
 			let res = await getAccessesByOs(props.idType, props.selectedItem.id)
-			console.log(res)
-			stats.value.apple = res.data.os[0]
-			stats.value.android = res.data.os[1]
-			console.log(`Device Stats updated with block id: ${newVal.id}`)
+			stats.value.chrome = res.data.browsers[0]
+			stats.value.firefox = res.data.browsers[1]
+			stats.value.edge = res.data.browsers[2]
+			console.log(`Browser Stats updated with block id: ${newVal.id}`)
 		}
 	},
 	{ immediate: true } // Add immediate option if you want to call it on component mount as well
