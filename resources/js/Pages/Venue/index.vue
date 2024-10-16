@@ -19,6 +19,7 @@ import { NavOptions } from '@/types'
 const props = defineProps<{
 	venue: VenuePageProps
 	nav: NavOptions
+	stats: any
 }>()
 
 console.log(props)
@@ -114,7 +115,7 @@ const IconCardData = [
 							<p
 								class="h3"
 								style="font-weight: 100">
-								Your plaques have been scanned a total of {{ venue.id }} times at {{ venue.name }}!
+								Your plaques have been scanned a total of {{ stats.accesses }} times at {{ venue.name }}!
 							</p>
 							<Link
 								:href="

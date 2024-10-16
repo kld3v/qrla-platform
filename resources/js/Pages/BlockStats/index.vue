@@ -176,7 +176,9 @@ const returnSelectedStandBlocks = computed(() =>
 			<v-col
 				cols="12"
 				lg="12">
-				<PlaqueTimeGraph />
+				<PlaqueTimeGraph
+					:selected-item="selectedBlock"
+					id-type="block" />
 			</v-col>
 		</v-row>
 		<v-row class="mb-6">

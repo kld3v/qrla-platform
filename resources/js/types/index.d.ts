@@ -51,3 +51,6 @@ export type Stand = {
 	name: string
 	venue_id: number
 }
+
+export type IdType = 'venue' | 'block'
+export type TimeRange = '1d' | '1w' | '1m' | '3m' | '1y'

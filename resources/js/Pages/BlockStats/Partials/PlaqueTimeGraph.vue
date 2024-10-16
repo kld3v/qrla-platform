@@ -18,6 +18,27 @@
 import QCard from '@/components/QComponents/QCard.vue'
 import QGraphTimeScaleMenu from '@/components/QComponents/QGraphTimeScaleMenu.vue'
 import QPlaqueActivityGraph from '@/components/QComponents/QPlaqueActivityGraph.vue'
+import { Block, IdType } from '@/types'
+import { VenuePageProps } from '@/types/Venue'
+import { getAccessesOverTime } from '@/utils/apiDataFetchers'
+import { watch } from 'vue'
+
+const props = defineProps<{
+	// think of a more scalable way to type this
+	selectedItem: Block | VenuePageProps
+	idType: IdType
+}>()
+
+watch(
+	() => props.selectedItem,
+	async (newVal, oldVal) => {
+		if (newVal && newVal.id !== oldVal?.id) {
+			let res = await getAccessesOverTime(props.idType, props.selectedItem.id, '1d')
+			console.log(res)
+		}
+	},
+	{ immediate: true } // Add immediate option if you want to call it on component mount as well
+)
 </script>
 
 <style></style>
