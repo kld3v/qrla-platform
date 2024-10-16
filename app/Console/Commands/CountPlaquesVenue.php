@@ -7,7 +7,7 @@ use App\Models\Venue;
 use App\Traits\TracksCronJob;
 use Carbon\Carbon;
 
-class CountPlaques extends Command
+class CountPlaquesVenue extends Command
 {
     use TracksCronJob;
 
@@ -23,8 +23,8 @@ class CountPlaques extends Command
 
             foreach ($venues as $venue) {
                 $plaqueCount = $venue->stands()
-                    ->with(['blocks.seats' => function ($query) {
-                        $query->with('markers');
+                    ->with(['blocks.seats.markers' => function ($query) {
+                        $query->where('plaqueable_type', 'seat');
                     }])
                     ->get()
                     ->pluck('blocks')

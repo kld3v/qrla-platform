@@ -9,7 +9,13 @@ class Block extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'stand_id', 'base_url_id'];
+    protected $fillable = [
+        'name',
+        'stand_id', 
+        'base_url_id',
+        'plaques',
+        'access_rate'
+    ];
 
     public function stand()
     {
