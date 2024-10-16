@@ -11,4 +11,6 @@ use Illuminate\Support\Facades\Schedule;
 
 Schedule::command('venue:count-accesses')->dailyAt('02:00');
 Schedule::command('venue:count-plaques')->dailyAt('03:00');
-Schedule::command('venue:calculate-access-rate')->dailyAt('04:00');
+Schedule::command('block:count-plaques')->dailyAt('04:00');
+Schedule::command('venue:calculate-access-rate')->dailyAt('05:00');
+Schedule::command('block:calculate-access-rate')->dailyAt('06:00');

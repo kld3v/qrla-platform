@@ -8,7 +8,7 @@ use App\Models\AccessLog;
 use App\Traits\TracksCronJob;
 use Carbon\Carbon;
 
-class CalculateAccessRate extends Command
+class CalculateAccessRateVenue extends Command
 {
     use TracksCronJob;
 
