@@ -20,7 +20,7 @@ class CountPlaquesBlock extends Command
 
         try {
             $blocks = Block::with(['seats.markers' => function ($query) {
-                $query->where('plaqueable_type', 'seat');
+                $query->where('markerable_type', 'seat');
             }])->get();
 
             foreach ($blocks as $block) {

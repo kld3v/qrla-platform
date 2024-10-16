@@ -24,7 +24,7 @@ class CountPlaquesVenue extends Command
             foreach ($venues as $venue) {
                 $plaqueCount = $venue->stands()
                     ->with(['blocks.seats.markers' => function ($query) {
-                        $query->where('plaqueable_type', 'seat');
+                        $query->where('markerable_type', 'seat');
                     }])
                     ->get()
                     ->pluck('blocks')
