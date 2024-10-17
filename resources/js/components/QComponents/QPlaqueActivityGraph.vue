@@ -1,6 +1,52 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { Icon } from '@iconify/vue'
+
+interface QPlaqueActivityGraphDataObject {
+	time_group: string
+	total_access_count: number
+	seat_access_count: number
+	block_access_count: number
+}
+
+const props = defineProps<{
+	data: QPlaqueActivityGraphDataObject[]
+}>()
+
+const graphData = reactive<{
+	categories: QPlaqueActivityGraphDataObject['time_group'][]
+	total: QPlaqueActivityGraphDataObject['total_access_count'][]
+	taps: QPlaqueActivityGraphDataObject['seat_access_count'][]
+	scans: QPlaqueActivityGraphDataObject['block_access_count'][]
+}>({
+	categories: [],
+	total: [],
+	taps: [],
+	scans: [],
+})
+
+watch(
+	() => props.data,
+	async (newVal, oldVal) => {
+		if (newVal && newVal !== oldVal) {
+			console.log(props.data)
+			graphData.categories = props.data.map((el) => {
+				return el.time_group
+			})
+			graphData.total = props.data.map((el) => {
+				return el.total_access_count
+			})
+			graphData.taps = props.data.map((el) => {
+				return el.seat_access_count
+			})
+			graphData.scans = props.data.map((el) => {
+				return el.block_access_count
+			})
+			console.log(graphData)
+		}
+	},
+	{ immediate: true }
+)
 
 /* Chart */
 const areachartOptions = computed(() => {
@@ -57,13 +103,14 @@ const areachartOptions = computed(() => {
 			},
 		},
 		xaxis: {
+			type: 'datetime',
 			axisBorder: {
 				show: false,
 			},
 			axisTicks: {
 				show: false,
 			},
-			categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sept', 'Oct', 'Nov'],
+			categories: graphData.categories,
 		},
 		markers: {
 			strokeColor: ['#A2F732', '#635BFF', '#14E9E2'],
@@ -79,16 +126,16 @@ const areaChart = {
 	series: [
 		{
 			name: 'Total',
-			data: [50, 60, 30, 55, 75, 60, 100, 120, 100, 90, 100],
+			data: graphData.total,
 		},
 
 		{
 			name: 'Taps',
-			data: [35, 45, 40, 50, 35, 55, 40, 45, 100, 90, 10],
+			data: graphData.taps,
 		},
 		{
 			name: 'Scans',
-			data: [100, 75, 80, 40, 20, 40, 0, 25, 100, 90, 50],
+			data: graphData.scans,
 		},
 	],
 }
@@ -110,7 +157,7 @@ const areaChart = {
 					</v-avatar>
 					<div>
 						<v-card-title class="text-h5">Activity</v-card-title>
-						<v-card-subtitle class="text-subtitle-1">Past Year</v-card-subtitle>
+						<v-card-subtitle class="text-white">Past Year</v-card-subtitle>
 					</div>
 				</div>
 				<div class="d-flex align-center gap-4">
@@ -118,19 +165,19 @@ const areaChart = {
 						<v-avatar
 							size="8"
 							class="bg-primary rounded-circle"></v-avatar>
-						<span class="textSecondary">Total</span>
+						<span class="">Total</span>
 					</div>
 					<div class="d-flex align-center gap-2">
 						<v-avatar
 							size="8"
 							class="!bg-[#635bff] rounded-circle"></v-avatar>
-						<span class="textSecondary">Taps</span>
+						<span class="">Taps</span>
 					</div>
 					<div class="d-flex align-center gap-2">
 						<v-avatar
 							size="8"
 							class="bg-success rounded-circle"></v-avatar>
-						<span class="textSecondary">Scans</span>
+						<span class="">Scans</span>
 					</div>
 				</div>
 			</div>

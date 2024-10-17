@@ -14,24 +14,29 @@
 </template>
 
 <script setup lang="ts">
+import { TimeRange } from '@/types'
 import { ref } from 'vue'
 
-const timeRangeOptions = [
+const props = defineProps<{
+	handleTimeScaleChange: (timeScale: TimeRange) => void
+}>()
+
+const timeRangeOptions: { label: string; value: TimeRange }[] = [
 	{ label: '1D', value: '1d' },
 	{ label: '1W', value: '1w' },
 	{ label: '1M', value: '1m' },
 	{ label: '3M', value: '3m' },
 	{ label: '1Y', value: '1y' },
-	{ label: 'All', value: 'all' },
+	//NOTE CHANGE AFTER A YEAR OF OPERATION
+	{ label: 'All', value: '1y' },
 ]
 
-const selectedRange = ref('1y') // Default selected range
+const selectedRange = ref<TimeRange>('3m') // Default selected range
 
-const selectRange = (range: string) => {
+const selectRange = (range: TimeRange) => {
 	selectedRange.value = range
+	props.handleTimeScaleChange(selectedRange.value)
 }
 </script>
 
-<style scoped>
-/* Add any additional styles here if needed */
-</style>
+<style scoped></style>
