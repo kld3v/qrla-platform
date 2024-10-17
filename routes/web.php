@@ -1,13 +1,15 @@
 <?php
 
+use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProfilePictureController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use App\Http\Controllers\VenueController;
 use App\Http\Controllers\BlockController;
 use App\Http\Controllers\MarkerController;
 use App\Http\Controllers\StatsController;
+
 
 Route::get('/', function () {
     if (auth()->check()) {
@@ -38,6 +40,10 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/venues/{venue}/stats', [VenueController::class, 'showStats'])->name('venues.showStats');
 
     Route::get('/venues/{venue}/block-stats', [BlockController::class, 'showStats'])->name('blocks.showStats');
+
+    Route::post('/profile-picture/upload', [ProfilePictureController::class, 'upload'])->name('profilePicture.upload');
+
+    Route::post('/organisation/logo/upload', [OrganisationController::class, 'uploadLogo'])->name('organisation.uploadLogo');
 });
 
 
