@@ -16,6 +16,7 @@
 					:data="graphData?.current?.data" />
 			</v-col>
 		</v-row>
+		<PlaqueGraphStatsIcons />
 	</QCard>
 </template>
 
@@ -27,7 +28,7 @@ import QPlaqueActivityGraph from '@/components/QComponents/QPlaqueActivityGraph.
 import { getAccessesOverTime } from '@/utils/apiDataFetchers'
 import { Block, IdType, TimeRange } from '@/types'
 import { VenuePageProps } from '@/types/Venue'
-
+import PlaqueGraphStatsIcons from '@/components/QComponents/QPlaqueTimeGraphStatsIcons.vue'
 // Define Props
 const props = defineProps<{
 	selectedItem: Block | VenuePageProps

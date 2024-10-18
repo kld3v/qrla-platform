@@ -8,15 +8,14 @@ import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.
 import QCard from '@/components/QComponents/QCard.vue'
 import QIconCardSet from '@/components/QComponents/QIconCardSet.vue'
 import QPlaqueActivityGraph from '@/components/QComponents/QPlaqueActivityGraph.vue'
-import PlaqueGraphStatsIcons from './Partials/PlaqueGraphStatsIcons.vue'
+import PlaqueGraphStatsIcons from '../../components/QComponents/QPlaqueTimeGraphStatsIcons.vue'
+import QPlaqueTimeGraph from '@/components/QComponents/QPlaqueTimeGraph.vue'
 import GraphTimeScaleMenu from '../../components/QComponents/QGraphTimeScaleMenu.vue'
 import APPLEICON from '@/assets/images/svgs/appleIcon.svg'
 import ANDROIDICONGREEN from '@/assets/images/svgs/androidIcon.svg'
 import GOOGLEICON from '@/assets/images/svgs/icon-chrome.svg'
 import QDonutChart from '../../components/QComponents/QDonutChart.vue'
 import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
-// import FIREFOXICON from '@/assets/images/svgs/.svg'
-// import SAFARIICON from '@/assets/images/svgs/.svg'
 import STADIUMCHAIRS from '@/assets/images/QAssets/VenuePerformance/asset1.png'
 import BlockPerformanceRow from './Partials/BlockPerformanceRow.vue'
 import { Icon } from '@iconify/vue'
@@ -24,10 +23,12 @@ import { NavOptions } from '@/types'
 
 const props = defineProps<{
 	venue: VenuePageProps
+	stats: any
 	nav: NavOptions
 }>()
 
 const isGlobalHome = ref(false)
+console.log(props)
 
 // to be relpaced with prop data
 const IconCardData = [
@@ -36,7 +37,7 @@ const IconCardData = [
 		icon: 'lucide:nfc',
 		color: 'primary',
 		title: 'Venue Capacity',
-		data: '16,689',
+		data: props.venue.capacity,
 		link: '',
 	},
 	{
@@ -44,7 +45,7 @@ const IconCardData = [
 		icon: 'iconamoon:eye',
 		color: 'purple',
 		title: 'Venue Type',
-		data: 'Sport',
+		data: props.venue.type,
 		link: '',
 	},
 	{
@@ -52,7 +53,7 @@ const IconCardData = [
 		icon: 'uil:qrcode-scan',
 		color: 'success',
 		title: 'QRLA Plaques',
-		data: '450',
+		data: props.venue.plaques,
 		link: '',
 	},
 	{
@@ -60,7 +61,7 @@ const IconCardData = [
 		icon: 'ph:chart-line-up',
 		color: 'error',
 		title: 'Managed By',
-		data: 'Levy UK & Ireland',
+		data: props.venue.address_line1,
 		link: '',
 	},
 ]
@@ -102,26 +103,9 @@ const colors = ['primary', 'warning', 'success', 'purple']
 			<v-col
 				cols="12"
 				lg="12">
-				<QCard bg="default-gray">
-					<GraphTimeScaleMenu class="flex gap-6 absolute right-20" />
-					<v-row>
-						<v-col
-							cols="12"
-							lg="8"
-							class="text-left flex flex-col gap-y-2">
-							<h3 class="q-text-qrla_green h3">QRLA Plaque Activity</h3>
-							<!-- /access-over-time -->
-							<p class="text-subtitle-1">Overview of Tap or Scans through plaques</p>
-							<QPlaqueActivityGraph />
-						</v-col>
-						<v-col
-							cols="12"
-							lg="4"
-							class="flex flex-col justify-center gap-y-8">
-							<PlaqueGraphStatsIcons />
-						</v-col>
-					</v-row>
-				</QCard>
+				<QPlaqueTimeGraph
+					id-type="venue"
+					:selected-item="venue" />
 			</v-col>
 		</v-row>
 
