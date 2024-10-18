@@ -16,23 +16,32 @@ class ProfilePictureController extends Controller
         $this->imageService = $imageService;
     }
 
-    public function upload(Request $request)
+    public function uploadLogo(Request $request)
     {
         $request->validate([
-            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'logo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+    
+        $organisation = auth()->user()->organisation;
+    
+        if (!$organisation) {
+            return response()->json(['error' => 'Organisation not found'], 404);
+        }
+    
+        $image = $request->file('logo');
+        
 
-        $image = $request->file('profile_picture');
-        $path = $image->store('profile_pictures', 'public');
+        $path = $image->store('organisation_logos', 's3'); 
+    
+        $localPath = storage_path('app/' . $path); 
+        $this->imageService->resizeImage($localPath, 500); 
 
-        $this->imageService->resizeImage(storage_path('app/public/' . $path), 300);
-
-        $profilePicture = new ProfilePicture([
-            'user_id' => auth()->id(),
-            'image_path' => $path,
-        ]);
-        $profilePicture->save();
-
-        return response()->json(['message' => 'Profile picture uploaded successfully', 'path' => $path], 200);
+        Storage::disk('s3')->put($path, file_get_contents($localPath));
+    
+        $organisation->logo_path = $path;
+        $organisation->save();
+    
+        return response()->json(['message' => 'Logo uploaded successfully', 'path' => $path], 200);
     }
+    
 }
