@@ -6,7 +6,7 @@
 		<v-row>
 			<v-col
 				cols="12"
-				lg="12"
+				lg="10"
 				class="text-left flex flex-col gap-y-2">
 				<h3 class="q-text-qrla_green h3">QRLA Plaque Activity</h3>
 				<p class="text-subtitle-1">Overview of Tap or Scans through plaques</p>
@@ -15,8 +15,13 @@
 					v-else
 					:data="graphData?.current?.data" />
 			</v-col>
+			<v-col
+				cols="12"
+				lg="2"
+				class="mt-16">
+				<PlaqueGraphStatsIcons />
+			</v-col>
 		</v-row>
-		<PlaqueGraphStatsIcons />
 	</QCard>
 </template>
 

@@ -1,14 +1,16 @@
 <template>
 	<QCard
 		bg="default-gray"
-		class="flex flex-col gap-y-2">
+		class="flex flex-col gap-y-2 h-full">
 		<h3 class="q-text-qrla_green h3 mb-2">Device Stats</h3>
 		<p class="text-subtitle-1 mb-2">Most used devices by customers.</p>
 		<v-row>
 			<v-col
 				cols="12"
 				lg="12">
-				<QCard bg="dark-primary-gradient">
+				<QCard
+					bg="dark-primary-gradient"
+					style="height: 200px; display: flex; height: 200px; justify-content: space-evenly; flex-direction: column">
 					<div class="flex justify-space-between align-center">
 						<span class="flex align-center">
 							<img

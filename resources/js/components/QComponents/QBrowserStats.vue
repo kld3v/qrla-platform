@@ -8,7 +8,10 @@
 			<v-col
 				cols="12"
 				lg="12">
-				<QCard bg="dark-primary-gradient">
+				<QCard
+					bg="dark-primary-gradient"
+					custom-css="flex flex-col justify-space-between"
+					style="height: 200px; display: flex; height: 200px; justify-content: space-evenly; flex-direction: column">
 					<div class="flex justify-space-between align-center">
 						<span class="flex align-center">
 							<img

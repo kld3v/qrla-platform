@@ -3,14 +3,15 @@ import { QCardType } from '@/types'
 
 const props = defineProps<{
 	bg: QCardType['bg'] | 'default-gray'
+	customCss?: string
+	overflowY?: boolean
 }>()
 </script>
 
 <template>
 	<v-sheet
-		:class="bg"
 		elevation="12"
-		class="py-8 px-8 rounded-md h-full">
+		:class="['py-8 px-8 rounded-md h-full', overflowY && 'overflow-y-scroll', bg && bg, customCss && customCss]">
 		<slot></slot>
 	</v-sheet>
 </template>

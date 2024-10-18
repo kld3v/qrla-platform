@@ -10,21 +10,27 @@
 				label="Blocks"
 				menu-location="start"
 				dropdown-button-color="secondary"
-				:dropdown-options="['Aug 2023', 'Sept 2023']"></QMenusAnchor>
+				:dropdown-options="['all']"></QMenusAnchor>
 		</div>
 		<v-row>
 			<v-col
 				cols="12"
 				lg="6">
-				<QCard bg="dark-primary-gradient">
+				<QCard
+					bg="dark-primary-gradient"
+					custom-css="h-[400px]"
+					:overflow-y="true">
 					<p class="h4 mb-4">Top Performing Blocks</p>
 					<!-- accesses-by-block -->
 					<BlockPerformanceRow
-						v-for="(item, index) in 4"
+						v-if="graphData.current"
+						v-for="(item, index) in graphData.current.data"
 						:key="index"
-						:visits="10"
-						:percent-of-total="20 * (index + 1)"
-						:progress-bar-color="colors[index]" />
+						:visits="item.access_count"
+						:percent-of-total="item.access_percent"
+						:progress-bar-color="colors[index % 4]"
+						:block-name="item.block_name"
+						:highest-percentage="graphData.current.data[0].access_count" />
 				</QCard>
 			</v-col>
 			<v-col
@@ -47,11 +53,18 @@
 						:src="STADIUMCHAIRS"
 						alt="Stadium Chairs"
 						class="w-full mb-4" />
-					<v-btn
-						color="primary"
-						class="w-full">
-						View Individual Block Performance
-					</v-btn>
+					<Link
+						:href="
+							route('blocks.showStats', {
+								venue: selectedItem.id,
+							})
+						">
+						<v-btn
+							color="primary"
+							class="w-full">
+							View Individual Block Performance
+						</v-btn>
+					</Link>
 				</QCard>
 			</v-col>
 		</v-row>
@@ -65,10 +78,11 @@ import QGraphTimeScaleMenu from '@/components/QComponents/QGraphTimeScaleMenu.vu
 import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
 import BlockPerformanceRow from './BlockPerformanceRow.vue'
 import { getAccessesByBlockOverTime } from '@/utils/apiDataFetchers'
-import { Block, IdType, TimeRange } from '@/types'
+import { Block, TimeRange } from '@/types'
 import { VenuePageProps } from '@/types/Venue'
-import { onMounted, reactive } from 'vue'
-
+import { onMounted, reactive, ref } from 'vue'
+import { Icon } from '@iconify/vue'
+import { Link } from '@inertiajs/vue3'
 const colors = ['primary', 'warning', 'success', 'purple']
 
 const props = defineProps<{
@@ -84,6 +98,7 @@ const graphData = reactive({
 	year: null,
 	current: null, // for storing the current data passed to the graph
 })
+const loading = ref(false)
 
 // Fetch data for different time scales
 const fetchData = async () => {
@@ -97,7 +112,9 @@ const fetchData = async () => {
 }
 
 onMounted(async () => {
+	loading.value = !loading.value
 	await fetchData()
+	loading.value = !loading.value
 	console.log(graphData)
 })
 

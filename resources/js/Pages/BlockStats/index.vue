@@ -13,7 +13,7 @@ import { Block, NavOptions, QColors, Stand } from '@/types'
 import QDeviceStats from '@/components/QComponents/QDeviceStats.vue'
 import QTapOrScanDonut from '@/components/QComponents/QTapOrScanDonut.vue'
 import QBrowserStats from '@/components/QComponents/QBrowserStats.vue'
-import QPlaqueTimeGraph from '@/components/QComponents/QPlaqueTimeGraph.vue'
+import QPlaqueTimeGraph from '@/components/QComponents/QPlaqueActivityGraphParent.vue'
 
 const props = defineProps<{
 	venue: VenuePageProps

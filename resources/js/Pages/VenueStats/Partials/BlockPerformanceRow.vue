@@ -2,7 +2,7 @@
 	<div class="mb-4">
 		<div class="flex justify-space-between">
 			<div>
-				<p class="h2">Block J</p>
+				<p class="h2">Block {{ blockName }}</p>
 				<p class="h4">{{ visits }} Visits</p>
 			</div>
 			<p class="h4 align-self-end">{{ percentOfTotal }}%</p>
@@ -10,7 +10,7 @@
 		<div class="h-[8px] rounded-md mt-1 bg-white">
 			<div
 				:class="computedProgressBarClass"
-				:style="{ width: `${percentOfTotal}%` }"></div>
+				:style="{ width: `${getPercentageOfHighestPercentage}%` }"></div>
 		</div>
 	</div>
 </template>
@@ -22,10 +22,16 @@ const props = defineProps<{
 	visits: number
 	percentOfTotal: number
 	progressBarColor: string
+	blockName: string
+	highestPercentage: number
 }>()
 
 const computedProgressBarClass = computed(() => {
 	return `bg-${props.progressBarColor} rounded-md h-[8px]`
+})
+
+const getPercentageOfHighestPercentage = computed(() => {
+	return (props.visits / props.highestPercentage) * 100
 })
 </script>
 
