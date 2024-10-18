@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { watch, reactive, computed, ref } from 'vue'
+import { watch, reactive, ref } from 'vue'
 import QCard from '@/components/QComponents/QCard.vue'
 import QGraphTimeScaleMenu from '@/components/QComponents/QGraphTimeScaleMenu.vue'
 import QPlaqueActivityGraph from '@/components/QComponents/QPlaqueActivityGraph.vue'
@@ -55,7 +55,7 @@ const fetchData = async () => {
 	graphData.threeMonths = await getAccessesOverTime(props.idType, props.selectedItem.id, '3m')
 	graphData.year = await getAccessesOverTime(props.idType, props.selectedItem.id, '1y')
 
-	// Set initial data for graph (e.g., default to last day)
+	// Set initial data for graph (e.g., default to last day) This needs to match the default value in the time scale menu
 	graphData.current = graphData.threeMonths
 }
 

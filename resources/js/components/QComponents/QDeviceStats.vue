@@ -60,10 +60,8 @@ watch(
 		if (newVal && newVal.id !== oldVal?.id) {
 			// Check if the value has actually changed
 			let res = await getAccessesByOs(props.idType, props.selectedItem.id)
-			console.log(res)
 			stats.value.apple = res.data.os[0]
 			stats.value.android = res.data.os[1]
-			console.log(`Device Stats updated with block id: ${newVal.id}`)
 		}
 	},
 	{ immediate: true } // Add immediate option if you want to call it on component mount as well

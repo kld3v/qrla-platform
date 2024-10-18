@@ -10,18 +10,16 @@ import QIconCardSet from '@/components/QComponents/QIconCardSet.vue'
 import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
 import QSelectableTable from '@/components/QComponents/QSelectableTable.vue'
 import { Block, NavOptions, QColors, Stand } from '@/types'
-import DeviceStats from './Partials/DeviceStats.vue'
-import TapOrScanDonut from './Partials/TapOrScanDonut.vue'
-import BrowserStats from './Partials/BrowserStats.vue'
-import PlaqueTimeGraph from './Partials/PlaqueTimeGraph.vue'
+import QDeviceStats from '@/components/QComponents/QDeviceStats.vue'
+import QTapOrScanDonut from '@/components/QComponents/QTapOrScanDonut.vue'
+import QBrowserStats from '@/components/QComponents/QBrowserStats.vue'
+import QPlaqueTimeGraph from '@/components/QComponents/QPlaqueTimeGraph.vue'
 
 const props = defineProps<{
 	venue: VenuePageProps
 	stands: Stand[]
 	nav: NavOptions
 }>()
-
-console.log(props)
 
 const selectedStand = ref<Stand>(props.stands[0])
 const changeSelectedStand = (standName: string): void => {
@@ -168,7 +166,7 @@ const returnSelectedStandBlocks = computed(() =>
 			<v-col
 				cols="12"
 				lg="12">
-				<PlaqueTimeGraph
+				<QPlaqueTimeGraph
 					:selected-item="selectedBlock"
 					id-type="block" />
 			</v-col>
@@ -178,7 +176,7 @@ const returnSelectedStandBlocks = computed(() =>
 				cols="12"
 				lg="4">
 				<Suspense>
-					<DeviceStats
+					<QDeviceStats
 						:selected-item="selectedBlock"
 						id-type="block" />
 				</Suspense>
@@ -187,7 +185,7 @@ const returnSelectedStandBlocks = computed(() =>
 				cols="12"
 				lg="4">
 				<Suspense>
-					<BrowserStats
+					<QBrowserStats
 						:selected-item="selectedBlock"
 						id-type="block" />
 				</Suspense>
@@ -195,7 +193,7 @@ const returnSelectedStandBlocks = computed(() =>
 			<v-col
 				cols="12"
 				lg="4">
-				<TapOrScanDonut :data="[selectedBlock.stats.total_block_visits, selectedBlock.stats.total_seat_visits]" />
+				<QTapOrScanDonut :data="[selectedBlock.stats.total_block_visits, selectedBlock.stats.total_seat_visits]" />
 			</v-col>
 		</v-row>
 	</FullLayout>

@@ -25,120 +25,80 @@ const graphData = reactive<{
 	scans: [],
 })
 
+/* Chart */
+const areachartOptions = computed(() => ({
+	chart: {
+		toolbar: { show: false },
+		type: 'area',
+		fontFamily: 'inherit',
+		foreColor: '#fff',
+		height: 290,
+		width: '100%',
+		stacked: false,
+	},
+	colors: ['#A2F732', '#635BFF', '#14E9E2'],
+	plotOptions: {},
+	dataLabels: { enabled: false },
+	legend: { show: false },
+	stroke: { width: 2, curve: 'monotoneCubic' },
+	grid: {
+		show: true,
+		padding: { top: 0, bottom: 0 },
+		borderColor: '#2C4E26',
+		xaxis: { lines: { show: true } },
+		yaxis: { lines: { show: true } },
+	},
+	fill: {
+		type: 'gradient',
+		gradient: {
+			shadeIntensity: 4,
+			inverseColors: false,
+			opacityFrom: 0.2,
+			opacityTo: 0.9,
+			stops: [100],
+		},
+	},
+	xaxis: {
+		type: 'datetime',
+		axisBorder: { show: false },
+		axisTicks: { show: false },
+		categories: graphData.categories, // Make sure this updates reactively
+	},
+	markers: {
+		strokeColor: ['#A2F732', '#635BFF', '#14E9E2'],
+		strokeWidth: 2,
+	},
+	tooltip: { theme: 'dark' },
+}))
+
+const areaChartSeries = computed(() => [
+	{
+		name: 'Total',
+		data: graphData.total,
+	},
+	{
+		name: 'Taps',
+		data: graphData.taps,
+	},
+	{
+		name: 'Scans',
+		data: graphData.scans,
+	},
+])
+
 watch(
 	() => props.data,
-	async (newVal, oldVal) => {
+	(newVal, oldVal) => {
 		if (newVal && newVal !== oldVal) {
-			console.log(props.data)
-			graphData.categories = props.data.map((el) => {
-				return el.time_group
-			})
-			graphData.total = props.data.map((el) => {
-				return el.total_access_count
-			})
-			graphData.taps = props.data.map((el) => {
-				return el.seat_access_count
-			})
-			graphData.scans = props.data.map((el) => {
-				return el.block_access_count
-			})
-			console.log(graphData)
+			console.log('data being passed to graph via props.data', props.data)
+			graphData.categories = props.data.map((el) => el.time_group)
+			graphData.total = props.data.map((el) => el.total_access_count)
+			graphData.taps = props.data.map((el) => el.seat_access_count)
+			graphData.scans = props.data.map((el) => el.block_access_count)
 		}
 	},
 	{ immediate: true }
 )
-
-/* Chart */
-const areachartOptions = computed(() => {
-	return {
-		chart: {
-			toolbar: {
-				show: false,
-			},
-			type: 'area',
-			fontFamily: 'inherit',
-			foreColor: '#fff',
-			height: 290,
-			width: '100%',
-			stacked: false,
-		},
-		colors: ['#A2F732', '#635BFF', '#14E9E2'],
-		plotOptions: {},
-		dataLabels: {
-			enabled: false,
-		},
-		legend: {
-			show: false,
-		},
-		stroke: {
-			width: 2,
-			curve: 'monotoneCubic',
-		},
-		grid: {
-			show: true,
-			padding: {
-				top: 0,
-				bottom: 0,
-			},
-			borderColor: '#2C4E26',
-			xaxis: {
-				lines: {
-					show: true,
-				},
-			},
-			yaxis: {
-				lines: {
-					show: true,
-				},
-			},
-		},
-		fill: {
-			type: 'gradient',
-			gradient: {
-				shadeIntensity: 4,
-				inverseColors: false,
-				opacityFrom: 0.2,
-				opacityTo: 0.9,
-				stops: [100],
-			},
-		},
-		xaxis: {
-			type: 'datetime',
-			axisBorder: {
-				show: false,
-			},
-			axisTicks: {
-				show: false,
-			},
-			categories: graphData.categories,
-		},
-		markers: {
-			strokeColor: ['#A2F732', '#635BFF', '#14E9E2'],
-			strokeWidth: 2,
-		},
-		tooltip: {
-			theme: 'dark',
-		},
-	}
-})
-
-const areaChart = {
-	series: [
-		{
-			name: 'Total',
-			data: graphData.total,
-		},
-
-		{
-			name: 'Taps',
-			data: graphData.taps,
-		},
-		{
-			name: 'Scans',
-			data: graphData.scans,
-		},
-	],
-}
 </script>
 <template>
 	<v-card
@@ -186,7 +146,7 @@ const areaChart = {
 					type="area"
 					height="290"
 					:options="areachartOptions"
-					:series="areaChart.series">
+					:series="areaChartSeries">
 				</apexchart>
 			</div>
 		</v-card-item>

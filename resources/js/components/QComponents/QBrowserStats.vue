@@ -72,7 +72,6 @@ watch(
 			stats.value.chrome = res.data.browsers[0]
 			stats.value.firefox = res.data.browsers[1]
 			stats.value.edge = res.data.browsers[2]
-			console.log(`Browser Stats updated with block id: ${newVal.id}`)
 		}
 	},
 	{ immediate: true } // Add immediate option if you want to call it on component mount as well
