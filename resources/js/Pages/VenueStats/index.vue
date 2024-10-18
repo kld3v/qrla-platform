@@ -16,10 +16,13 @@ import ANDROIDICONGREEN from '@/assets/images/svgs/androidIcon.svg'
 import GOOGLEICON from '@/assets/images/svgs/icon-chrome.svg'
 import QDonutChart from '../../components/QComponents/QDonutChart.vue'
 import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
-import STADIUMCHAIRS from '@/assets/images/QAssets/VenuePerformance/asset1.png'
 import BlockPerformanceRow from './Partials/BlockPerformanceRow.vue'
 import { Icon } from '@iconify/vue'
 import { NavOptions } from '@/types'
+import QDeviceStats from '@/components/QComponents/QDeviceStats.vue'
+import QBrowserStats from '@/components/QComponents/QBrowserStats.vue'
+import QTapOrScanDonut from '@/components/QComponents/QTapOrScanDonut.vue'
+import BlockPerformanceComponent from './Partials/BlockPerformanceComponent.vue'
 
 const props = defineProps<{
 	venue: VenuePageProps
@@ -61,12 +64,10 @@ const IconCardData = [
 		icon: 'ph:chart-line-up',
 		color: 'error',
 		title: 'Managed By',
-		data: props.venue.address_line1,
+		data: props.venue.organisation.name,
 		link: '',
 	},
 ]
-
-const colors = ['primary', 'warning', 'success', 'purple']
 </script>
 <template>
 	<FullLayout
@@ -113,96 +114,23 @@ const colors = ['primary', 'warning', 'success', 'purple']
 			<v-col
 				cols="12"
 				lg="4">
-				<QCard
-					bg="default-gray"
-					class="flex flex-col gap-y-2">
-					<h3 class="q-text-qrla_green h3 mb-2">Device Stats</h3>
-					<!-- accesses-by-device-browser -->
-					<p class="text-subtitle-1 mb-2">Most used devices by customers.</p>
-					<v-row>
-						<v-col
-							cols="12"
-							lg="12">
-							<QCard bg="dark-primary-gradient">
-								<div class="flex justify-space-between align-center">
-									<span class="flex align-center">
-										<img
-											:src="APPLEICON"
-											alt="Green Apple Icon" />
-										<p class="ml-4 mt-2 muted">Apple</p></span
-									>
-									<p>{{ venue.city }} 23%</p>
-								</div>
-								<div class="flex justify-space-between align-center mt-4">
-									<span class="flex align-center">
-										<img
-											:src="ANDROIDICONGREEN"
-											alt="Green Android Icon" />
-										<p class="ml-4 mt-1 muted">Android</p></span
-									>
-									<p>{{ venue.city }} 43%</p>
-								</div>
-							</QCard>
-						</v-col>
-					</v-row>
-				</QCard>
+				<QDeviceStats
+					id-type="venue"
+					:selected-item="venue" />
 			</v-col>
 			<v-col
 				cols="12"
 				lg="4">
-				<QCard
-					bg="default-gray"
-					class="text-left">
-					<h3 class="q-text-qrla_green h3 mb-2">Browser Stats</h3>
-					<p class="text-subtitle-1 mb-2">Most used browsers by customers.</p>
-					<v-row>
-						<v-col
-							cols="12"
-							lg="12">
-							<QCard bg="dark-primary-gradient">
-								<div class="flex justify-space-between align-center">
-									<span class="flex align-center">
-										<img
-											:src="GOOGLEICON"
-											alt="Green Apple Icon" />
-										<p class="ml-4 mt-2 muted">Google</p></span
-									>
-									<p>{{ venue.city }} 23%</p>
-								</div>
-								<div class="flex justify-space-between align-center mt-4">
-									<span class="flex align-center">
-										<img
-											:src="GOOGLEICON"
-											alt="Green Android Icon" />
-										<p class="ml-4 mt-1 muted">Android</p></span
-									>
-									<p>{{ venue.city }} 43%</p>
-								</div>
-								<div class="flex justify-space-between align-center mt-4">
-									<span class="flex align-center">
-										<img
-											:src="GOOGLEICON"
-											alt="Green Android Icon" />
-										<p class="ml-4 mt-1 muted">Android</p></span
-									>
-									<p>{{ venue.city }} 43%</p>
-								</div>
-							</QCard>
-						</v-col>
-					</v-row>
-				</QCard>
+				<QBrowserStats
+					id-type="venue"
+					:selected-item="venue" />
 			</v-col>
 			<v-col
 				cols="12"
 				lg="4">
-				<QCard bg="default-gray">
-					<div class="flex justify-space-between align-center w-full">
-						<h3 class="q-text-qrla_green h3 mb-2">Tap or Scan %</h3>
-						<!-- accesses-by-marker-type leave as all time -->
-						<p class="text-subtitle-1">All time</p>
-					</div>
-					<QDonutChart :labels="['Taps', 'Scans']" />
-				</QCard>
+				<QTapOrScanDonut
+					:labels="['Taps', 'Scans']"
+					:data="[stats.total_block_visits, stats.total_seat_visits]" />
 			</v-col>
 		</v-row>
 
@@ -210,61 +138,7 @@ const colors = ['primary', 'warning', 'success', 'purple']
 			<v-col
 				cols="12"
 				lg="12">
-				<QCard bg="default-gray">
-					<div class="flex justify-space-between align-center w-full">
-						<div class="mb-4">
-							<h3 class="q-text-qrla_green h3 mb-6">Block Activity</h3>
-							<GraphTimeScaleMenu />
-						</div>
-						<QMenusAnchor
-							menu-location="start"
-							dropdown-button-color="secondary"
-							:dropdown-options="['Aug 2023', 'Sept 2023']"></QMenusAnchor>
-					</div>
-					<v-row>
-						<v-col
-							cols="12"
-							lg="6">
-							<QCard bg="dark-primary-gradient">
-								<p class="h4 mb-4">Top Performing Blocks</p>
-								<!-- accesses-by-block -->
-								<BlockPerformanceRow
-									v-for="(item, index) in 4"
-									:key="index"
-									:visits="10"
-									:percent-of-total="20 * (index + 1)"
-									:progress-bar-color="colors[index]" />
-							</QCard>
-						</v-col>
-						<v-col
-							cols="12"
-							lg="6"></v-col>
-					</v-row>
-					<v-row>
-						<v-col
-							cols="12"
-							lg="12">
-							<QCard bg="dark-primary-gradient">
-								<div class="flex justify-space-between align-center">
-									<p class="h4 mb-4">Block Performance Tracker</p>
-									<Icon
-										icon="material-symbols:stairs-outline"
-										height="25"
-										class="text-primary" />
-								</div>
-								<img
-									:src="STADIUMCHAIRS"
-									alt="Stadium Chairs"
-									class="w-full mb-4" />
-								<v-btn
-									color="primary"
-									class="w-full">
-									View Individual Block Performance
-								</v-btn>
-							</QCard>
-						</v-col>
-					</v-row>
-				</QCard>
+				<BlockPerformanceComponent :selected-item="venue" />
 			</v-col>
 		</v-row>
 	</FullLayout>

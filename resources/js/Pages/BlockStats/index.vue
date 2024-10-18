@@ -77,7 +77,7 @@ const IconCardData = ref<any>([
 		icon: 'ic:baseline-sync-problem',
 		color: 'error',
 		title: 'Average Activity Level',
-		data: '232',
+		data: selectedBlock.value.access_rate,
 		link: '',
 		delta: 40,
 	},

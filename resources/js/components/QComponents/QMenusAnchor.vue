@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, watchEffect } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = defineProps<{
 	menuLocation: 'top' | 'bottom' | 'start' | 'end' | 'center'

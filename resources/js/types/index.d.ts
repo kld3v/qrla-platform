@@ -37,6 +37,10 @@ export type NavOptions = 'venue_home' | 'plaque_management' | 'venue_performance
 
 export type Block = {
 	id: number
+	access_rate: string
+	base_url_id: number
+	created_at: string
+	plaques: number
 	name: string
 	stand_id: 1
 	stats: {

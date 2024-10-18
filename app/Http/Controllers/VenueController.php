@@ -79,7 +79,7 @@ class VenueController extends Controller
     {
         $this->authorize('view', $venue);
     
-        $venue->load('stands.blocks');
+        $venue->load(['stands.blocks','organisation']);
     
         $totalSeatVisits = $venue->seatAccessCounts()->sum('total_count');
         $totalBlockVisits = $venue->blockAccessCounts()->sum('total_count');

@@ -16,9 +16,7 @@ class BlockController extends Controller
         $this->authorize('viewBlocks', $venue);
 
         $stands = $venue->stands()
-                        ->with(['blocks' => function ($query) {
-                            $query->select('id', 'name', 'stand_id');
-                        }])
+                        ->with('blocks')
                         ->select('id', 'name', 'venue_id')
                         ->get();
 
@@ -34,9 +32,7 @@ class BlockController extends Controller
         $this->authorize('viewBlocks', $venue);
     
         $stands = $venue->stands()
-                        ->with(['blocks' => function ($query) {
-                            $query->select('id', 'name', 'stand_id');
-                        }])
+                        ->with('blocks')
                         ->select('id', 'name', 'venue_id')
                         ->get();
     
