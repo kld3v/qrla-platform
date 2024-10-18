@@ -39,7 +39,7 @@ const addPolygonHoverEffects = () => {
   const polygons = svgContainer.value.querySelectorAll('polygon');
   polygons.forEach((polygon) => {
     polygon.addEventListener('mouseover', () => {
-      polygon.style.fill = '#034694'; // Highlight color on hover
+      polygon.style.fill = '#A2F732'; // Highlight color on hover
     });
     polygon.addEventListener('mouseout', () => {
       polygon.style.fill = ''; // Revert to original color on mouse out

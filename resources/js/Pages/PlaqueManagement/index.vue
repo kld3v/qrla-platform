@@ -12,6 +12,7 @@ import { Block, NavOptions, QColors, Stand } from '@/types'
 import QGraphTimeScaleMenu from '@/components/QComponents/QGraphTimeScaleMenu.vue'
 import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
 import QSelectableTable from '@/components/QComponents/QSelectableTable.vue'
+import QInteractiveVenueMap from '@/components/QComponents/QInteractiveVenueMap.vue'
 
 const props = defineProps<{
 	venue: VenuePageProps
@@ -106,7 +107,9 @@ const returnSelectedStandBlocksForTable = computed(() =>
 						</v-col>
 						<v-col
 							cols="12"
-							lg="6"></v-col>
+							lg="6">
+							<QInteractiveVenueMap svgUrl="https://qrla-b2b-bucket.s3.eu-west-2.amazonaws.com/platform/public/venue_svgs/1.svg" />
+							</v-col>
 					</v-row>
 				</QCard>
 			</v-col>
