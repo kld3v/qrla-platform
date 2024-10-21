@@ -54,7 +54,14 @@ class VenueController extends Controller
         ]);
     }
     
-    
+    public function testSvg()
+    {
+        $svgUrl = 'https://qrla-b2b-bucket.s3.eu-west-2.amazonaws.com/platform/public/venue_svgs/1.svg';
+
+        return Inertia::render('JoelTest/svg', [
+            'svgUrl' => $svgUrl,
+        ]);
+    }
 
     public function show(Venue $venue)
     {

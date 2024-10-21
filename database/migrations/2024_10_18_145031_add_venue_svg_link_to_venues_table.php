@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('organisation_id')->nullable()->constrained('organisations')->cascadeOnDelete()->after('long_description');;
+        Schema::table('venues', function (Blueprint $table) {
+            $table->string('map_svg_url')->nullable()->after('banner_url');
         });
     }
 
@@ -21,9 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['organisation_id']);
-            $table->dropColumn('organisation_id');
+        Schema::table('venues', function (Blueprint $table) {
+            $table->dropColumn('map_svg_url');
         });
     }
 };

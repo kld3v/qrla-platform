@@ -56,6 +56,9 @@ Route::get('/stats/accesses-by-block', [StatsController::class, 'getAccessesByBl
 Route::get('/stats/accesses-by-marker-type', [StatsController::class, 'getAccessesByMarkerType']);
 
 
+Route::get('/test-svg', [VenueController::class, 'testSvg']);
+
+
 require __DIR__.'/auth.php';
 
 Route::get('/{short_code}', [MarkerController::class, 'handleMarkerRedirect'])->name('markers.redirect');
