@@ -33,7 +33,7 @@ export const sidebarItem: menu[] = [
 			{
 				title: 'Account',
 				icon: 'iconoir:profile-circle',
-				to: '/venues',
+				to: '/profile',
 				nav: 'account',
 			},
 		],

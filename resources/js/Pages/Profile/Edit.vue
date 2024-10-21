@@ -78,7 +78,11 @@ const componentMap = {
 				<QCard bg="dark-primary-gradient">
 					<h3 class="q-text-qrla_green h3">{{ component.title }}</h3>
 					<p class="text-subtitle-1">{{ component.subtitle }}</p>
-					<component :is="componentMap[component.component]" />
+					<component
+						v-bind="{
+							index: index,
+						}"
+						:is="componentMap[component.component]" />
 				</QCard>
 			</v-col>
 		</v-row>
