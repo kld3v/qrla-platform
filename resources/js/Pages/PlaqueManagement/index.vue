@@ -108,7 +108,11 @@ const returnSelectedStandBlocksForTable = computed(() =>
 						<v-col
 							cols="12"
 							lg="6">
-							<QInteractiveVenueMap svgUrl="https://qrla-b2b-bucket.s3.eu-west-2.amazonaws.com/platform/public/venue_svgs/1.svg" />
+							<QInteractiveVenueMap
+							:svgUrl="venue.map_svg_url"
+							:stands="stands"
+							:selected-block="selectedBlock"
+							/>
 							</v-col>
 					</v-row>
 				</QCard>
