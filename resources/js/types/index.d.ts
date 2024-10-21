@@ -33,7 +33,7 @@ export type VenuesTableData = {
 	id: number
 }
 
-export type NavOptions = 'venue_home' | 'plaque_management' | 'venue_performance' | 'block_performance' | 'home'
+export type NavOptions = 'venue_home' | 'plaque_management' | 'venue_performance' | 'block_performance' | 'home' | 'account'
 
 export type Block = {
 	id: number

@@ -30,6 +30,12 @@ export const sidebarItem: menu[] = [
 				to: '/venues',
 				nav: 'home',
 			},
+			{
+				title: 'Account',
+				icon: 'iconoir:profile-circle',
+				to: '/venues',
+				nav: 'account',
+			},
 		],
 	},
 	{
@@ -38,25 +44,25 @@ export const sidebarItem: menu[] = [
 		children: [
 			{
 				title: 'Seat Activity',
-				icon: 'calendar-mark-line-duotone',
+				icon: 'mdi:person-check-outline',
 				to: '/apps/calendar',
 				disabled: true,
 			},
 			{
 				title: 'Calendar',
-				icon: 'airbuds-case-minimalistic-line-duotone',
+				icon: 'mdi:calendar-blank-outline',
 				to: '/apps/kanban',
 				disabled: true,
 			},
 			{
 				title: 'Event Day Data',
-				icon: 'chat-round-line-line-duotone',
+				icon: 'mynaui:ticket',
 				to: '/apps/chats',
 				disabled: true,
 			},
 			{
 				title: 'Taskboard',
-				icon: 'document-text-line-duotone',
+				icon: 'charm:circle-tick',
 				to: '/apps/notes',
 				disabled: true,
 			},

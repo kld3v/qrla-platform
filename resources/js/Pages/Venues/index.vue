@@ -1,12 +1,12 @@
 z
 <script setup lang="ts">
-import ProfitCard from '@/components/dashboards/dashboard2/ProfitCard.vue'
+import QPageIntroCard from '@/components/QComponents/QHomePageIntroCard.vue'
 import QCardBanner from '@/components/widgets/banners/QCardBanner.vue'
 import QIconCard from '@/components/QComponents/QIconCard.vue'
 import FullLayout from '@/layouts/full/FullLayout.vue'
 import QFiltering from '@/views/tables/datatables/QFiltering.vue'
 import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
-import { ref } from 'vue'
+
 import { QCardType, VenuesTableData } from '@/types'
 import QCARDAVATAR from '@/assets/images/profile/user-1.jpg'
 import QCARDCOMPANYLOGO from '@/assets/images/QAssets/levy_logo.png'
@@ -19,7 +19,6 @@ const props = defineProps<{
 	stats: any
 	nav: 'home'
 }>()
-const isGlobalHome = ref(true)
 console.log(props)
 const cards: QCardType[] = [
 	{ bg: 'dark-primary-gradient', icon: QCARDSTADICON, title: 'Total Venues', dataValue: props.stats?.total_venues, color: 'primary' },
@@ -43,13 +42,13 @@ console.log(filterVenues(props.venues))
 </script>
 <template>
 	<FullLayout
-		:isGlobalHome="isGlobalHome"
+		isGlobalHome
 		:nav="nav">
 		<v-row class="mb-6">
 			<v-col
 				cols="12"
 				lg="6">
-				<ProfitCard />
+				<QPageIntroCard />
 			</v-col>
 			<v-col
 				cols="12"

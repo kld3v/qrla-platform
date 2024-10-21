@@ -24,6 +24,7 @@ class ProfileController extends Controller
             'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => session('status'),
             'organisation' => $user->organisation,
+            'nav' => 'account'
         ]);
     }
     

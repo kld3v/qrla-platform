@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, shallowRef } from 'vue'
 import { useCustomizerStore } from '@/stores/customizer'
-import { sidebarItem } from './sidebarItem'
+import { sidebarItem } from './sideBarItems_home'
 import NavGroup from './NavGroup/index.vue'
 import NavItem from './NavItem/index.vue'
 import NavCollapse from './NavCollapse/NavCollapse.vue'
