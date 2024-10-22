@@ -1,53 +1,50 @@
 <script setup lang="ts">
-import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue';
-import FullLayout from '@/layouts/full/FullLayout.vue';
-import HeaderImageAndLogo from '@/components/QComponents/HeaderImageAndLogo.vue';
-import { computed, ref, watch } from 'vue';
-import { VenuePageProps } from '@/types/Venue';
-import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.vue';
-import QCard from '@/components/QComponents/QCard.vue';
-import QPRIVACYASSET from '@/assets/images/QAssets/PlaqueManagement/privacy_asset.svg';
-import QSETTINGASSET from '@/assets/images/QAssets/PlaqueManagement/settings_asset.svg';
-import { Block, NavOptions, QColors, Stand } from '@/types';
-import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue';
-import QSelectableTable from '@/components/QComponents/QSelectableTable.vue';
-import QInteractiveVenueMap from '@/components/QComponents/QInteractiveVenueMap.vue';
+import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
+import FullLayout from '@/layouts/full/FullLayout.vue'
+import HeaderImageAndLogo from '@/components/QComponents/HeaderImageAndLogo.vue'
+import { computed, ref, watch } from 'vue'
+import { VenuePageProps } from '@/types/Venue'
+import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.vue'
+import QCard from '@/components/QComponents/QCard.vue'
+import QPRIVACYASSET from '@/assets/images/QAssets/PlaqueManagement/privacy_asset.svg'
+import QSETTINGASSET from '@/assets/images/QAssets/PlaqueManagement/settings_asset.svg'
+import { BlockEverywhereElse, NavOptions, QColors, Stand } from '@/types'
+import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
+import QSelectableTable from '@/components/QComponents/QSelectableTable.vue'
+import QInteractiveVenueMap from '@/components/QComponents/QInteractiveVenueMap.vue'
 
 const props = defineProps<{
-  venue: VenuePageProps;
-  stands: Stand[];
-  nav: NavOptions;
-}>();
+	venue: VenuePageProps
+	stands: Stand[]
+	nav: NavOptions
+}>()
 
-const selectedStand = ref<Stand>(props.stands[0]);
+console.log(props)
+
+const selectedStand = ref<Stand>(props.stands[0])
 
 const changeSelectedStand = (standName: string) => {
-  for (const stand of props.stands) {
-    if (standName === stand.name) {
-      selectedStand.value = stand;
-      console.log('Stand Updated');
-      return;
-    }
-  }
-};
+	for (const stand of props.stands) {
+		if (standName === stand.name) {
+			selectedStand.value = stand
+			console.log('Stand Updated')
+			return
+		}
+	}
+}
 
-const selectedBlocks = ref<Block[]>([]);
+const selectedBlocks = ref<BlockEverywhereElse[]>([props.stands[0].blocks[2]])
 
 watch(selectedBlocks, (newVal) => {
-  console.log('Selected Blocks updated:', newVal);
-});
+	console.log('Selected Blocks updated:', newVal)
+})
 
-const returnSelectedStandBlocksForTable = computed(() =>
-  selectedStand.value.blocks.map((el) => {
-    const circleColor: QColors = 'primary';
-    return {
-      ...el,
-      code: el.name,
-      name: selectedStand.value.name,
-      circleColor: circleColor,
-    };
-  })
-);
+const updateSelectedBlockState = (blocks: BlockEverywhereElse[]) => {
+	selectedBlocks.value = blocks
+	console.log('new Mr Selected Blocks', selectedBlocks.value)
+}
+
+const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blocks.map((el: BlockEverywhereElse) => el))
 </script>
 
 <template>
@@ -89,22 +86,25 @@ const returnSelectedStandBlocksForTable = computed(() =>
 							:dropdown-options="[...props.stands.map((el: Stand) => el.name)]"></QMenusAnchor>
 					</div>
 					<v-row>
-						<v-col cols="12" lg="4">
-						<QCard bg="dark-primary-gradient">
-							<QSelectableTable
-							v-model="selectedBlocks"
-							:block-data="returnSelectedStandBlocksForTable"
-							select-strategy="all"
-							/>
-						</QCard>
+						<v-col
+							cols="12"
+							lg="4">
+							<QCard bg="dark-primary-gradient">
+								<QSelectableTable
+									:selected-blocks="selectedBlocks"
+									:update-selected-block-state="updateSelectedBlockState"
+									:block-data="returnSelectedStandBlocksForTable"
+									select-strategy="single" />
+							</QCard>
 						</v-col>
-						<v-col cols="12" lg="6">
-						<QInteractiveVenueMap
-							:svgUrl="venue.map_svg_url"
-							:stands="stands"
-							:selected-blocks="selectedBlocks"
-							@update:selectedBlocks="selectedBlocks = $event"
-						/>
+						<v-col
+							cols="12"
+							lg="6">
+							<QInteractiveVenueMap
+								:svgUrl="venue.map_svg_url"
+								:stands="stands"
+								:selected-blocks="selectedBlocks"
+								@update:selectedBlocks="selectedBlocks = $event" />
 						</v-col>
 					</v-row>
 				</QCard>

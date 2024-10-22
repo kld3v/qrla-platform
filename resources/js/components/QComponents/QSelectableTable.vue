@@ -1,75 +1,68 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-
-interface Block {
-  id: number;
-  code: string;
-  name: string;
-  circleColor: string;
-}
+import { ref, watch } from 'vue'
+import { BlockEverywhereElse } from '@/types'
 
 const props = defineProps<{
-  blockData: Block[];
-  selectStrategy: 'single' | 'all' | 'page';
-  modelValue: Block[];
-}>();
+	// The data in Mr Selected Blocks - ie the data the user has selected.
+	selectedBlocks: BlockEverywhereElse[]
+	// All the data that Mr Table wants to show available to the user to click.
+	blockData: BlockEverywhereElse[]
+	selectStrategy: 'single' | 'all' | 'page'
+	updateSelectedBlockState: (blocks: BlockEverywhereElse[]) => void
+}>()
 
-const emits = defineEmits(['update:modelValue']);
-
-const internalSelectedBlocks = ref<Block[]>(props.modelValue || []);
+const internalSelectedBlocks = ref<BlockEverywhereElse[]>(props.selectedBlocks)
 
 watch(
-  () => internalSelectedBlocks.value,
-  (newVal) => {
-    console.log('DataTable Selection Changed:', newVal);
-    emits('update:modelValue', newVal);
-  },
-  { immediate: true }
-);
+	() => internalSelectedBlocks.value,
+	(newVal) => {
+		props.updateSelectedBlockState(newVal)
+	}
+)
 
-const headers = ref([
-  { title: 'Block', align: 'start', key: 'name' },
-  { title: 'Stand', align: 'start', key: 'code' },
-]);
+watch(
+	() => props.selectedBlocks,
+	(newVal) => {
+		internalSelectedBlocks.value = newVal
+	}
+)
+
+const headers = ref<
+	{
+		title: string
+		align: 'start' | 'end'
+		key: string
+	}[]
+>([{ title: 'Block Name', align: 'start', key: 'name' }])
 </script>
 
 <template>
-  <div>
-    <!-- Data Table -->
-    <v-data-table
-      :headers="headers"
-      :items="blockData"
-      :single-select="selectStrategy === 'single'"
-      :show-select="true"
-      class="border border-2 border-solid border-grey rounded-md bg-transparent block-stats-table datatables"
-      v-model="internalSelectedBlocks"
-      :return-object="true"
-    >
-      <!-- Block Column -->
-      <template #item.name="{ item }">
-        <div class="flex gap-4 align-center">
-          <div
-            :class="[
-              'h-[24px]',
-              'w-[24px]',
-              `bg-${item.circleColor}`,
-              'rounded-circle',
-            ]"
-          ></div>
-          <span>{{ item.name }}</span>
-        </div>
-      </template>
-
-      <!-- Stand Column -->
-      <template #item.code="{ item }">
-        <p>{{ item.code }}</p>
-      </template>
-    </v-data-table>
-  </div>
+	<div>
+		<!-- Data Table -->
+		<v-data-table
+			:headers="headers"
+			:items="blockData"
+			:single-select="selectStrategy === 'single'"
+			:show-select="true"
+			class="border border-2 border-solid border-grey rounded-md bg-transparent block-stats-table datatables"
+			v-model="internalSelectedBlocks"
+			:return-object="true">
+			<!-- Block Column -->
+			<template #item.name="{ item }">
+				<div class="flex gap-4 align-center">
+					<div :class="['h-[24px]', 'w-[24px]', `bg-primary`, 'rounded-circle']"></div>
+					<span>{{ item.name }}</span>
+				</div>
+			</template>
+		</v-data-table>
+		<div>
+			{{ internalSelectedBlocks }}
+		</div>
+	</div>
 </template>
 
 <style scoped>
 .rounded-circle {
-  border-radius: 50%;
+	border-radius: 50%;
 }
 </style>
