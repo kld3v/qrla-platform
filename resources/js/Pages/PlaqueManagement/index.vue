@@ -13,7 +13,7 @@ import QGraphTimeScaleMenu from '@/components/QComponents/QGraphTimeScaleMenu.vu
 import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
 import QSelectableTable from '@/components/QComponents/QSelectableTable.vue'
 import QInteractiveVenueMap from '@/components/QComponents/QInteractiveVenueMap.vue'
-
+import QModal from '@/components/QComponents/QModal.vue'
 const props = defineProps<{
 	venue: VenuePageProps
 	stands: Stand[]
@@ -58,7 +58,7 @@ const returnSelectedStandBlocksForTable = computed(() =>
 </script>
 <template>
 	<FullLayout
-		:isGlobalHome="nav === 'home'"
+		:is-global-home="false"
 		:venue="venue"
 		:nav="nav">
 		<HeaderImageAndLogo
@@ -109,11 +109,10 @@ const returnSelectedStandBlocksForTable = computed(() =>
 							cols="12"
 							lg="6">
 							<QInteractiveVenueMap
-							:svgUrl="venue.map_svg_url"
-							:stands="stands"
-							:selected-block="selectedBlock"
-							/>
-							</v-col>
+								:svgUrl="venue.map_svg_url"
+								:stands="stands"
+								:selected-block="selectedBlock" />
+						</v-col>
 					</v-row>
 				</QCard>
 			</v-col>
@@ -136,7 +135,91 @@ const returnSelectedStandBlocksForTable = computed(() =>
 							alt="Edit Settings Icon" />
 						<h3 class="h3 q-text-qrla_green">Change Link Destination</h3>
 						<p>Dynamically edit the end URL of the QRLA plaque.</p>
-						<v-btn class="q-btn-green">Edit</v-btn>
+						<QModal
+							button-text="Change"
+							:total-steps="2">
+							<template #page-0>
+								<v-row class="mb-6">
+									<v-col
+										cols="12"
+										lg="12">
+										<QCard bg="default-gray">
+											<div class="flex justify-space-between align-center w-full">
+												<div class="mb-4">
+													<h3 class="q-text-qrla_green h3 mb-2">Select Block End Destination URL To Edit</h3>
+												</div>
+												<QMenusAnchor
+													:changeSelectedStand="changeSelectedStand"
+													:label="'Stand'"
+													menu-location="start"
+													dropdown-button-color="secondary"
+													:initialSelectedItem="selectedStand.name"
+													:dropdown-options="[...props.stands.map((el: Stand) => el.name)]"></QMenusAnchor>
+											</div>
+											<v-row>
+												<v-col
+													cols="12"
+													lg="4">
+													<QCard bg="dark-primary-gradient">
+														<QSelectableTable
+															:update-selected-block="changeSelectedBlock"
+															:block-data="returnSelectedStandBlocksForTable"
+															select-strategy="all" />
+													</QCard>
+												</v-col>
+												<v-col
+													cols="12"
+													lg="6">
+													<QInteractiveVenueMap
+														:svgUrl="venue.map_svg_url"
+														:stands="stands"
+														:selected-block="selectedBlock" />
+												</v-col>
+											</v-row>
+										</QCard>
+									</v-col>
+								</v-row>
+							</template>
+							<template #page-1>
+								<v-row class="mb-6">
+									<v-col
+										cols="12"
+										lg="12">
+										<QCard bg="default-gray">
+											<div class="flex justify-space-between align-center w-full">
+												<div class="mb-4">
+													<h3 class="q-text-qrla_green h3 mb-2">Select Block End Destination URL To Edit</h3>
+												</div>
+												<QMenusAnchor
+													:changeSelectedStand="changeSelectedStand"
+													:label="'Stand'"
+													menu-location="start"
+													dropdown-button-color="secondary"
+													:initialSelectedItem="selectedStand.name"
+													:dropdown-options="[...props.stands.map((el: Stand) => el.name)]"></QMenusAnchor>
+											</div>
+											<v-row>
+												<v-col
+													cols="12"
+													lg="4">
+													<QCard bg="dark-primary-gradient">
+														<QSelectableTable
+															:update-selected-block="changeSelectedBlock"
+															:block-data="returnSelectedStandBlocksForTable"
+															select-strategy="all" />
+													</QCard>
+												</v-col>
+												<v-col
+													cols="12"
+													lg="6">
+													<v-text-field />
+												</v-col>
+											</v-row>
+										</QCard>
+									</v-col>
+								</v-row>
+							</template>
+						</QModal>
 					</div>
 				</QCard>
 			</v-col>
