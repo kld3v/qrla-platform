@@ -3,8 +3,8 @@ import { ref, watch } from 'vue';
 
 interface Block {
   id: number;
-  code: string; // Stand code
-  name: string; // Block name
+  code: string;
+  name: string;
   circleColor: string;
 }
 
