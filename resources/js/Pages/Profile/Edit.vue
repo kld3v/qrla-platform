@@ -21,14 +21,14 @@ defineProps<{
 const accountPageComponents: { title: string; subtitle: string; component: keyof typeof componentMap }[] = [
 	{ title: 'Change Profile', subtitle: 'Change your profile picture from here.', component: 'ChangeProfilePhoto' },
 	{ title: 'Change Password', subtitle: 'To change your password please click here.', component: 'UpdatePasswordForm' },
-	{ title: 'Personal Details', subtitle: 'To change your personal details, edit and save from here.', component: 'DeleteUserForm' },
-	{ title: 'Change Company Profile', subtitle: 'Change your company profile picture from here.', component: 'DeleteUserForm' },
+	{ title: 'Personal Details', subtitle: 'To change your personal details, edit and save from here.', component: 'UpdateProfileInformationForm' },
+	{ title: 'Change Company Profile', subtitle: 'Change your company profile picture from here.', component: 'ChangeProfilePhoto' },
 ]
 
 const componentMap = {
 	ChangeProfilePhoto,
-	UpdateProfileInformationForm,
 	UpdatePasswordForm,
+	UpdateProfileInformationForm,
 	DeleteUserForm,
 }
 </script>
@@ -75,12 +75,15 @@ const componentMap = {
 				v-for="(component, index) in accountPageComponents"
 				cols="12"
 				lg="6">
-				<QCard bg="dark-primary-gradient">
+				<QCard
+					bg="dark-primary-gradient"
+					custom-css="h-[560px]">
 					<h3 class="q-text-qrla_green h3">{{ component.title }}</h3>
 					<p class="text-subtitle-1">{{ component.subtitle }}</p>
 					<component
 						v-bind="{
 							index: index,
+							componentTitle: component.title,
 						}"
 						:is="componentMap[component.component]" />
 				</QCard>
