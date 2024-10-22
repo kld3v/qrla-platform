@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { BlockEverywhereElse } from '@/types'
+import { BlockExtended } from '@/types'
 
 const props = defineProps<{
 	// The data in Mr Selected Blocks - ie the data the user has selected.
-	selectedBlocks: BlockEverywhereElse[]
+	selectedBlocks: BlockExtended[]
 	// All the data that Mr Table wants to show available to the user to click.
-	blockData: BlockEverywhereElse[]
+	blockData: BlockExtended[]
 	selectStrategy: 'single' | 'all' | 'page'
-	updateSelectedBlockState: (blocks: BlockEverywhereElse[]) => void
+	updateSelectedBlockState: (blocks: BlockExtended[]) => void
 }>()
 
-const internalSelectedBlocks = ref<BlockEverywhereElse[]>(props.selectedBlocks)
+const internalSelectedBlocks = ref<BlockExtended[]>(props.selectedBlocks)
 
 watch(
 	() => internalSelectedBlocks.value,

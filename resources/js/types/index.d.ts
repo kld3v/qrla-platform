@@ -35,7 +35,7 @@ export type VenuesTableData = {
 
 export type NavOptions = 'venue_home' | 'plaque_management' | 'venue_performance' | 'block_performance' | 'home' | 'account'
 
-export type BlocksForBlockStatsPage = {
+export type BlockExtended = {
 	id: number
 	access_rate: string
 	base_url_id: number
@@ -52,7 +52,7 @@ export type BlocksForBlockStatsPage = {
 	}
 }
 
-export type BlockEverywhereElse = {
+export type BlockShort = {
 	id: number
 	name: string
 	stand_id: 1

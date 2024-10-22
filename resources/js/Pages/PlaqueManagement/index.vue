@@ -8,7 +8,7 @@ import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.
 import QCard from '@/components/QComponents/QCard.vue'
 import QPRIVACYASSET from '@/assets/images/QAssets/PlaqueManagement/privacy_asset.svg'
 import QSETTINGASSET from '@/assets/images/QAssets/PlaqueManagement/settings_asset.svg'
-import { BlockEverywhereElse, NavOptions, QColors, Stand } from '@/types'
+import { BlockExtended, NavOptions, Stand } from '@/types'
 import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
 import QSelectableTable from '@/components/QComponents/QSelectableTable.vue'
 import QInteractiveVenueMap from '@/components/QComponents/QInteractiveVenueMap.vue'
@@ -33,18 +33,14 @@ const changeSelectedStand = (standName: string) => {
 	}
 }
 
-const selectedBlocks = ref<BlockEverywhereElse[]>([props.stands[0].blocks[2]])
+const selectedBlocks = ref<BlockExtended[]>([props.stands[0].blocks[2]])
 
-watch(selectedBlocks, (newVal) => {
-	console.log('Selected Blocks updated:', newVal)
-})
-
-const updateSelectedBlockState = (blocks: BlockEverywhereElse[]) => {
+const updateSelectedBlockState = (blocks: BlockExtended[]) => {
 	selectedBlocks.value = blocks
 	console.log('new Mr Selected Blocks', selectedBlocks.value)
 }
 
-const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blocks.map((el: BlockEverywhereElse) => el))
+const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blocks.map((el: BlockExtended) => el))
 </script>
 
 <template>
@@ -101,10 +97,10 @@ const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blo
 							cols="12"
 							lg="6">
 							<QInteractiveVenueMap
+								:updateSelectedBlockState="updateSelectedBlockState"
 								:svgUrl="venue.map_svg_url"
 								:stands="stands"
-								:selected-blocks="selectedBlocks"
-								@update:selectedBlocks="selectedBlocks = $event" />
+								:selected-blocks="selectedBlocks" />
 						</v-col>
 					</v-row>
 				</QCard>
