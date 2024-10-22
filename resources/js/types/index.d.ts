@@ -35,7 +35,7 @@ export type VenuesTableData = {
 
 export type NavOptions = 'venue_home' | 'plaque_management' | 'venue_performance' | 'block_performance' | 'home' | 'account'
 
-export type Block = {
+export type BlocksForBlockStatsPage = {
 	id: number
 	access_rate: string
 	base_url_id: number
@@ -43,12 +43,21 @@ export type Block = {
 	plaques: number
 	name: string
 	stand_id: 1
+	code: string
+	circleColor: string
 	stats: {
 		total_block_visits: number
 		total_seat_visits: number
 		total_visits: number
 	}
 }
+
+export type BlockEverywhereElse = {
+	id: number
+	name: string
+	stand_id: 1
+}
+
 export type Stand = {
 	blocks: Block[]
 	id: number
