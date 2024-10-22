@@ -16,11 +16,14 @@ const props = defineProps({
     type: Array,
     required: true,
   },
- selectedBlock: {
-    type: Object,
+  selectedBlocks: {
+    type: Array,
     required: false,
+    default: () => [],
   },
 });
+
+const emits = defineEmits(['update:selectedBlocks']);
 
 const svgContent = ref('');
 const svgContainer = ref(null);
@@ -39,7 +42,7 @@ const createBlockColorMap = () => {
   props.stands.forEach((stand) => {
     const color = standColorMap.value[stand.id];
     stand.blocks.forEach((block) => {
-      const blockNameWithUnderscores = block.name.replace(/\s+/g, '_'); // Replace spaces with underscores
+      const blockNameWithUnderscores = block.name.replace(/\s+/g, '_');
       blockColorMap.value[blockNameWithUnderscores] = color;
     });
   });
@@ -64,32 +67,71 @@ const addPolygonHoverEffects = () => {
     const polygonId = polygon.getAttribute('id');
     if (!polygonId) return;
 
-    const polygonIdWithUnderscores = polygonId.replace(/\s+/g, '_'); // Replace spaces with underscores
+    const polygonIdWithUnderscores = polygonId.replace(/\s+/g, '_');
     let fillColor = '';
 
-    if (blockColorMap.value[polygonIdWithUnderscores]) {
+    const selectedBlockNames = props.selectedBlocks.map((block) =>
+      block.name.replace(/\s+/g, '_')
+    );
+
+    if (selectedBlockNames.includes(polygonIdWithUnderscores)) {
+      fillColor = '#A2F732'; // Highlight the selected block
+    } else if (blockColorMap.value[polygonIdWithUnderscores]) {
       fillColor = blockColorMap.value[polygonIdWithUnderscores];
     } else {
       fillColor = '#CCCCCC'; // default color
     }
 
-    // Check if this polygon is the selected block
-    if (props.selectedBlock && props.selectedBlock.name.replace(/\s+/g, '_') === polygonIdWithUnderscores) {
-      fillColor = '#A2F732'; // Highlight the selected block
-    }
-
     polygon.style.fill = fillColor;
 
     const originalFill = fillColor; // Store the original fill color
+
     polygon.addEventListener('mouseover', () => {
       polygon.style.fill = '#A2F732'; // highlight color on hover
     });
     polygon.addEventListener('mouseout', () => {
       polygon.style.fill = originalFill; // reset to original fill color
     });
+    polygon.addEventListener('click', () => {
+      handlePolygonClick(polygonIdWithUnderscores);
+    });
   });
 };
 
+const handlePolygonClick = (polygonIdWithUnderscores) => {
+  console.log('Polygon clicked:', polygonIdWithUnderscores);
+
+  let clickedBlock = null;
+  props.stands.forEach((stand) => {
+    stand.blocks.forEach((block) => {
+      const blockNameWithUnderscores = block.name.replace(/\s+/g, '_');
+      if (blockNameWithUnderscores === polygonIdWithUnderscores) {
+        clickedBlock = block;
+      }
+    });
+  });
+
+  if (!clickedBlock) {
+    console.warn('Block not found for polygon:', polygonIdWithUnderscores);
+    return;
+  }
+
+  const index = props.selectedBlocks.findIndex((block) => block.id === clickedBlock.id);
+
+  let updatedSelectedBlocks = [...props.selectedBlocks];
+
+  if (index !== -1) {
+    // Block is selected, so remove it
+    updatedSelectedBlocks.splice(index, 1);
+  } else {
+    // Block is not selected, so add it
+    updatedSelectedBlocks.push(clickedBlock);
+  }
+
+  console.log('Updated selected blocks:', updatedSelectedBlocks);
+
+  emits('update:selectedBlocks', updatedSelectedBlocks);
+};
 
 onMounted(() => {
   assignStandColors();
@@ -98,13 +140,13 @@ onMounted(() => {
 });
 
 watch(
-  () => props.selectedBlock,
+  () => props.selectedBlocks,
   () => {
-    // Reapply hover effects when the selected block changes
     nextTick(() => {
       addPolygonHoverEffects();
     });
-  }
+  },
+  { immediate: true }
 );
 </script>
 
