@@ -16,23 +16,25 @@ const form = useForm({
 })
 
 const updatePassword = () => {
-	form.put(route('password.update'), {
-		preserveScroll: true,
-		onSuccess: () => {
-			form.reset()
-		},
-		onError: () => {
-			if (form.errors.password) {
-				form.reset('password', 'password_confirmation')
-				passwordInput.value?.focus()
-			}
-			if (form.errors.current_password) {
-				form.reset('current_password')
-				currentPasswordInput.value?.focus()
-			}
-		},
-	})
+  console.log('Update password function called')
+  form.put(route('password.update'), {
+    preserveScroll: true,
+    onSuccess: () => {
+      form.reset()
+    },
+    onError: () => {
+      if (form.errors.password) {
+        form.reset('password', 'password_confirmation')
+        passwordInput.value?.focus()
+      }
+      if (form.errors.current_password) {
+        form.reset('current_password')
+        currentPasswordInput.value?.focus()
+      }
+    },
+  })
 }
+
 </script>
 
 <template>
@@ -96,7 +98,8 @@ const updatePassword = () => {
 			<div class="flex items-center gap-4">
 				<v-btn
 					color="primary"
-					isabled="form.processing"
+					:disabled="form.processing"
+					@click="updatePassword"
 					>Save</v-btn
 				>
 
