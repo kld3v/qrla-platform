@@ -1,56 +1,77 @@
+<template>
+  <div>
+    <!-- Data Table -->
+    <v-data-table
+      :headers="headers"
+      :items="blockData"
+      :single-select="selectStrategy === 'single'"
+      :show-select="true"
+      class="border border-2 border-solid border-grey rounded-md bg-transparent block-stats-table datatables"
+      v-model="selectedBlocks"
+	  item-value="code"
+    >
+      <!-- Block Column -->
+      <template #item.code="{ item }">
+        <div class="flex gap-4 align-center">
+          <div
+            :class="[
+              'h-[24px]',
+              'w-[24px]',
+              `bg-${item.circleColor}`,
+              'rounded-circle',
+            ]"
+          ></div>
+          <span>{{ item.code }}</span>
+        </div>
+      </template>
+
+      <!-- Stand Column -->
+      <template #item.name="{ item }">
+        <p>{{ item.name }}</p>
+      </template>
+    </v-data-table>
+
+    <!-- Selected Block Data for Debugging -->
+    <v-card class="elevation-0 border mt-3 pa-4">
+      <pre>{{ selectedBlocks }}</pre>
+    </v-card>
+  </div>
+</template>
+
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { QColors } from '@/types'
-const selected = ref()
+import { ref, watch } from 'vue';
 
-/*Header Data*/
-const headers: any = ref([
-	{ title: 'Block', align: 'start', key: 'code' },
-	{ title: 'Stand', align: 'start', key: 'name' },
-])
-
-type BlockDataObject = {
-	circleColor: QColors
-	code: string
-	name: string
+interface Block {
+  code: string;
+  name: string;
+  circleColor: string;
 }
+
 const props = defineProps<{
-	blockData: BlockDataObject[]
-	selectStrategy?: 'single' | 'all' | 'page'
-	updateSelectedBlock: (blockId: number) => void
-}>()
+  blockData: Block[];
+  updateSelectedBlock: (block: Block | null) => void;
+  selectStrategy: 'single' | 'all' | 'page';
+}>();
+
+const selectedBlocks = ref<Block[]>([]);
+
+const headers = ref([
+  { title: 'Block', align: 'start', key: 'code' },
+  { title: 'Stand', align: 'start', key: 'name' },
+]);
 
 watch(
-	() => selected.value,
-	() => {
-		props.updateSelectedBlock(selected.value[0].id)
-	}
-)
+  selectedBlocks,
+  (newVal) => {
+    const firstSelectedBlock = newVal.length > 0 ? newVal[0] : null;
+    props.updateSelectedBlock(firstSelectedBlock);
+  },
+  { immediate: true }
+);
 </script>
-<template>
-	<v-data-table
-		items-per-page="5"
-		:headers="headers"
-		:items="blockData"
-		return-object
-		show-select
-		:select-strategy="selectStrategy ? selectStrategy : 'single'"
-		:itemsPerPageOptions="[5, 10, 25]"
-		v-model="selected"
-		class="border border-2 border-solid border-grey rounded-md bg-transparent block-stats-table datatables">
-		<template v-slot:item.code="{ item }">
-			<div class="flex gap-4 align-center">
-				<div :class="`rounded-circle h-[24px] w-[24px] bg-${item.circleColor}`"></div>
-				<p>{{ item.code }}</p>
-			</div>
-		</template>
-		<template v-slot:item.name="{ item }">
-			<div class="">
-				<p class="">{{ item.name }}</p>
-			</div>
-		</template>
-	</v-data-table>
-	<v-card class="elevation-0 border mt-3 pa-4">
-		<pre>{{ selected }}</pre>
-	</v-card>
-</template>
+
+<style scoped>
+.rounded-circle {
+  border-radius: 50%;
+}
+</style>
