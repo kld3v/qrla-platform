@@ -43,7 +43,7 @@ Route::middleware('auth')->group(function (): void {
 
     Route::get('/venues/{venue}/block-stats', [BlockController::class, 'showStats'])->name('blocks.showStats');
 
-    Route::post('/profile-picture/upload', [ProfilePictureController::class, 'upload'])->name('profilePicture.upload');
+    Route::post('/profile-picture/upload', [ProfilePictureController::class, 'upload'])->name('user.uploadProfilePhoto');
 
     Route::post('/organisation/logo/upload', [OrganisationController::class, 'uploadLogo'])->name('organisation.uploadLogo');
 });
