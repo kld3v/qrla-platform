@@ -3,37 +3,32 @@ import { ref, watch } from 'vue'
 import { BlockExtended } from '@/types'
 
 const props = defineProps<{
-	// The data in Mr Selected Blocks - ie the data the user has selected.
 	selectedBlocks: BlockExtended[]
-	// All the data that Mr Table wants to show available to the user to click.
 	blockData: BlockExtended[]
 	selectStrategy: 'single' | 'all' | 'page'
 	updateSelectedBlockState: (blocks: BlockExtended[]) => void
 }>()
 
 const internalSelectedBlocks = ref<BlockExtended[]>(props.selectedBlocks)
+let updatingFromProps = false // Add this flag
+
+watch(
+	() => props.selectedBlocks,
+	(newVal) => {
+		updatingFromProps = true
+		internalSelectedBlocks.value = newVal
+		updatingFromProps = false
+	}
+)
 
 watch(
 	() => internalSelectedBlocks.value,
 	(newVal) => {
-		props.updateSelectedBlockState(newVal)
+		if (!updatingFromProps) {
+			props.updateSelectedBlockState(newVal)
+		}
 	}
 )
-
-// watch(
-// 	() => props.selectedBlocks,
-// 	(newVal) => {
-// 		internalSelectedBlocks.value = newVal
-// 	}
-// )
-
-const headers = ref<
-	{
-		title: string
-		align: 'start' | 'end'
-		key: string
-	}[]
->([{ title: 'Block Name', align: 'start', key: 'name' }])
 </script>
 
 <template>
