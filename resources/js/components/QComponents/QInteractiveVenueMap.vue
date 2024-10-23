@@ -101,51 +101,67 @@ const handlePolygonClick = (polygonIdWithUnderscores: string) => {
 }
 
 const addPolygonHoverEffects = () => {
-	const polygons = svgContainer.value.querySelectorAll('polygon')
-	polygons.forEach((polygon) => {
-		const polygonId = polygon.getAttribute('id')
-		if (!polygonId) return
+  const polygons = svgContainer.value.querySelectorAll('polygon')
+  
+  polygons.forEach((polygon) => {
+    const polygonId = polygon.getAttribute('id')
+    if (!polygonId) return
 
-		const polygonIdWithUnderscores = polygonId.replace(/\s+/g, '_')
-		let fillColor = ''
+    const polygonIdWithUnderscores = polygonId.replace(/\s+/g, '_')
+    
+    // Determine if the polygon is selected
+    const isSelected = internalSelectedBlocks.value.some(
+      (block) => block.name.replace(/\s+/g, '_') === polygonIdWithUnderscores
+    )
 
-		// Check if the polygon is in the selected blocks
-		const selectedBlockNames = internalSelectedBlocks.value.map((block) => block.name.replace(/\s+/g, '_'))
+    // Set the initial fill color based on selection or stand color
+    let fillColor = ''
+    if (isSelected) {
+      fillColor = '#A2F732' // Highlight color for selected blocks
+    } else if (blockColorMap.value[polygonIdWithUnderscores]) {
+      fillColor = blockColorMap.value[polygonIdWithUnderscores]
+    } else {
+      fillColor = '#CCCCCC' // Default color
+    }
 
-		if (selectedBlockNames.includes(polygonIdWithUnderscores)) {
-			fillColor = '#A2F732' // Highlight the selected block
-		} else if (blockColorMap.value[polygonIdWithUnderscores]) {
-			fillColor = blockColorMap.value[polygonIdWithUnderscores] // Assign the mapped color
-		} else {
-			fillColor = '#CCCCCC' // Default color
-		}
+    polygon.style.fill = fillColor
 
-		// Set the fill color based on the selection status
-		polygon.style.fill = fillColor
+    // Store the original fill color for use in mouseout
+    const originalFill = fillColor
 
-		// Store the original fill color for reset on hover out
-		const originalFill = fillColor
+    // Add event listeners only if they haven't been added yet
+    if (!polygon.hasAttribute('data-listeners-added')) {
+      // Always add hover listeners
+      polygon.addEventListener('mouseover', () => {
+        polygon.style.fill = '#A2F732' // Highlight color on hover
+      })
 
-		// Check if event listeners have been added before
-		if (!polygon.hasAttribute('data-listeners-added')) {
-			// Add event listeners only if they haven't been added
-			if (!selectedBlockNames.includes(polygonIdWithUnderscores)) {
-				polygon.addEventListener('mouseover', () => {
-					polygon.style.fill = '#A2F732' // highlight color on hover
-				})
-				polygon.addEventListener('mouseout', () => {
-					polygon.style.fill = originalFill // reset to original fill color
-				})
-			}
-			polygon.addEventListener('click', () => {
-				handlePolygonClick(polygonIdWithUnderscores)
-			})
+      polygon.addEventListener('mouseout', () => {
+        // Re-determine if the polygon is selected after hover
+        const currentlySelected = internalSelectedBlocks.value.some(
+          (block) => block.name.replace(/\s+/g, '_') === polygonIdWithUnderscores
+        )
 
-			// Mark the polygon as having listeners added
-			polygon.setAttribute('data-listeners-added', 'true')
-		}
-	})
+        if (currentlySelected) {
+          polygon.style.fill = '#A2F732' // Maintain highlight if selected
+        } else if (blockColorMap.value[polygonIdWithUnderscores]) {
+          polygon.style.fill = blockColorMap.value[polygonIdWithUnderscores]
+        } else {
+          polygon.style.fill = '#CCCCCC'
+        }
+      })
+
+      // Add click listener
+      polygon.addEventListener('click', () => {
+        handlePolygonClick(polygonIdWithUnderscores)
+      })
+
+      // Mark the polygon as having listeners added
+      polygon.setAttribute('data-listeners-added', 'true')
+    }
+  })
 }
+
 
 
 onMounted(() => {
