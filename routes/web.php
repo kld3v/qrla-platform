@@ -35,7 +35,9 @@ Route::middleware('auth')->group(function (): void {
 
     // Route to manage plaques ssociated with a specific venue
     Route::get('/venues/{venue}/plaque-management', [BlockController::class, 'index'])->name('blocks.index');
-    
+
+    Route::post('/venues/{venue}/blocks/assign-url', [BlockController::class, 'assignBaseUrl'])->name('blocks.assignBaseUrl');
+
     // Route to get stats associated with a specific venue
     Route::get('/venues/{venue}/stats', [VenueController::class, 'showStats'])->name('venues.showStats');
 

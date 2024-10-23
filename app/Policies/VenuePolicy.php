@@ -17,4 +17,9 @@ class VenuePolicy
     {
         return $user->venues()->where('venues.id', $venue->id)->exists();
     }
+
+    public function editVenue(User $user, Venue $venue)
+    {
+        return $user->venues()->where('venue_id', $venue->id)->exists();
+    }
 }
