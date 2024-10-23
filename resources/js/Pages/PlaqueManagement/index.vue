@@ -125,87 +125,8 @@ const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blo
 						<QModal
 							button-text="Change"
 							:total-steps="2">
-							<template #page-0>
-								<v-row class="mb-6">
-									<v-col
-										cols="12"
-										lg="12">
-										<QCard bg="default-gray">
-											<div class="flex justify-space-between align-center w-full">
-												<div class="mb-4">
-													<h3 class="q-text-qrla_green h3 mb-2">Select Block End Destination URL To Edit</h3>
-												</div>
-												<QMenusAnchor
-													:changeSelectedStand="changeSelectedStand"
-													:label="'Stand'"
-													menu-location="start"
-													dropdown-button-color="secondary"
-													:initialSelectedItem="selectedStand.name"
-													:dropdown-options="[...props.stands.map((el: Stand) => el.name)]"></QMenusAnchor>
-											</div>
-											<v-row>
-												<v-col
-													cols="12"
-													lg="4">
-													<QCard bg="dark-primary-gradient">
-														<QSelectableTable
-															:update-selected-block="changeSelectedBlock"
-															:block-data="returnSelectedStandBlocksForTable"
-															select-strategy="all" />
-													</QCard>
-												</v-col>
-												<v-col
-													cols="12"
-													lg="6">
-													<QInteractiveVenueMap
-														:svgUrl="venue.map_svg_url"
-														:stands="stands"
-														:selected-block="selectedBlock" />
-												</v-col>
-											</v-row>
-										</QCard>
-									</v-col>
-								</v-row>
-							</template>
-							<template #page-1>
-								<v-row class="mb-6">
-									<v-col
-										cols="12"
-										lg="12">
-										<QCard bg="default-gray">
-											<div class="flex justify-space-between align-center w-full">
-												<div class="mb-4">
-													<h3 class="q-text-qrla_green h3 mb-2">Select Block End Destination URL To Edit</h3>
-												</div>
-												<QMenusAnchor
-													:changeSelectedStand="changeSelectedStand"
-													:label="'Stand'"
-													menu-location="start"
-													dropdown-button-color="secondary"
-													:initialSelectedItem="selectedStand.name"
-													:dropdown-options="[...props.stands.map((el: Stand) => el.name)]"></QMenusAnchor>
-											</div>
-											<v-row>
-												<v-col
-													cols="12"
-													lg="4">
-													<QCard bg="dark-primary-gradient">
-														<QSelectableTable
-															:update-selected-block="changeSelectedBlock"
-															:block-data="returnSelectedStandBlocksForTable"
-															select-strategy="all" />
-													</QCard>
-												</v-col>
-												<v-col
-													cols="12"
-													lg="6">
-													<v-text-field />
-												</v-col>
-											</v-row>
-										</QCard>
-									</v-col>
-								</v-row>
-							</template>
+							<template #page-0> </template>
+							<template #page-1> </template>
 						</QModal>
 					</div>
 				</QCard>

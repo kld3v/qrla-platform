@@ -6,7 +6,7 @@ import { ref } from 'vue'
 import { VenuePageProps } from '@/types/Venue'
 import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.vue'
 import QIconCardSet from '@/components/QComponents/QIconCardSet.vue'
-import QPlaqueTimeGraph from '@/components/QComponents/QPlaqueActivityGraphParent.vue'
+import QPlaqueActivityGraphParent from '@/components/QComponents/QPlaqueActivityGraphParent.vue'
 import { NavOptions } from '@/types'
 import QDeviceStats from '@/components/QComponents/QDeviceStats.vue'
 import QBrowserStats from '@/components/QComponents/QBrowserStats.vue'
@@ -93,7 +93,7 @@ const IconCardData = [
 			<v-col
 				cols="12"
 				lg="12">
-				<QPlaqueTimeGraph
+				<QPlaqueActivityGraphParent
 					id-type="venue"
 					:selected-item="venue" />
 			</v-col>
