@@ -2,7 +2,7 @@
 import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
 import FullLayout from '@/layouts/full/FullLayout.vue'
 import HeaderImageAndLogo from '@/components/QComponents/HeaderImageAndLogo.vue'
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { VenuePageProps } from '@/types/Venue'
 import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.vue'
 import QCard from '@/components/QComponents/QCard.vue'
@@ -18,8 +18,6 @@ const props = defineProps<{
 	stands: Stand[]
 	nav: NavOptions
 }>()
-
-console.log(props)
 
 const selectedStand = ref<Stand>(props.stands[0])
 

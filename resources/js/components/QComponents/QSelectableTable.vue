@@ -20,12 +20,12 @@ watch(
 	}
 )
 
-watch(
-	() => props.selectedBlocks,
-	(newVal) => {
-		internalSelectedBlocks.value = newVal
-	}
-)
+// watch(
+// 	() => props.selectedBlocks,
+// 	(newVal) => {
+// 		internalSelectedBlocks.value = newVal
+// 	}
+// )
 
 const headers = ref<
 	{

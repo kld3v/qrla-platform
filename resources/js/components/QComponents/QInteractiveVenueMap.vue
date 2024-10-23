@@ -19,7 +19,7 @@ const props = defineProps<{
 
 const internalSelectedBlocks = ref<BlockExtended[]>(props.selectedBlocks)
 
-const onClickSeeIfMrSelectedBlocksHasMyBlockAndPushIfSoRemoveIfNot = (block: BlockExtended) => {
+const updateInternalBlocksState = (block: BlockExtended) => {
 	// Check if the block is already in the selectedBlocks
 	const iDoHaveYourBlock = internalSelectedBlocks.value.find((el) => el.id === block.id)
 
@@ -31,7 +31,6 @@ const onClickSeeIfMrSelectedBlocksHasMyBlockAndPushIfSoRemoveIfNot = (block: Blo
 		internalSelectedBlocks.value.push(block)
 	}
 	console.log('internalValue', internalSelectedBlocks.value)
-	props.updateSelectedBlockState(internalSelectedBlocks.value)
 }
 
 const svgContent = ref('')
@@ -92,12 +91,8 @@ const handlePolygonClick = (polygonIdWithUnderscores: string) => {
 	}
 
 	// Update internal selection and propagate to parent
-	onClickSeeIfMrSelectedBlocksHasMyBlockAndPushIfSoRemoveIfNot(clickedBlock)
-
-	// Update SVG highlighting after selection changes
-	nextTick(() => {
-		addPolygonHoverEffects() // Reapply polygon effects
-	})
+	updateInternalBlocksState(clickedBlock)
+	props.updateSelectedBlockState(internalSelectedBlocks.value)
 }
 
 const addPolygonHoverEffects = () => {
@@ -109,11 +104,9 @@ const addPolygonHoverEffects = () => {
 
 		const polygonIdWithUnderscores = polygonId.replace(/\s+/g, '_')
 		let fillColor = ''
-		console.log(polygonIdWithUnderscores)
 
 		// Check if the polygon is in the selected blocks
 		const selectedBlockNames = internalSelectedBlocks.value.map((block) => block.name.replace(/\s+/g, '_'))
-		console.log(selectedBlockNames)
 
 		if (selectedBlockNames.includes(polygonIdWithUnderscores)) {
 			fillColor = '#A2F732' // Highlight the selected block
@@ -153,8 +146,9 @@ onMounted(() => {
 watch(
 	() => props.selectedBlocks,
 	(newVal, oldVal) => {
-		internalSelectedBlocks.value = newVal
-		console.log('local state: updated and next tick called!', internalSelectedBlocks.value)
+		// internalSelectedBlocks.value = newVal
+		// console.log('local state: updated and next tick called!', internalSelectedBlocks.value)
+		console.log('addPolygonHoverEffects')
 		nextTick(() => {
 			addPolygonHoverEffects()
 		})
