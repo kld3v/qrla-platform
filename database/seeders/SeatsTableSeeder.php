@@ -26,7 +26,7 @@ class SeatsTableSeeder extends Seeder
         // Loop through each block between minBlockId and maxBlockId
         for ($blockId = $minBlockId; $blockId <= $maxBlockId; $blockId++) {
             foreach ($rows as $row) {
-                for ($seatNumber = 1; $seatNumber <= 50; $seatNumber++) { // 50 seats per row
+                for ($seatNumber = 1; $seatNumber <= 20; $seatNumber++) { // 50 seats per row
                     DB::table('seats')->insert([
                         'block_id' => $blockId,
                         'row' => $row,
