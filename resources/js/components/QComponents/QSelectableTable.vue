@@ -44,7 +44,7 @@ const headers = ref<
 			:items="blockData"
 			:single-select="selectStrategy === 'single'"
 			:show-select="true"
-			class="border border-2 border-solid border-grey rounded-md bg-transparent block-stats-table datatables"
+			class="border border-2 border-solid border-grey rounded-md bg-transparent block-stats-table datatables max-h-[600px]"
 			v-model="internalSelectedBlocks"
 			:return-object="true">
 			<!-- Block Column -->
@@ -55,9 +55,6 @@ const headers = ref<
 				</div>
 			</template>
 		</v-data-table>
-		<div>
-			{{ internalSelectedBlocks }}
-		</div>
 	</div>
 </template>
 

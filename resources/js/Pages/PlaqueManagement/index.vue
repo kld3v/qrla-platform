@@ -2,7 +2,7 @@
 import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
 import FullLayout from '@/layouts/full/FullLayout.vue'
 import HeaderImageAndLogo from '@/components/QComponents/HeaderImageAndLogo.vue'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { VenuePageProps } from '@/types/Venue'
 import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.vue'
 import QCard from '@/components/QComponents/QCard.vue'
@@ -13,6 +13,7 @@ import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
 import QSelectableTable from '@/components/QComponents/QSelectableTable.vue'
 import QInteractiveVenueMap from '@/components/QComponents/QInteractiveVenueMap.vue'
 import QModal from '@/components/QComponents/QModal.vue'
+import DestinationUrlTextInput from './Partials/DestinationUrlTextInput.vue'
 const props = defineProps<{
 	venue: VenuePageProps
 	stands: Stand[]
@@ -39,6 +40,20 @@ const updateSelectedBlockState = (blocks: BlockExtended[]) => {
 }
 
 const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blocks.map((el: BlockExtended) => el))
+
+const returnIdsForSelectedBlocks = computed(() => {
+	return selectedBlocks.value.map((block) => block.id)
+})
+
+/// Handle Destination URL Update
+const newDestinationUrl = ref('')
+watch(newDestinationUrl, (newValue) => {
+	console.log('New destination URL:', newValue)
+})
+
+const saveNewEndDestinationURl = async (): Promise<void> => {
+	// handle api send off
+}
 </script>
 
 <template>
@@ -55,55 +70,7 @@ const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blo
 			:address-line1="venue.address_line1"
 			:city="venue.city"
 			class="mb-12" />
-		<v-row class="mb-3">
-			<v-col
-				cols="12"
-				lg="12">
-				<QSubsectionHeader title="Select Your Blocks" />
-			</v-col>
-		</v-row>
-		<v-row class="mb-6">
-			<v-col
-				cols="12"
-				lg="12">
-				<QCard bg="default-gray">
-					<div class="flex justify-space-between align-center w-full">
-						<div class="mb-4">
-							<h3 class="q-text-qrla_green h3 mb-2">Select Block End Destination URL To Edit</h3>
-						</div>
-						<QMenusAnchor
-							:changeSelectedStand="changeSelectedStand"
-							:label="'Stand'"
-							menu-location="start"
-							dropdown-button-color="secondary"
-							:initialSelectedItem="selectedStand.name"
-							:dropdown-options="[...props.stands.map((el: Stand) => el.name)]"></QMenusAnchor>
-					</div>
-					<v-row>
-						<v-col
-							cols="12"
-							lg="4">
-							<QCard bg="dark-primary-gradient">
-								<QSelectableTable
-									:selected-blocks="selectedBlocks"
-									:update-selected-block-state="updateSelectedBlockState"
-									:block-data="returnSelectedStandBlocksForTable"
-									select-strategy="single" />
-							</QCard>
-						</v-col>
-						<v-col
-							cols="12"
-							lg="6">
-							<QInteractiveVenueMap
-								:updateSelectedBlockState="updateSelectedBlockState"
-								:svgUrl="venue.map_svg_url"
-								:stands="stands"
-								:selected-blocks="selectedBlocks" />
-						</v-col>
-					</v-row>
-				</QCard>
-			</v-col>
-		</v-row>
+
 		<v-row class="mb-6">
 			<v-col
 				cols="12"
@@ -125,8 +92,93 @@ const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blo
 						<QModal
 							button-text="Change"
 							:total-steps="2">
-							<template #page-0> </template>
-							<template #page-1> </template>
+							<template #page-0>
+								<v-row class="mb-6">
+									<v-col
+										cols="12"
+										lg="12">
+										<QCard bg="default-gray">
+											<div class="flex justify-space-between align-center w-full">
+												<div class="mb-4">
+													<h3 class="q-text-qrla_green h3 mb-2">Select Block End Destination URL To Edit</h3>
+												</div>
+												<QMenusAnchor
+													:changeSelectedStand="changeSelectedStand"
+													:label="'Stand'"
+													menu-location="start"
+													dropdown-button-color="secondary"
+													:initialSelectedItem="selectedStand.name"
+													:dropdown-options="[...props.stands.map((el: Stand) => el.name)]"></QMenusAnchor>
+											</div>
+											<v-row>
+												<v-col
+													cols="12"
+													lg="4">
+													<QCard bg="dark-primary-gradient">
+														<QSelectableTable
+															:selected-blocks="selectedBlocks"
+															:update-selected-block-state="updateSelectedBlockState"
+															:block-data="returnSelectedStandBlocksForTable"
+															select-strategy="single" />
+													</QCard>
+												</v-col>
+												<v-col
+													cols="12"
+													lg="6">
+													<QInteractiveVenueMap
+														:updateSelectedBlockState="updateSelectedBlockState"
+														:svgUrl="venue.map_svg_url"
+														:stands="stands"
+														:selected-blocks="selectedBlocks" />
+												</v-col>
+											</v-row>
+										</QCard>
+									</v-col>
+								</v-row>
+							</template>
+							<template #page-1>
+								<v-row class="mb-6">
+									<v-col
+										cols="12"
+										lg="12">
+										<QCard bg="default-gray">
+											<div class="flex justify-space-between align-center w-full">
+												<div class="mb-4">
+													<h3 class="q-text-qrla_green h3 mb-2">Select Block End Destination URL To Edit</h3>
+												</div>
+												<QMenusAnchor
+													:changeSelectedStand="changeSelectedStand"
+													:label="'Stand'"
+													menu-location="start"
+													dropdown-button-color="secondary"
+													:initialSelectedItem="selectedStand.name"
+													:dropdown-options="[...props.stands.map((el: Stand) => el.name)]"></QMenusAnchor>
+											</div>
+											<v-row>
+												<v-col
+													cols="12"
+													lg="6">
+													<QCard bg="dark-primary-gradient">
+														<QSelectableTable
+															:selected-blocks="selectedBlocks"
+															:update-selected-block-state="updateSelectedBlockState"
+															:block-data="returnSelectedStandBlocksForTable"
+															select-strategy="single" />
+													</QCard>
+												</v-col>
+												<v-col
+													cols="12"
+													lg="6"
+													class="flex align-center justify-center w-full">
+													<DestinationUrlTextInput
+														v-model="newDestinationUrl"
+														:block-ids="returnIdsForSelectedBlocks" />
+												</v-col>
+											</v-row>
+										</QCard>
+									</v-col>
+								</v-row>
+							</template>
 						</QModal>
 					</div>
 				</QCard>
