@@ -14,6 +14,7 @@ import QDeviceStats from '@/components/QComponents/QDeviceStats.vue'
 import QTapOrScanDonut from '@/components/QComponents/QTapOrScanDonut.vue'
 import QBrowserStats from '@/components/QComponents/QBrowserStats.vue'
 import QPlaqueTimeGraph from '@/components/QComponents/QPlaqueActivityGraphParent.vue'
+import QInteractiveVenueMap from '@/components/QComponents/QInteractiveVenueMap.vue'
 
 const props = defineProps<{
 	venue: VenuePageProps
@@ -32,17 +33,15 @@ const changeSelectedStand = (standName: string): void => {
 		}
 	}
 }
-const selectedBlock = ref<BlockExtended>(props.stands[0].blocks[0])
-const changeSelectedBlock = (blockId: number): void => {
-	for (const block of selectedStand.value.blocks) {
-		if (blockId === block.id) {
-			selectedBlock.value = block
-			console.log('Block Updated')
-			console.log(selectedBlock.value)
-			return
-		}
-	}
+const selectedBlocks = ref<BlockExtended[]>([props.stands[0].blocks[2]])
+
+const updateSelectedBlockState = (blocks: BlockExtended[]) => {
+	// Use slice instead of splice to avoid modifying the original array
+	selectedBlocks.value = blocks.slice(blocks.length - 1, blocks.length)
+
+	console.log('new Mr Selected Blocks', selectedBlocks.value)
 }
+
 // to be relpaced with prop data
 const IconCardData = ref<any>([
 	{
@@ -50,7 +49,7 @@ const IconCardData = ref<any>([
 		icon: 'lucide:nfc',
 		color: 'primary',
 		title: 'Total Visits',
-		data: selectedBlock.value.stats.total_visits,
+		data: selectedBlocks.value[0].stats.total_visits,
 		link: '',
 		delta: 40,
 	},
@@ -59,7 +58,7 @@ const IconCardData = ref<any>([
 		icon: 'streamline:wave-signal-solid',
 		color: 'purple',
 		title: 'Visits By Tap',
-		data: selectedBlock.value.stats.total_seat_visits,
+		data: selectedBlocks.value[0].stats.total_seat_visits,
 		link: '',
 		delta: -23,
 	},
@@ -68,7 +67,7 @@ const IconCardData = ref<any>([
 		icon: 'uil:qrcode-scan',
 		color: 'success',
 		title: 'Visits By Scan',
-		data: selectedBlock.value.stats.total_block_visits,
+		data: selectedBlocks.value[0].stats.total_block_visits,
 		link: '',
 		delta: 12,
 	},
@@ -77,23 +76,12 @@ const IconCardData = ref<any>([
 		icon: 'ic:baseline-sync-problem',
 		color: 'error',
 		title: 'Average Activity Level',
-		data: selectedBlock.value.access_rate,
+		data: selectedBlocks.value[0].access_rate,
 		link: '',
 		delta: 40,
 	},
 ])
-
-const returnSelectedStandBlocks = computed(() =>
-	selectedStand.value.blocks.map((el) => {
-		const circleColor: QColors = 'primary'
-		return {
-			code: el.name,
-			name: selectedStand.value.name,
-			circleColor: circleColor,
-			id: el.id,
-		}
-	})
-)
+const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blocks.map((el: BlockExtended) => el))
 </script>
 <template>
 	<FullLayout
@@ -141,15 +129,21 @@ const returnSelectedStandBlocks = computed(() =>
 							lg="6">
 							<QCard bg="dark-primary-gradient">
 								<QSelectableTable
-									:selected-blocks="selectedBlock"
-									:update-selected-block="changeSelectedBlock"
+									:selected-blocks="selectedBlocks"
+									:update-selected-block-state="updateSelectedBlockState"
 									select-strategy="single"
-									:block-data="returnSelectedStandBlocks" />
+									:block-data="returnSelectedStandBlocksForTable" />
 							</QCard>
 						</v-col>
 						<v-col
 							cols="12"
-							lg="6"></v-col>
+							lg="6">
+							<QInteractiveVenueMap
+								:updateSelectedBlockState="updateSelectedBlockState"
+								:svgUrl="venue.map_svg_url"
+								:stands="stands"
+								:selected-blocks="selectedBlocks" />
+						</v-col>
 					</v-row>
 				</QCard>
 			</v-col>
@@ -159,7 +153,7 @@ const returnSelectedStandBlocks = computed(() =>
 				cols="12"
 				lg="12">
 				<QIconCardSet
-					:block-name="selectedBlock.name"
+					:block-name="selectedBlocks[0].name"
 					:IconCardData="IconCardData"
 					bg="#151C25" />
 			</v-col>
@@ -169,7 +163,7 @@ const returnSelectedStandBlocks = computed(() =>
 				cols="12"
 				lg="12">
 				<QPlaqueTimeGraph
-					:selected-item="selectedBlock"
+					:selected-item="selectedBlocks[0]"
 					id-type="block" />
 			</v-col>
 		</v-row>
@@ -179,7 +173,7 @@ const returnSelectedStandBlocks = computed(() =>
 				lg="4">
 				<Suspense>
 					<QDeviceStats
-						:selected-item="selectedBlock"
+						:selected-item="selectedBlocks[0]"
 						id-type="block" />
 				</Suspense>
 			</v-col>
@@ -188,14 +182,14 @@ const returnSelectedStandBlocks = computed(() =>
 				lg="4">
 				<Suspense>
 					<QBrowserStats
-						:selected-item="selectedBlock"
+						:selected-item="selectedBlocks[0]"
 						id-type="block" />
 				</Suspense>
 			</v-col>
 			<v-col
 				cols="12"
 				lg="4">
-				<QTapOrScanDonut :data="[selectedBlock.stats.total_block_visits, selectedBlock.stats.total_seat_visits]" />
+				<QTapOrScanDonut :data="[selectedBlocks[0].stats.total_block_visits, selectedBlocks[0].stats.total_seat_visits]" />
 			</v-col>
 		</v-row>
 	</FullLayout>

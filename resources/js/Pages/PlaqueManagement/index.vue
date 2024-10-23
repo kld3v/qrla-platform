@@ -113,13 +113,13 @@ const saveNewEndDestinationURl = async (): Promise<void> => {
 											<v-row>
 												<v-col
 													cols="12"
-													lg="4">
+													lg="5">
 													<QCard bg="dark-primary-gradient">
 														<QSelectableTable
 															:selected-blocks="selectedBlocks"
 															:update-selected-block-state="updateSelectedBlockState"
 															:block-data="returnSelectedStandBlocksForTable"
-															select-strategy="single" />
+															select-strategy="all" />
 													</QCard>
 												</v-col>
 												<v-col
@@ -157,7 +157,7 @@ const saveNewEndDestinationURl = async (): Promise<void> => {
 											<v-row>
 												<v-col
 													cols="12"
-													lg="6">
+													lg="5">
 													<QCard bg="dark-primary-gradient">
 														<QSelectableTable
 															:selected-blocks="selectedBlocks"
@@ -167,6 +167,7 @@ const saveNewEndDestinationURl = async (): Promise<void> => {
 													</QCard>
 												</v-col>
 												<v-col
+													offset="1"
 													cols="12"
 													lg="6"
 													class="flex align-center justify-center w-full">
