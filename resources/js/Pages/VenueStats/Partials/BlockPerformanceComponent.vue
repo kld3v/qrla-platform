@@ -90,6 +90,30 @@ import { Icon } from '@iconify/vue'
 import { Link } from '@inertiajs/vue3'
 const colors = ['primary', 'warning', 'success', 'purple']
 
+const venueMapColors: string[] = [
+  '#440154FF',
+  '#481567FF',
+  '#482677FF',
+  '#453781FF',
+  '#404788FF',
+  '#39568CFF',
+  '#33638DFF',
+  '#2D708EFF',
+  '#287D8EFF',
+  '#238A8DFF',
+  '#1F968BFF',
+  '#20A387FF',
+  '#29AF7FFF',
+  '#3CBB75FF',
+  '#55C667FF',
+  '#73D055FF',
+  '#95D840FF',
+  '#B8DE29FF',
+  '#DCE319FF',
+  '#FDE725FF'
+];
+
+
 const props = defineProps<{
 	selectedItem: Block | VenuePageProps
 	stands: Stand[]
