@@ -101,7 +101,6 @@ const handlePolygonClick = (polygonIdWithUnderscores: string) => {
 }
 
 const addPolygonHoverEffects = () => {
-	//get all polygons from the svg
 	const polygons = svgContainer.value.querySelectorAll('polygon')
 	polygons.forEach((polygon) => {
 		const polygonId = polygon.getAttribute('id')
@@ -109,11 +108,9 @@ const addPolygonHoverEffects = () => {
 
 		const polygonIdWithUnderscores = polygonId.replace(/\s+/g, '_')
 		let fillColor = ''
-		console.log(polygonIdWithUnderscores)
 
 		// Check if the polygon is in the selected blocks
 		const selectedBlockNames = internalSelectedBlocks.value.map((block) => block.name.replace(/\s+/g, '_'))
-		console.log(selectedBlockNames)
 
 		if (selectedBlockNames.includes(polygonIdWithUnderscores)) {
 			fillColor = '#A2F732' // Highlight the selected block
@@ -129,20 +126,27 @@ const addPolygonHoverEffects = () => {
 		// Store the original fill color for reset on hover out
 		const originalFill = fillColor
 
-		// Hover effects only apply if the polygon is not selected
-		if (!selectedBlockNames.includes(polygonIdWithUnderscores)) {
-			polygon.addEventListener('mouseover', () => {
-				polygon.style.fill = '#A2F732' // highlight color on hover
+		// Check if event listeners have been added before
+		if (!polygon.hasAttribute('data-listeners-added')) {
+			// Add event listeners only if they haven't been added
+			if (!selectedBlockNames.includes(polygonIdWithUnderscores)) {
+				polygon.addEventListener('mouseover', () => {
+					polygon.style.fill = '#A2F732' // highlight color on hover
+				})
+				polygon.addEventListener('mouseout', () => {
+					polygon.style.fill = originalFill // reset to original fill color
+				})
+			}
+			polygon.addEventListener('click', () => {
+				handlePolygonClick(polygonIdWithUnderscores)
 			})
-			polygon.addEventListener('mouseout', () => {
-				polygon.style.fill = originalFill // reset to original fill color
-			})
+
+			// Mark the polygon as having listeners added
+			polygon.setAttribute('data-listeners-added', 'true')
 		}
-		polygon.addEventListener('click', () => {
-			handlePolygonClick(polygonIdWithUnderscores)
-		})
 	})
 }
+
 
 onMounted(() => {
 	assignStandColors()

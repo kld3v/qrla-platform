@@ -1,40 +1,36 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { BlockExtended } from '@/types'
+import { ref, watch } from 'vue';
+import { BlockExtended } from '@/types';
 
 const props = defineProps<{
-	// The data in Mr Selected Blocks - ie the data the user has selected.
-	selectedBlocks: BlockExtended[]
-	// All the data that Mr Table wants to show available to the user to click.
-	blockData: BlockExtended[]
-	selectStrategy: 'single' | 'all' | 'page'
-	updateSelectedBlockState: (blocks: BlockExtended[]) => void
-}>()
+  selectedBlocks: BlockExtended[];
+  blockData: BlockExtended[];
+  selectStrategy: 'single' | 'all' | 'page';
+  updateSelectedBlockState: (blocks: BlockExtended[]) => void;
+}>();
 
-const internalSelectedBlocks = ref<BlockExtended[]>(props.selectedBlocks)
-
-watch(
-	() => internalSelectedBlocks.value,
-	(newVal) => {
-		props.updateSelectedBlockState(newVal)
-	}
-)
+const internalSelectedBlocks = ref<BlockExtended[]>(props.selectedBlocks);
+let updatingFromProps = false; // Add this flag
 
 watch(
-	() => props.selectedBlocks,
-	(newVal) => {
-		internalSelectedBlocks.value = newVal
-	}
-)
+  () => props.selectedBlocks,
+  (newVal) => {
+    updatingFromProps = true;
+    internalSelectedBlocks.value = newVal;
+    updatingFromProps = false;
+  }
+);
 
-const headers = ref<
-	{
-		title: string
-		align: 'start' | 'end'
-		key: string
-	}[]
->([{ title: 'Block Name', align: 'start', key: 'name' }])
+watch(
+  () => internalSelectedBlocks.value,
+  (newVal) => {
+    if (!updatingFromProps) {
+      props.updateSelectedBlockState(newVal);
+    }
+  }
+);
 </script>
+
 
 <template>
 	<div>
