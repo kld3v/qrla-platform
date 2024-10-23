@@ -35,7 +35,11 @@
 			</v-col>
 			<v-col
 				cols="12"
-				lg="6"></v-col>
+				lg="6">
+				<QInteractiveVenueMap
+					:stands="stands"
+				/>
+			</v-col>
 		</v-row>
 		<v-row>
 			<v-col
@@ -77,8 +81,9 @@ import QCard from '@/components/QComponents/QCard.vue'
 import QGraphTimeScaleMenu from '@/components/QComponents/QGraphTimeScaleMenu.vue'
 import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
 import BlockPerformanceRow from './BlockPerformanceRow.vue'
+import QInteractiveVenueMap from '@/components/QComponents/QInteractiveVenueMap.vue'
 import { getAccessesByBlockOverTime } from '@/utils/apiDataFetchers'
-import { Block, TimeRange } from '@/types'
+import { Block, TimeRange, Stand } from '@/types'
 import { VenuePageProps } from '@/types/Venue'
 import { onMounted, reactive, ref } from 'vue'
 import { Icon } from '@iconify/vue'
@@ -87,6 +92,7 @@ const colors = ['primary', 'warning', 'success', 'purple']
 
 const props = defineProps<{
 	selectedItem: Block | VenuePageProps
+	stands: Stand[]
 }>()
 
 // State for API results

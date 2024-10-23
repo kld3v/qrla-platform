@@ -44,7 +44,7 @@ export type BlockExtended = {
 	name: string
 	stand_id: 1
 	code: string
-	circleColor: string
+	color: string
 	stats: {
 		total_block_visits: number
 		total_seat_visits: number

@@ -85,11 +85,11 @@ const IconCardData = ref<any>([
 
 const returnSelectedStandBlocks = computed(() =>
 	selectedStand.value.blocks.map((el) => {
-		const circleColor: QColors = 'primary'
+		const color: QColors = 'primary'
 		return {
 			code: el.name,
 			name: selectedStand.value.name,
-			circleColor: circleColor,
+			color: color,
 			id: el.id,
 		}
 	})

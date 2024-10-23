@@ -127,7 +127,7 @@ const IconCardData = [
 			<v-col
 				cols="12"
 				lg="12">
-				<BlockPerformanceComponent :selected-item="venue" />
+				<BlockPerformanceComponent :selected-item="venue" :stands="venue.stands" />
 			</v-col>
 		</v-row>
 	</FullLayout>

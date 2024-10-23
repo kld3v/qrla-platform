@@ -55,11 +55,11 @@ const loading = ref(false)
 
 // Fetch data for different time scales
 const fetchData = async () => {
-	// graphData.day = await getAccessesOverTime(props.idType, props.selectedItem.id, '1d')
-	// graphData.week = await getAccessesOverTime(props.idType, props.selectedItem.id, '1w')
-	// graphData.month = await getAccessesOverTime(props.idType, props.selectedItem.id, '1m')
+	graphData.day = await getAccessesOverTime(props.idType, props.selectedItem.id, '1d')
+	graphData.week = await getAccessesOverTime(props.idType, props.selectedItem.id, '1w')
+	graphData.month = await getAccessesOverTime(props.idType, props.selectedItem.id, '1m')
 	graphData.threeMonths = await getAccessesOverTime(props.idType, props.selectedItem.id, '3m')
-	// graphData.year = await getAccessesOverTime(props.idType, props.selectedItem.id, '1y')
+	graphData.year = await getAccessesOverTime(props.idType, props.selectedItem.id, '1y')
 
 	// Set initial data for graph (e.g., default to last day) This needs to match the default value in the time scale menu
 	graphData.current = graphData.threeMonths

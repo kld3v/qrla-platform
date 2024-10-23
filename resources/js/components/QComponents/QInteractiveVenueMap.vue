@@ -39,21 +39,13 @@ const svgContainer = ref(null)
 const standColorMap = ref({})
 const blockColorMap = ref({})
 
-const assignStandColors = () => {
-	const colors = ['#14E9E2', '#FFAE1F', '#ff6692', '#635BFF', '#ffffff', '#33FFF3']
-	props.stands.forEach((stand, index) => {
-		standColorMap.value[stand.id] = colors[index % colors.length]
-	})
-}
-
 const createBlockColorMap = () => {
-	props.stands.forEach((stand) => {
-		const color = standColorMap.value[stand.id]
-		stand.blocks.forEach((block) => {
-			const blockNameWithUnderscores = block.name.replace(/\s+/g, '_')
-			blockColorMap.value[blockNameWithUnderscores] = color
-		})
-	})
+  props.stands.forEach((stand) => {
+    stand.blocks.forEach((block) => {
+      const blockNameWithUnderscores = block.name.replace(/\s+/g, '_')
+      blockColorMap.value[blockNameWithUnderscores] = block.color
+    })
+  })
 }
 
 const loadSvgFile = async () => {
@@ -154,7 +146,6 @@ const addPolygonHoverEffects = () => {
 }
 
 onMounted(() => {
-	assignStandColors()
 	createBlockColorMap()
 	loadSvgFile()
 })
