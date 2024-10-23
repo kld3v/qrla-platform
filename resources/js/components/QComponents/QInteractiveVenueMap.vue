@@ -165,6 +165,7 @@ watch(
 		// internalSelectedBlocks.value = newVal
 		// console.log('local state: updated and next tick called!', internalSelectedBlocks.value)
 		console.log('addPolygonHoverEffects')
+		internalSelectedBlocks.value = newVal
 		nextTick(() => {
 			addPolygonHoverEffects()
 		})
