@@ -2,7 +2,7 @@
 import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
 import FullLayout from '@/layouts/full/FullLayout.vue'
 import HeaderImageAndLogo from '@/components/QComponents/HeaderImageAndLogo.vue'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { VenuePageProps } from '@/types/Venue'
 import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.vue'
 import QCard from '@/components/QComponents/QCard.vue'
@@ -41,6 +41,23 @@ const updateSelectedBlockState = (blocks: BlockExtended[]) => {
 
 	console.log('new Mr Selected Blocks', selectedBlocks.value)
 }
+
+const assignColorsToBlocks = (): void => {
+	const colors = ['#14E9E2', '#FFAE1F', '#ff6692', '#635BFF', '#ffffff', '#33FFF3']
+
+	props.stands.forEach((stand, index) => {
+		const color = colors[index % colors.length]
+
+		stand.blocks.forEach((block: BlockExtended) => {
+			block.color = color
+		})
+	})
+	console.log('colors assigned')
+}
+
+onMounted(() => {
+	assignColorsToBlocks()
+})
 
 // to be relpaced with prop data
 const IconCardData = ref<any>([
@@ -83,7 +100,6 @@ const IconCardData = ref<any>([
 ])
 
 const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blocks.map((el: BlockExtended) => el))
-
 </script>
 <template>
 	<FullLayout

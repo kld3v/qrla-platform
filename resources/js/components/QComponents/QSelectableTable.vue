@@ -51,6 +51,7 @@ const headers = ref<
 		<v-data-table
 			:headers="headers"
 			:items="blockData"
+			items-per-page="-1"
 			:selectStrategy="selectStrategy || 'single'"
 			show-select
 			class="border border-2 border-solid border-grey rounded-md bg-transparent block-stats-table datatables max-h-[600px]"
@@ -59,7 +60,9 @@ const headers = ref<
 			<!-- Block Column -->
 			<template #item.name="{ item }">
 				<div class="flex gap-4 align-center">
-					<div :class="['h-[24px]', 'w-[24px]', `bg-primary`, 'rounded-circle']"></div>
+					<div
+						:class="['h-[24px]', 'w-[24px]', 'rounded-circle']"
+						:style="{ backgroundColor: item.color }"></div>
 					<span>{{ item.name }}</span>
 				</div>
 			</template>

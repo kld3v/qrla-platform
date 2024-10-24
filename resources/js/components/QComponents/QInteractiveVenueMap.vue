@@ -40,12 +40,12 @@ const standColorMap = ref({})
 const blockColorMap = ref({})
 
 const createBlockColorMap = () => {
-  props.stands.forEach((stand) => {
-    stand.blocks.forEach((block) => {
-      const blockNameWithUnderscores = block.name.replace(/\s+/g, '_')
-      blockColorMap.value[blockNameWithUnderscores] = block.color
-    })
-  })
+	props.stands.forEach((stand) => {
+		stand.blocks.forEach((block) => {
+			const blockNameWithUnderscores = block.name.replace(/\s+/g, '_')
+			blockColorMap.value[blockNameWithUnderscores] = block.color
+		})
+	})
 }
 
 const loadSvgFile = async () => {

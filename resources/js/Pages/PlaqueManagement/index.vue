@@ -2,7 +2,7 @@
 import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
 import FullLayout from '@/layouts/full/FullLayout.vue'
 import HeaderImageAndLogo from '@/components/QComponents/HeaderImageAndLogo.vue'
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { VenuePageProps } from '@/types/Venue'
 import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.vue'
 import QCard from '@/components/QComponents/QCard.vue'
@@ -21,7 +21,7 @@ const props = defineProps<{
 	nav: NavOptions
 }>()
 
-const selectedStand = ref<Stand | 'All'>(props.stands[0]) // Allow 'All' as an option
+const selectedStand = ref<Stand | 'All'>('All') // Allow 'All' as an option
 
 const changeSelectedStand = (standName: string) => {
 	if (standName === 'All') {
@@ -38,28 +38,30 @@ const changeSelectedStand = (standName: string) => {
 	}
 }
 
-const selectedBlocks = ref<BlockExtended[]>([props.stands[0].blocks[2]])
+const selectedBlocks = ref<BlockExtended[]>([props.stands[0].blocks[0]])
 
 const updateSelectedBlockState = (blocks: BlockExtended[]) => {
 	selectedBlocks.value = blocks
 	console.log('new Mr Selected Blocks', selectedBlocks.value)
 }
 
-const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blocks.map((el: BlockExtended) => el))
+const assignColorsToBlocks = (): void => {
+	const colors = ['#14E9E2', '#FFAE1F', '#ff6692', '#635BFF', '#ffffff', '#33FFF3']
 
-const assignColorsToBlocks = ():void => {
-  const colors = ['#14E9E2', '#FFAE1F', '#ff6692', '#635BFF', '#ffffff', '#33FFF3']
-  
-  props.stands.forEach((stand, index) => {
-    const color = colors[index % colors.length]
-    
-    stand.blocks.forEach((block: BlockExtended) => {
-      block.color = color
-    })
-  })
+	props.stands.forEach((stand, index) => {
+		const color = colors[index % colors.length]
+
+		stand.blocks.forEach((block: BlockExtended) => {
+			block.color = color
+		})
+	})
+	console.log('colors assigned')
 }
 
-assignColorsToBlocks()
+onMounted(() => {
+	assignColorsToBlocks()
+})
+
 const returnSelectedStandBlocksForTable = computed(() => {
 	if (selectedStand.value === 'All') {
 		// Return all blocks from all stands
