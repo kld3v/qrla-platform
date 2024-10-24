@@ -40,7 +40,7 @@ const updateSelectedBlockState = (blocks: BlockExtended[]) => {
 
 const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blocks.map((el: BlockExtended) => el))
 
-const assignColorsToBlocks = () => {
+const assignColorsToBlocks = ():void => {
   const colors = ['#14E9E2', '#FFAE1F', '#ff6692', '#635BFF', '#ffffff', '#33FFF3']
   
   props.stands.forEach((stand, index) => {
