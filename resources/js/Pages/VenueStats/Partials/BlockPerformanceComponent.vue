@@ -35,7 +35,11 @@
 			</v-col>
 			<v-col
 				cols="12"
-				lg="6"></v-col>
+				lg="6">
+				<QInteractiveVenueMap
+					:stands="stands"
+				/>
+			</v-col>
 		</v-row>
 		<v-row>
 			<v-col
@@ -77,16 +81,42 @@ import QCard from '@/components/QComponents/QCard.vue'
 import QGraphTimeScaleMenu from '@/components/QComponents/QGraphTimeScaleMenu.vue'
 import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
 import BlockPerformanceRow from './BlockPerformanceRow.vue'
+import QInteractiveVenueMap from '@/components/QComponents/QInteractiveVenueMap.vue'
 import { getAccessesByBlockOverTime } from '@/utils/apiDataFetchers'
-import { Block, TimeRange } from '@/types'
+import { Block, TimeRange, Stand } from '@/types'
 import { VenuePageProps } from '@/types/Venue'
 import { onMounted, reactive, ref } from 'vue'
 import { Icon } from '@iconify/vue'
 import { Link } from '@inertiajs/vue3'
 const colors = ['primary', 'warning', 'success', 'purple']
 
+const venueMapColors: string[] = [
+  '#440154FF',
+  '#481567FF',
+  '#482677FF',
+  '#453781FF',
+  '#404788FF',
+  '#39568CFF',
+  '#33638DFF',
+  '#2D708EFF',
+  '#287D8EFF',
+  '#238A8DFF',
+  '#1F968BFF',
+  '#20A387FF',
+  '#29AF7FFF',
+  '#3CBB75FF',
+  '#55C667FF',
+  '#73D055FF',
+  '#95D840FF',
+  '#B8DE29FF',
+  '#DCE319FF',
+  '#FDE725FF'
+];
+
+
 const props = defineProps<{
 	selectedItem: Block | VenuePageProps
+	stands: Stand[]
 }>()
 
 // State for API results

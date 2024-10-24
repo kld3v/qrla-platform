@@ -81,7 +81,9 @@ const IconCardData = ref<any>([
 		delta: 40,
 	},
 ])
+
 const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blocks.map((el: BlockExtended) => el))
+
 </script>
 <template>
 	<FullLayout
