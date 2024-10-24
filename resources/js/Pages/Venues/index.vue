@@ -55,7 +55,7 @@ console.log(filterVenues(props.venues))
 				<QCardBanner
 					:title="$page.props.auth.user.name"
 					buttonText="Manage Account"
-					:imageSrc="QCARDAVATAR" />
+					:imageSrc="$page.props.auth.user.profile_photo_url || QCARDAVATAR" />
 			</v-col>
 			<v-col
 				cols="12"
@@ -63,7 +63,7 @@ console.log(filterVenues(props.venues))
 				<QCardBanner
 					:title="$page.props.auth.user.name"
 					subHeading="Product and Systems Manager"
-					:imageSrc="QCARDCOMPANYLOGO" />
+					:imageSrc="$page.props.auth.user.organisation.logo_path || QCARDCOMPANYLOGO" />
 			</v-col>
 		</v-row>
 		<v-row class="mb-6">
