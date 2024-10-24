@@ -3,6 +3,7 @@ import { ref } from 'vue'
 const props = defineProps<{
 	buttonText: string
 	totalSteps: 1 | 2 | 3
+	// The function to run on click of the save button.
 	saveAction?: () => Promise<void>
 }>()
 
@@ -28,10 +29,13 @@ const save = async () => {
 	// Handle the save logic here
 	loading.value = true
 	if (props.saveAction) {
-		await props.saveAction()
+		try {
+			await props.saveAction()
+		} catch (error) {
+			console.log(error)
+		}
 	}
 	loading.value = false
-
 	dialog.value = false
 }
 </script>

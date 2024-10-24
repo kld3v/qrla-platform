@@ -67,3 +67,8 @@ export type Stand = {
 
 export type IdType = 'venue' | 'block'
 export type TimeRange = '1d' | '1w' | '1m' | '3m' | '1y'
+
+interface AssignBaseUrlData {
+	url: string
+	blocks: BlockExtended['id'][] // Array of block IDs
+}

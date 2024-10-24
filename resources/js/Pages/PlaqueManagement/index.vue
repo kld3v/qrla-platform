@@ -8,21 +8,27 @@ import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.
 import QCard from '@/components/QComponents/QCard.vue'
 import QPRIVACYASSET from '@/assets/images/QAssets/PlaqueManagement/privacy_asset.svg'
 import QSETTINGASSET from '@/assets/images/QAssets/PlaqueManagement/settings_asset.svg'
-import { BlockExtended, NavOptions, Stand } from '@/types'
+import { AssignBaseUrlData, BlockExtended, NavOptions, Stand } from '@/types'
 import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
 import QSelectableTable from '@/components/QComponents/QSelectableTable.vue'
 import QInteractiveVenueMap from '@/components/QComponents/QInteractiveVenueMap.vue'
 import QModal from '@/components/QComponents/QModal.vue'
 import DestinationUrlTextInput from './Partials/DestinationUrlTextInput.vue'
+import { assignBaseUrl } from '@/utils/apiDataSenders'
 const props = defineProps<{
 	venue: VenuePageProps
 	stands: Stand[]
 	nav: NavOptions
 }>()
 
-const selectedStand = ref<Stand>(props.stands[0])
+const selectedStand = ref<Stand | 'All'>(props.stands[0]) // Allow 'All' as an option
 
 const changeSelectedStand = (standName: string) => {
+	if (standName === 'All') {
+		selectedStand.value = 'All'
+		console.log('All Blocks Selected')
+		return
+	}
 	for (const stand of props.stands) {
 		if (standName === stand.name) {
 			selectedStand.value = stand
@@ -39,20 +45,26 @@ const updateSelectedBlockState = (blocks: BlockExtended[]) => {
 	console.log('new Mr Selected Blocks', selectedBlocks.value)
 }
 
-const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blocks.map((el: BlockExtended) => el))
-
-const returnIdsForSelectedBlocks = computed(() => {
-	return selectedBlocks.value.map((block) => block.id)
+const returnSelectedStandBlocksForTable = computed(() => {
+	if (selectedStand.value === 'All') {
+		// Return all blocks from all stands
+		return props.stands.flatMap((stand: Stand) => stand.blocks.map((el: BlockExtended) => el))
+	} else {
+		// Return blocks of the selected stand
+		return selectedStand.value.blocks.map((el: BlockExtended) => el)
+	}
 })
-
-/// Handle Destination URL Update
+/// Destination URL Update Logic
 const newDestinationUrl = ref('')
-watch(newDestinationUrl, (newValue) => {
-	console.log('New destination URL:', newValue)
-})
-
 const saveNewEndDestinationURl = async (): Promise<void> => {
 	// handle api send off
+	const assignNewUrlData: AssignBaseUrlData = {
+		blocks: selectedBlocks.value.map((block) => block.id),
+		url: newDestinationUrl.value,
+	}
+	console.log(assignNewUrlData)
+	const res = await assignBaseUrl(props.venue.id, assignNewUrlData)
+	console.log(res)
 }
 </script>
 
@@ -91,7 +103,8 @@ const saveNewEndDestinationURl = async (): Promise<void> => {
 						<p>Dynamically edit the end URL of the QRLA plaque.</p>
 						<QModal
 							button-text="Change"
-							:total-steps="2">
+							:total-steps="2"
+							:save-action="saveNewEndDestinationURl">
 							<template #page-0>
 								<v-row class="mb-6">
 									<v-col
@@ -107,8 +120,8 @@ const saveNewEndDestinationURl = async (): Promise<void> => {
 													:label="'Stand'"
 													menu-location="start"
 													dropdown-button-color="secondary"
-													:initialSelectedItem="selectedStand.name"
-													:dropdown-options="[...props.stands.map((el: Stand) => el.name)]"></QMenusAnchor>
+													:initialSelectedItem="selectedStand === 'All' ? 'All' : selectedStand.name"
+													:dropdown-options="[...props.stands.map((el: Stand) => el.name), 'All']"></QMenusAnchor>
 											</div>
 											<v-row>
 												<v-col
@@ -151,8 +164,8 @@ const saveNewEndDestinationURl = async (): Promise<void> => {
 													:label="'Stand'"
 													menu-location="start"
 													dropdown-button-color="secondary"
-													:initialSelectedItem="selectedStand.name"
-													:dropdown-options="[...props.stands.map((el: Stand) => el.name)]"></QMenusAnchor>
+													:initialSelectedItem="selectedStand === 'All' ? 'All' : selectedStand.name"
+													:dropdown-options="[...props.stands.map((el: Stand) => el.name), 'All']"></QMenusAnchor>
 											</div>
 											<v-row>
 												<v-col
@@ -163,7 +176,7 @@ const saveNewEndDestinationURl = async (): Promise<void> => {
 															:selected-blocks="selectedBlocks"
 															:update-selected-block-state="updateSelectedBlockState"
 															:block-data="returnSelectedStandBlocksForTable"
-															select-strategy="single" />
+															select-strategy="all" />
 													</QCard>
 												</v-col>
 												<v-col
@@ -171,9 +184,7 @@ const saveNewEndDestinationURl = async (): Promise<void> => {
 													cols="12"
 													lg="6"
 													class="flex align-center justify-center w-full">
-													<DestinationUrlTextInput
-														v-model="newDestinationUrl"
-														:block-ids="returnIdsForSelectedBlocks" />
+													<DestinationUrlTextInput v-model="newDestinationUrl" />
 												</v-col>
 											</v-row>
 										</QCard>
