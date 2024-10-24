@@ -3,6 +3,9 @@ export interface User {
 	name: string
 	email: string
 	email_verified_at?: string
+	profile_photo_url?: string
+	role: string
+	phone: string
 }
 
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
