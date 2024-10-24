@@ -3,6 +3,8 @@ import { ref } from 'vue'
 const props = defineProps<{
 	buttonText: string
 	totalSteps: 1 | 2 | 3
+	// The function to run on click of the save button.
+	saveAction?: () => Promise<void>
 }>()
 
 const dialog = ref(false)
@@ -21,8 +23,19 @@ const previousStep = () => {
 	}
 }
 
-const save = () => {
+const loading = ref(false)
+
+const save = async () => {
 	// Handle the save logic here
+	loading.value = true
+	if (props.saveAction) {
+		try {
+			await props.saveAction()
+		} catch (error) {
+			console.log(error)
+		}
+	}
+	loading.value = false
 	dialog.value = false
 }
 </script>
@@ -30,7 +43,7 @@ const save = () => {
 <template>
 	<v-dialog
 		v-model="dialog"
-		class="w-[1400px] h-[1200px] h-full overflow-scroll">
+		class="w-[1400px] h-[1200px]">
 		<template v-slot:activator="{ props }">
 			<v-btn
 				color="primary"
@@ -65,6 +78,7 @@ const save = () => {
 						color="error"
 						@click="dialog = false"
 						variant="tonal"
+						size="large"
 						flat>
 						Close
 					</v-btn>
@@ -74,6 +88,7 @@ const save = () => {
 						v-if="currentStep > 0"
 						@click="previousStep"
 						variant="tonal"
+						size="large"
 						flat>
 						Back
 					</v-btn>
@@ -102,6 +117,7 @@ const save = () => {
 						color="primary"
 						@click="nextStep"
 						variant="tonal"
+						size="large"
 						flat>
 						Next
 					</v-btn>
@@ -111,8 +127,9 @@ const save = () => {
 						color="primary"
 						@click="save"
 						variant="tonal"
+						size="large"
 						flat>
-						Save
+						{{ loading ? 'Updating Url...' : 'Confirm' }}
 					</v-btn>
 				</div>
 			</v-container>

@@ -13,17 +13,26 @@ const props = defineProps<{
 
 const internalSelectedBlocks = ref<BlockExtended[]>(props.selectedBlocks)
 
+// Watch internal state and update parent only when there is a change
 watch(
 	() => internalSelectedBlocks.value,
 	(newVal) => {
-		props.updateSelectedBlockState(newVal)
+		if (JSON.stringify(newVal) !== JSON.stringify(props.selectedBlocks)) {
+			props.updateSelectedBlockState(newVal)
+			console.log('update parent state after internal change')
+		}
 	}
 )
 
+// Watch parent state and update local only when there is a change
+// this needs revisiting it feels like a complete bodge.
 watch(
 	() => props.selectedBlocks,
 	(newVal) => {
-		internalSelectedBlocks.value = newVal
+		if (JSON.stringify(newVal) !== JSON.stringify(internalSelectedBlocks.value)) {
+			internalSelectedBlocks.value = newVal
+			console.log('update local state after parent change')
+		}
 	}
 )
 
@@ -42,9 +51,9 @@ const headers = ref<
 		<v-data-table
 			:headers="headers"
 			:items="blockData"
-			:single-select="selectStrategy === 'single'"
-			:show-select="true"
-			class="border border-2 border-solid border-grey rounded-md bg-transparent block-stats-table datatables"
+			:selectStrategy="selectStrategy || 'single'"
+			show-select
+			class="border border-2 border-solid border-grey rounded-md bg-transparent block-stats-table datatables max-h-[600px]"
 			v-model="internalSelectedBlocks"
 			:return-object="true">
 			<!-- Block Column -->
@@ -55,9 +64,6 @@ const headers = ref<
 				</div>
 			</template>
 		</v-data-table>
-		<div>
-			{{ internalSelectedBlocks }}
-		</div>
 	</div>
 </template>
 

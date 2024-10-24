@@ -3,6 +3,9 @@ export interface User {
 	name: string
 	email: string
 	email_verified_at?: string
+	profile_photo_url?: string
+	role: string
+	phone: string
 }
 
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
@@ -67,3 +70,8 @@ export type Stand = {
 
 export type IdType = 'venue' | 'block'
 export type TimeRange = '1d' | '1w' | '1m' | '3m' | '1y'
+
+interface AssignBaseUrlData {
+	url: string
+	blocks: BlockExtended['id'][] // Array of block IDs
+}

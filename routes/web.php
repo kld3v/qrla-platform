@@ -35,13 +35,15 @@ Route::middleware('auth')->group(function (): void {
 
     // Route to manage plaques ssociated with a specific venue
     Route::get('/venues/{venue}/plaque-management', [BlockController::class, 'index'])->name('blocks.index');
-    
+
+    Route::post('/venues/{venue}/blocks/assign-url', [BlockController::class, 'assignBaseUrl'])->name('blocks.assignBaseUrl');
+
     // Route to get stats associated with a specific venue
     Route::get('/venues/{venue}/stats', [VenueController::class, 'showStats'])->name('venues.showStats');
 
     Route::get('/venues/{venue}/block-stats', [BlockController::class, 'showStats'])->name('blocks.showStats');
 
-    Route::post('/profile-picture/upload', [ProfilePictureController::class, 'upload'])->name('profilePicture.upload');
+    Route::post('/profile-picture/upload', [ProfilePictureController::class, 'upload'])->name('user.uploadProfilePhoto');
 
     Route::post('/organisation/logo/upload', [OrganisationController::class, 'uploadLogo'])->name('organisation.uploadLogo');
 });
