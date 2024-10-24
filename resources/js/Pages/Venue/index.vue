@@ -8,7 +8,11 @@ import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.
 import QIconCardSet from '@/components/QComponents/QIconCardSet.vue'
 import QCard from '@/components/QComponents/QCard.vue'
 import HorizontalPlaque from '@/assets/images/QAssets/chelspng 1horizontal_plaque.png'
-import QCARDSTADICON from '@/assets/images/svgs/stadium_icon.svg'
+import QCARDSTADICON from '@/assets/images/QAssets/Venues/stadium.svg'
+import QCARDLEVYICON from '@/assets/images/QAssets/Venues/levy.svg'
+import QCARDSOCCERICON from '@/assets/images/QAssets/Venues/soccer_logo.svg'
+import QCARDQRLAICON from '@/assets/images/QAssets/Venues/qrla_logo.svg'
+import QCARDSALESICON from '@/assets/images/QAssets/Venues/sales.svg'
 import QPLAQUEMANAGEMENTDASHBOARDIMAGE from '@/assets/images/QAssets/Venues/asset1.png'
 import QVENUEPERFORMANCEIMAGE from '@/assets/images/QAssets/Venues/asset2.png'
 import QBLOCKPERFORMANCEIMAGE from '@/assets/images/QAssets/Venues/asset3.png'
@@ -24,7 +28,6 @@ const props = defineProps<{
 
 console.log(props)
 
-const isGlobalHome = ref(false)
 const { capacity, type, plaques, access_rate } = props.venue
 // to be relpaced with prop data
 const IconCardData = [
@@ -43,7 +46,7 @@ const IconCardData = [
 		title: 'Venue Type',
 		data: type,
 		link: '',
-		image: QCARDSTADICON,
+		image: QCARDSOCCERICON,
 	},
 	{
 		bg: 'dark-primary-gradient',
@@ -52,7 +55,7 @@ const IconCardData = [
 		title: 'QRLA Plaques',
 		data: plaques,
 		link: '',
-		image: QCARDSTADICON,
+		image: QCARDQRLAICON,
 	},
 	{
 		bg: 'dark-primary-gradient',
@@ -61,7 +64,7 @@ const IconCardData = [
 		title: 'Managed By',
 		data: props.venue.organisation.name,
 		link: '',
-		image: QCARDSTADICON,
+		image: QCARDLEVYICON,
 	},
 	{
 		bg: 'dark-primary-gradient',
@@ -70,13 +73,13 @@ const IconCardData = [
 		title: 'Activity Level',
 		data: parseFloat(access_rate).toFixed(1) + '%',
 		link: '',
-		image: QCARDSTADICON,
+		image: QCARDSALESICON,
 	},
 ]
 </script>
 <template>
 	<FullLayout
-		:isGlobalHome="isGlobalHome"
+		:isGlobalHome="false"
 		:venue="venue"
 		:nav="nav">
 		<HeaderImageAndLogo

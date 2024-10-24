@@ -1,4 +1,3 @@
-z
 <script setup lang="ts">
 import QPageIntroCard from '@/components/QComponents/QHomePageIntroCard.vue'
 import QCardBanner from '@/components/widgets/banners/QCardBanner.vue'
