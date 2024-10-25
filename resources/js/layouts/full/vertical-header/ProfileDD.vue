@@ -2,6 +2,7 @@
 import { MailIcon } from 'vue-tabler-icons'
 import { profileDD } from '@/_mockApis/headerData'
 import { Link } from '@inertiajs/vue3'
+import QCARDAVATAR from '@/assets/images/profile/user-1.jpg'
 </script>
 
 <template>
@@ -20,7 +21,7 @@ import { Link } from '@inertiajs/vue3'
 				icon>
 				<v-avatar size="35">
 					<img
-						src="@/assets/images/profile/user-1.jpg"
+						:src="$page.props.auth.user.profile_photo_url || QCARDAVATAR"
 						width="35"
 						alt="Julia" />
 				</v-avatar>
@@ -34,12 +35,12 @@ import { Link } from '@inertiajs/vue3'
 				<div class="d-flex align-center pb-6">
 					<v-avatar size="55">
 						<img
-							src="@/assets/images/profile/user-1.jpg"
+							:src="$page.props.auth.user.profile_photo_url || QCARDAVATAR"
 							width="55" />
 					</v-avatar>
 					<div class="ml-3">
 						<h6 class="text-subtitle-1">{{ $page.props.auth.user.name }}<span class="text-success text-caption"> Pro</span></h6>
-						<span class="text-subtitle-1 textSecondary">{{ $page.props.auth.user.email }}</span>
+						<span class="text-subtitle-1 textPrimary">{{ $page.props.auth.user.email }}</span>
 					</div>
 				</div>
 				<v-divider></v-divider>

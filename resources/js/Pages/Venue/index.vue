@@ -3,33 +3,39 @@ import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
 import FullLayout from '@/layouts/full/FullLayout.vue'
 import HeaderImageAndLogo from '@/components/QComponents/HeaderImageAndLogo.vue'
 import { ref } from 'vue'
-import { VenuePageProps } from '@/types/Venue'
+import { VenuePageProps } from '@/types'
 import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.vue'
 import QIconCardSet from '@/components/QComponents/QIconCardSet.vue'
 import QCard from '@/components/QComponents/QCard.vue'
 import HorizontalPlaque from '@/assets/images/QAssets/chelspng 1horizontal_plaque.png'
-import QCARDSTADICON from '@/assets/images/svgs/stadium_icon.svg'
+import QCARDSTADICON from '@/assets/images/QAssets/Venues/stadium.svg'
+import QCARDLEVYICON from '@/assets/images/QAssets/Venues/levy.svg'
+import QCARDSOCCERICON from '@/assets/images/QAssets/Venues/soccer_logo.svg'
+import QCARDQRLAICON from '@/assets/images/QAssets/Venues/qrla_logo.svg'
+import QCARDSALESICON from '@/assets/images/QAssets/Venues/sales.svg'
 import QPLAQUEMANAGEMENTDASHBOARDIMAGE from '@/assets/images/QAssets/Venues/asset1.png'
 import QVENUEPERFORMANCEIMAGE from '@/assets/images/QAssets/Venues/asset2.png'
 import QBLOCKPERFORMANCEIMAGE from '@/assets/images/QAssets/Venues/asset3.png'
 import { Link } from '@inertiajs/vue3'
 import { Icon } from '@iconify/vue'
+import { NavOptions } from '@/types'
 
 const props = defineProps<{
-
+	venue: VenuePageProps
+	nav: NavOptions
+	stats: any
 }>()
 
-// console.log(props)
+console.log(props)
 
-const isGlobalHome = ref(false)
-
+const { capacity, type, plaques, access_rate } = props.venue
 // to be relpaced with prop data
 const IconCardData = [
 	{
 		bg: 'dark-primary-gradient',
 		color: 'primary',
 		title: 'Venue Capacity',
-		data: '16,689',
+		data: capacity,
 		link: '',
 		image: QCARDSTADICON,
 	},
@@ -38,43 +44,44 @@ const IconCardData = [
 
 		color: 'warning',
 		title: 'Venue Type',
-		data: 'Sport',
+		data: type,
 		link: '',
-		image: QCARDSTADICON,
+		image: QCARDSOCCERICON,
 	},
 	{
 		bg: 'dark-primary-gradient',
 
 		color: 'secondary',
 		title: 'QRLA Plaques',
-		data: '450',
+		data: plaques,
 		link: '',
-		image: QCARDSTADICON,
+		image: QCARDQRLAICON,
 	},
 	{
 		bg: 'dark-primary-gradient',
 
 		color: 'error',
 		title: 'Managed By',
-		data: 'Levy UK & Ireland',
+		data: props.venue.organisation.name,
 		link: '',
-		image: QCARDSTADICON,
+		image: QCARDLEVYICON,
 	},
 	{
 		bg: 'dark-primary-gradient',
 
 		color: 'success',
 		title: 'Activity Level',
-		data: '+86%',
+		data: parseFloat(access_rate).toFixed(1) + '%',
 		link: '',
-		image: QCARDSTADICON,
+		image: QCARDSALESICON,
 	},
 ]
 </script>
 <template>
 	<FullLayout
-		:isGlobalHome="isGlobalHome"
-		:venue="venue">
+		:isGlobalHome="false"
+		:venue="venue"
+		:nav="nav">
 		<HeaderImageAndLogo
 			:bannerUrl="venue.banner_url"
 			:logoUrl="venue.logo_url"
@@ -111,9 +118,16 @@ const IconCardData = [
 							<p
 								class="h3"
 								style="font-weight: 100">
-								Your plaques have been scanned a total of //$InsertDataProp$// times at {{ venue.name }}!
+								Your plaques have been scanned a total of {{ stats.accesses }} times at {{ venue.name }}!
 							</p>
-							<v-btn class="bg-primary w-1/4">Check</v-btn>
+							<Link
+								:href="
+									route('blocks.index', {
+										venue: props.venue.id,
+									})
+								">
+								<v-btn class="bg-primary w-1/4">Check</v-btn>
+							</Link>
 						</div>
 						<img
 							:src="HorizontalPlaque"
@@ -140,7 +154,7 @@ const IconCardData = [
 						<img
 							:src="QPLAQUEMANAGEMENTDASHBOARDIMAGE"
 							class="w-full" />
-						<Link :href="route('venues.index')">
+						<Link :href="route('blocks.index', { venue: venue.id })">
 							<v-btn class="bg-primary w-full">Manage Plaques</v-btn>
 						</Link>
 					</div>
@@ -204,7 +218,7 @@ const IconCardData = [
 						<img
 							:src="QVENUEPERFORMANCEIMAGE"
 							class="w-full" />
-						<Link :href="route('venues.index')">
+						<Link :href="route('venues.showStats', { venue: venue.id })">
 							<v-btn class="bg-primary w-full">View Plaque Performance</v-btn>
 						</Link>
 					</div></QCard
@@ -228,7 +242,12 @@ const IconCardData = [
 						<img
 							:src="QBLOCKPERFORMANCEIMAGE"
 							class="w-full" />
-						<Link :href="route('venues.index')">
+						<Link
+							:href="
+								route('blocks.showStats', {
+									venue: venue.id,
+								})
+							">
 							<v-btn class="bg-primary w-full">View Block Performance</v-btn>
 						</Link>
 					</div></QCard

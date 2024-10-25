@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { VenuePageProps } from '@/types/Venue'
+import { VenuePageProps } from '@/types'
 
 const props = defineProps<{
 	bannerUrl: VenuePageProps['banner_url']

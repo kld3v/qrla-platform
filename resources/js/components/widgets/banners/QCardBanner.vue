@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import FollowerCards from '../cards/FollowerCards.vue'
 import { Link } from '@inertiajs/vue3'
 
 const props = defineProps<{
@@ -7,6 +6,7 @@ const props = defineProps<{
 	subHeading?: string
 	buttonText?: string
 	imageSrc?: string
+	hideButton?: boolean
 }>()
 </script>
 <template>
@@ -36,7 +36,7 @@ const props = defineProps<{
 			</p>
 			<Link :href="route('profile.edit')">
 				<v-btn
-					v-if="buttonText"
+					v-if="buttonText && !hideButton"
 					flat
 					class="text-lg w-100 mt-6"
 					size="large"

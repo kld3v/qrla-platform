@@ -1,3 +1,5 @@
+import { NavOptions } from '@/types'
+
 export interface menu {
 	header?: string
 	title?: string
@@ -14,6 +16,7 @@ export interface menu {
 	disabled?: boolean
 	type?: string
 	subCaption?: string
+	nav?: NavOptions
 }
 
 export const sidebarItem: menu[] = [
@@ -25,6 +28,13 @@ export const sidebarItem: menu[] = [
 				title: 'Home',
 				icon: 'solar:home-line-duotone',
 				to: '/venues',
+				nav: 'home',
+			},
+			{
+				title: 'Account',
+				icon: 'iconoir:profile-circle',
+				to: '/profile',
+				nav: 'account',
 			},
 		],
 	},
@@ -34,25 +44,25 @@ export const sidebarItem: menu[] = [
 		children: [
 			{
 				title: 'Seat Activity',
-				icon: 'calendar-mark-line-duotone',
+				icon: 'mdi:person-check-outline',
 				to: '/apps/calendar',
 				disabled: true,
 			},
 			{
 				title: 'Calendar',
-				icon: 'airbuds-case-minimalistic-line-duotone',
+				icon: 'mdi:calendar-blank-outline',
 				to: '/apps/kanban',
 				disabled: true,
 			},
 			{
 				title: 'Event Day Data',
-				icon: 'chat-round-line-line-duotone',
+				icon: 'mynaui:ticket',
 				to: '/apps/chats',
 				disabled: true,
 			},
 			{
 				title: 'Taskboard',
-				icon: 'document-text-line-duotone',
+				icon: 'charm:circle-tick',
 				to: '/apps/notes',
 				disabled: true,
 			},

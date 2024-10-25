@@ -1,97 +1,100 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { Icon } from '@iconify/vue'
+import { QPlaqueActivityGraphDataObject } from '@/types'
 
-/* Chart */
-const areachartOptions = computed(() => {
-	return {
-		chart: {
-			toolbar: {
-				show: false,
-			},
-			type: 'area',
-			fontFamily: 'inherit',
-			foreColor: '#fff',
-			height: 290,
-			width: '100%',
-			stacked: false,
-		},
-		colors: ['#A2F732', '#635BFF', '#14E9E2'],
-		plotOptions: {},
-		dataLabels: {
-			enabled: false,
-		},
-		legend: {
-			show: false,
-		},
-		stroke: {
-			width: 2,
-			curve: 'monotoneCubic',
-		},
-		grid: {
-			show: true,
-			padding: {
-				top: 0,
-				bottom: 0,
-			},
-			borderColor: '#2C4E26',
-			xaxis: {
-				lines: {
-					show: true,
-				},
-			},
-			yaxis: {
-				lines: {
-					show: true,
-				},
-			},
-		},
-		fill: {
-			type: 'gradient',
-			gradient: {
-				shadeIntensity: 4,
-				inverseColors: false,
-				opacityFrom: 0.2,
-				opacityTo: 0.9,
-				stops: [100],
-			},
-		},
-		xaxis: {
-			axisBorder: {
-				show: false,
-			},
-			axisTicks: {
-				show: false,
-			},
-			categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sept', 'Oct', 'Nov'],
-		},
-		markers: {
-			strokeColor: ['#A2F732', '#635BFF', '#14E9E2'],
-			strokeWidth: 2,
-		},
-		tooltip: {
-			theme: 'dark',
-		},
-	}
+const props = defineProps<{
+	data: QPlaqueActivityGraphDataObject[] | null | undefined
+}>()
+
+const graphData = reactive<{
+	categories: QPlaqueActivityGraphDataObject['time_group'][]
+	total: QPlaqueActivityGraphDataObject['total_access_count'][]
+	taps: QPlaqueActivityGraphDataObject['seat_access_count'][]
+	scans: QPlaqueActivityGraphDataObject['block_access_count'][]
+}>({
+	categories: [],
+	total: [],
+	taps: [],
+	scans: [],
 })
 
-const areaChart = {
-	series: [
-		{
-			name: 'Total',
-			data: [50, 60, 30, 55, 75, 60, 100, 120, 100, 90, 100],
+/* Chart */
+const areachartOptions = computed(() => ({
+	chart: {
+		toolbar: { show: false },
+		type: 'area',
+		fontFamily: 'inherit',
+		foreColor: '#fff',
+		height: 290,
+		width: '100%',
+		stacked: false,
+	},
+	colors: ['#A2F732', '#635BFF', '#14E9E2'],
+	plotOptions: {},
+	dataLabels: { enabled: false },
+	legend: { show: false },
+	stroke: { width: 2, curve: 'monotoneCubic' },
+	grid: {
+		show: true,
+		padding: { top: 0, bottom: 0 },
+		borderColor: '#2C4E26',
+		xaxis: { lines: { show: true } },
+		yaxis: { lines: { show: true } },
+	},
+	fill: {
+		type: 'gradient',
+		gradient: {
+			shadeIntensity: 4,
+			inverseColors: false,
+			opacityFrom: 0.2,
+			opacityTo: 0.9,
+			stops: [100],
 		},
+	},
+	xaxis: {
+		type: 'datetime',
+		axisBorder: { show: false },
+		axisTicks: { show: false },
+		categories: graphData.categories, // Make sure this updates reactively
+	},
+	markers: {
+		strokeColor: ['#A2F732', '#635BFF', '#14E9E2'],
+		strokeWidth: 2,
+	},
+	tooltip: { theme: 'dark' },
+}))
 
-		{
-			name: 'Taps',
-			data: [35, 45, 40, 50, 35, 55, 40, 45, 100, 90, 10],
-		},
-		{
-			name: 'Scans',
-			data: [100, 75, 80, 40, 20, 40, 0, 25, 100, 90, 50],
-		},
-	],
-}
+const areaChartSeries = computed(() => [
+	{
+		name: 'Total',
+		data: graphData.total,
+	},
+	{
+		name: 'Taps',
+		data: graphData.taps,
+	},
+	{
+		name: 'Scans',
+		data: graphData.scans,
+	},
+])
+
+watch(
+	() => props.data,
+	(newVal, oldVal) => {
+		if (newVal && newVal !== oldVal) {
+			console.log('data being passed to graph via props.data', props.data)
+			if (props.data) {
+				graphData.categories = props.data.map((el) => el.time_group)
+				graphData.total = props.data.map((el) => el.total_access_count)
+				graphData.taps = props.data.map((el) => el.seat_access_count)
+				graphData.scans = props.data.map((el) => el.block_access_count)
+			}
+		}
+	},
+	{ immediate: true }
+)
 </script>
 <template>
 	<v-card
@@ -110,7 +113,7 @@ const areaChart = {
 					</v-avatar>
 					<div>
 						<v-card-title class="text-h5">Activity</v-card-title>
-						<v-card-subtitle class="text-subtitle-1">Past Year</v-card-subtitle>
+						<v-card-subtitle class="text-white">Past Year</v-card-subtitle>
 					</div>
 				</div>
 				<div class="d-flex align-center gap-4">
@@ -118,19 +121,19 @@ const areaChart = {
 						<v-avatar
 							size="8"
 							class="bg-primary rounded-circle"></v-avatar>
-						<span class="textSecondary">Total</span>
+						<span class="">Total</span>
 					</div>
 					<div class="d-flex align-center gap-2">
 						<v-avatar
 							size="8"
 							class="!bg-[#635bff] rounded-circle"></v-avatar>
-						<span class="textSecondary">Taps</span>
+						<span class="">Taps</span>
 					</div>
 					<div class="d-flex align-center gap-2">
 						<v-avatar
 							size="8"
 							class="bg-success rounded-circle"></v-avatar>
-						<span class="textSecondary">Scans</span>
+						<span class="">Scans</span>
 					</div>
 				</div>
 			</div>
@@ -139,7 +142,7 @@ const areaChart = {
 					type="area"
 					height="290"
 					:options="areachartOptions"
-					:series="areaChart.series">
+					:series="areaChartSeries">
 				</apexchart>
 			</div>
 		</v-card-item>

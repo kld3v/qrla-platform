@@ -1,72 +1,161 @@
 <script setup lang="ts">
 import InputError from '@/components/InputError.vue'
 import InputLabel from '@/components/InputLabel.vue'
-import PrimaryButton from '@/components/PrimaryButton.vue'
-import TextInput from '@/components/TextInput.vue'
-import { Link, useForm, usePage } from '@inertiajs/vue3'
+import { User } from '@/types'
+import { Organisation } from '@/types'
+import { Link, useForm } from '@inertiajs/vue3'
 
-defineProps<{
-	mustVerifyEmail?: Boolean
-	status?: String
+const props = defineProps<{
+	organisation: Organisation
+	auth?: any
+	mustVerifyEmail: boolean
+	status: any
 }>()
 
-const user = usePage().props.auth.user
-
+console.log(props)
 const form = useForm({
-	name: user.name,
-	email: user.email,
+	name: props.auth?.user.name,
+	email: props.auth?.user.email,
+	organisationName: props.organisation?.name,
+	role: props.auth?.user.role,
+	location: props.organisation?.address_line1 + ', ' + props.organisation?.city + ', ' + props.organisation?.country,
+	phone: props.auth?.user.phone,
 })
+
+const submitForm = () => {
+	form.patch(route('profile.update'), {
+		onError: () => {
+			// Not sure how we want to error handle
+		},
+		onSuccess: () => {
+			// Not sure if we need any success
+		},
+	})
+}
 </script>
 
 <template>
 	<section>
-		<header>
-			<h2 class="text-lg font-medium text-gray-900">Profile Information</h2>
-
-			<p class="mt-1 text-sm text-gray-600">Update your account's profile information and email address.</p>
-		</header>
-
 		<form
 			@submit.prevent="form.patch(route('profile.update'))"
 			class="mt-6 space-y-6">
-			<div>
-				<InputLabel
-					for="name"
-					value="Name" />
+			<div class="grid grid-cols-2 gap-x-4">
+				<!-- Name Field -->
+				<div>
+					<InputLabel
+						for="name"
+						value="Name" />
 
-				<TextInput
-					id="name"
-					type="text"
-					class="mt-1 block w-full"
-					v-model="form.name"
-					required
-					autofocus
-					autocomplete="name" />
+					<v-text-field
+						id="name"
+						type="text"
+						class="mt-1 block w-full"
+						v-model="form.name"
+						required
+						autofocus
+						autocomplete="name" />
 
-				<InputError
-					class="mt-2"
-					:message="form.errors.name" />
+					<InputError
+						class="mt-2"
+						:message="form.errors.name" />
+				</div>
+
+				<!-- Organisation Name Field (Read-Only) -->
+				<div>
+					<InputLabel
+						for="organisationName"
+						value="Organisation Name" />
+
+					<v-text-field
+						id="organisationName"
+						type="text"
+						class="mt-1 block w-full text-gray-500"
+						v-model="form.organisationName"
+						readonly />
+
+					<InputError
+						class="mt-2"
+						:message="form.errors.organisationName" />
+				</div>
+
+				<!-- Role Field -->
+				<div>
+					<InputLabel
+						for="role"
+						value="Role" />
+
+					<v-text-field
+						id="role"
+						type="text"
+						class="mt-1 block w-full"
+						v-model="form.role"
+						required
+						autocomplete="role" />
+
+					<InputError
+						class="mt-2"
+						:message="form.errors.role" />
+				</div>
+
+				<!-- Location Field (Read-Only) -->
+				<div>
+					<InputLabel
+						for="location"
+						value="Location" />
+
+					<v-text-field
+						id="location"
+						type="text"
+						class="mt-1 block w-full text-gray-500"
+						v-model="form.location"
+						readonly />
+
+					<InputError
+						class="mt-2"
+						:message="form.errors.location" />
+				</div>
+
+				<!-- Phone Field -->
+				<div>
+					<InputLabel
+						for="phone"
+						value="Phone" />
+
+					<v-text-field
+						id="phone"
+						type="text"
+						class="mt-1 block w-full"
+						v-model="form.phone"
+						required
+						autocomplete="tel" />
+
+					<InputError
+						class="mt-2"
+						:message="form.errors.phone" />
+				</div>
+
+				<!-- Email Field -->
+				<div>
+					<InputLabel
+						for="email"
+						value="Email" />
+
+					<v-text-field
+						id="email"
+						type="email"
+						class="mt-1 block w-full"
+						v-model="form.email"
+						required
+						autocomplete="username" />
+
+					<InputError
+						class="mt-2"
+						:message="form.errors.email" />
+				</div>
 			</div>
 
-			<div>
-				<InputLabel
-					for="email"
-					value="Email" />
-
-				<TextInput
-					id="email"
-					type="email"
-					class="mt-1 block w-full"
-					v-model="form.email"
-					required
-					autocomplete="username" />
-
-				<InputError
-					class="mt-2"
-					:message="form.errors.email" />
-			</div>
-
-			<div v-if="mustVerifyEmail && user.email_verified_at === null">
+			<!-- Verification Notice -->
+			<div v-if="mustVerifyEmail && props.auth?.user.email_verified_at === null">
 				<p class="text-sm mt-2 text-gray-800">
 					Your email address is unverified.
 					<Link
@@ -85,8 +174,14 @@ const form = useForm({
 				</div>
 			</div>
 
+			<!-- Save Button -->
 			<div class="flex items-center gap-4">
-				<PrimaryButton :disabled="form.processing">Save</PrimaryButton>
+				<v-btn
+					color="primary"
+					:disabled="form.processing"
+					@click="submitForm"
+					>Save</v-btn
+				>
 
 				<Transition
 					enter-active-class="transition ease-in-out"

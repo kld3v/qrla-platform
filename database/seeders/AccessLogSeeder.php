@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class AccessLogSeeder extends Seeder
 {
@@ -18,13 +19,16 @@ class AccessLogSeeder extends Seeder
             ->pluck('id')
             ->toArray();
 
+        // Define some blocks that are busier (e.g., blocks 1, 2, 3 are busier)
+        $busierBlocks = array_fill(0, 2 * count($blockMarkers), $blockMarkers[array_rand($blockMarkers)]); // Increase chance for busy blocks
+
         $totalRecordsForBlocks = 200000;
         $totalRecordsForAll = 300000;
         $batches = [];
 
         // Generate 200,000 records for block markers
         for ($i = 0; $i < $totalRecordsForBlocks; $i++) {
-            $batches[] = $this->generateLogRecord($blockMarkers[array_rand($blockMarkers)]);
+            $batches[] = $this->generateLogRecord($this->selectMarker($blockMarkers, $busierBlocks));
 
             if (count($batches) == $batchSize) {
                 DB::table('access_logs')->insert($batches);
@@ -39,7 +43,7 @@ class AccessLogSeeder extends Seeder
 
         // Now generate 300,000 records across all marker ids (from 1 to 50,000)
         for ($i = 0; $i < $totalRecordsForAll; $i++) {
-            $batches[] = $this->generateLogRecord(rand(1, 50000));
+            $batches[] = $this->generateLogRecord(rand(1, max: 43500));
 
             if (count($batches) == $batchSize) {
                 DB::table('access_logs')->insert($batches);
@@ -51,6 +55,12 @@ class AccessLogSeeder extends Seeder
         if (!empty($batches)) {
             DB::table('access_logs')->insert($batches);
         }
+    }
+
+    // Select a marker with a higher chance for busy blocks
+    private function selectMarker(array $blockMarkers, array $busierBlocks)
+    {
+        return rand(0, 2) === 0 ? $busierBlocks[array_rand($busierBlocks)] : $blockMarkers[array_rand($blockMarkers)];
     }
 
     // Generate a single log record with a given marker_id
@@ -66,12 +76,39 @@ class AccessLogSeeder extends Seeder
             'browser' => $this->randomBrowser(),
             'language' => $this->randomLanguage(),
             'referrer' => $this->randomReferrer(),
-            'accessed_at' => now()->subDays(rand(0, 365))->toDateTimeString(),
+            'accessed_at' => $this->generateAccessTime(),
             'created_at' => now(),
             'updated_at' => now(),
         ];
     }
 
+    private function generateAccessTime(): string
+    {
+        $now = Carbon::now();
+        $dayOfWeek = rand(0, 6); // Monday = 0, Sunday = 6
+        $hourOfDay = rand(0, 23);
+        $month = rand(1, 12);
+        
+        // Make Saturdays busier, especially between 3 PM and 5 PM
+        if ($dayOfWeek == 6) {
+            if (rand(0, 10) > 2) {
+                $hourOfDay = rand(15, 17); // Busier between 3 PM and 5 PM on Saturdays
+            }
+        }
+
+        // Reduce activity in off-season (June to September)
+        if ($month >= 6 && $month <= 9) {
+            if (rand(0, 10) > 2) {
+                return $now->subDays(rand(90, 365))->toDateTimeString(); // Less frequent activity
+            }
+        }
+
+        return Carbon::createFromDate(null, $month, rand(1, 28))
+            ->setTime($hourOfDay, rand(0, 59))
+            ->toDateTimeString();
+    }
+
+    // Random data generators (same as your original ones)
     private function randomUserAgent(): string
     {
         $userAgents = [

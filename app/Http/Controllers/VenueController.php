@@ -50,10 +50,18 @@ class VenueController extends Controller
         return Inertia::render('Venues/index', [
             'stats' => $stats,
             'venues' => $venues,
+            'nav'=> 'home'
         ]);
     }
     
-    
+    public function testSvg()
+    {
+        $svgUrl = 'https://qrla-b2b-bucket.s3.eu-west-2.amazonaws.com/platform/public/venue_svgs/1.svg';
+
+        return Inertia::render('JoelTest/svg', [
+            'svgUrl' => $svgUrl,
+        ]);
+    }
 
     public function show(Venue $venue)
     {
@@ -70,6 +78,7 @@ class VenueController extends Controller
         return inertia('Venue/index', [
             'venue' => $venue,
             'stats' => $stats,
+            'nav'=>'venue_home'
         ]);
     }
 
@@ -77,7 +86,7 @@ class VenueController extends Controller
     {
         $this->authorize('view', $venue);
     
-        $venue->load('blocks');
+        $venue->load(['stands.blocks','organisation']);
     
         $totalSeatVisits = $venue->seatAccessCounts()->sum('total_count');
         $totalBlockVisits = $venue->blockAccessCounts()->sum('total_count');
@@ -92,6 +101,8 @@ class VenueController extends Controller
         return Inertia::render('VenueStats/index', [
             'venue' => $venue,
             'stats' => $stats,
+            'nav'=>'venue_performance'
+
         ]);
     }
     

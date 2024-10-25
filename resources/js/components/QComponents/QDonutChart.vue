@@ -1,19 +1,18 @@
 <template>
-	<UiChildCard title="Donut Chart">
-		<apexchart
-			type="donut"
-			height="300"
-			:options="donutchartOptions"
-			:series="donutChart.series">
-		</apexchart>
-	</UiChildCard>
+	<apexchart
+		type="donut"
+		height="300"
+		:options="donutchartOptions"
+		:series="donutChart.series">
+	</apexchart>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-
+import UiChildCard from '../shared/UiChildCard.vue'
 const props = defineProps<{
 	labels: string[]
+	data: number[]
 }>()
 
 const donutchartOptions = computed(() => {
@@ -62,7 +61,7 @@ const donutchartOptions = computed(() => {
 })
 
 const donutChart = {
-	series: [50, 20],
+	series: props.data,
 }
 </script>
 

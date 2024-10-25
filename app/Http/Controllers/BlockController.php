@@ -6,6 +6,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Block;
+use App\Models\BaseUrl;
 
 class BlockController extends Controller
 {
@@ -16,15 +17,14 @@ class BlockController extends Controller
         $this->authorize('viewBlocks', $venue);
 
         $stands = $venue->stands()
-                        ->with(['blocks' => function ($query) {
-                            $query->select('id', 'name', 'stand_id');
-                        }])
+                        ->with('blocks.baseUrl')
                         ->select('id', 'name', 'venue_id')
                         ->get();
 
-        return Inertia::render('Blocks/index', [
+        return Inertia::render('PlaqueManagement/index', [
             'venue' => $venue,
             'stands' => $stands,
+            'nav'=>'plaque_management'
         ]);
     }
 
@@ -33,9 +33,7 @@ class BlockController extends Controller
         $this->authorize('viewBlocks', $venue);
     
         $stands = $venue->stands()
-                        ->with(['blocks' => function ($query) {
-                            $query->select('id', 'name', 'stand_id');
-                        }])
+                        ->with('blocks')
                         ->select('id', 'name', 'venue_id')
                         ->get();
     
@@ -56,8 +54,42 @@ class BlockController extends Controller
         return Inertia::render('BlockStats/index', [
             'venue' => $venue,
             'stands' => $stands,
+            'nav'=>'block_performance'
+        ]);
+    }
+
+    public function assignBaseUrl(Request $request, Venue $venue)
+    {
+        $data = $request->validate([
+            'url' => 'required|url',
+            'blocks' => 'required|array',
+            'blocks.*' => 'integer|exists:blocks,id'
+        ]);
+
+        $blocks = Block::whereIn('id', $data['blocks'])->get();
+
+        if ($blocks->isEmpty()) {
+            return response()->json(['message' => 'No valid blocks found'], 404);
+        }
+
+        $blocksVenueIds = $blocks->pluck('stand.venue_id')->unique();
+        if ($blocksVenueIds->count() > 1 || $blocksVenueIds->first() != $venue->id) {
+            return response()->json(['message' => 'Blocks do not belong to the same venue'], 403);
+        }
+
+        $this->authorize('editVenue', $venue);
+
+        $baseUrl = BaseUrl::create(['url' => $data['url']]);
+
+        foreach ($blocks as $block) {
+            $block->update(['base_url_id' => $baseUrl->id]);
+        }
+
+        return response()->json([
+            'message' => 'BaseUrl successfully assigned to blocks',
+            'base_url' => $baseUrl,
+            'updated_blocks' => $blocks
         ]);
     }
     
 }
-

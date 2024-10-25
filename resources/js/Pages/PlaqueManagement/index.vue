@@ -2,21 +2,95 @@
 import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
 import FullLayout from '@/layouts/full/FullLayout.vue'
 import HeaderImageAndLogo from '@/components/QComponents/HeaderImageAndLogo.vue'
-import { ref } from 'vue'
-import { VenuePageProps } from '@/types/Venue'
+import { computed, onMounted, ref, watch } from 'vue'
+import { VenuePageProps } from '@/types'
 import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.vue'
 import QCard from '@/components/QComponents/QCard.vue'
 import QPRIVACYASSET from '@/assets/images/QAssets/PlaqueManagement/privacy_asset.svg'
 import QSETTINGASSET from '@/assets/images/QAssets/PlaqueManagement/settings_asset.svg'
-
+import { AssignBaseUrlData, BlockExtended, NavOptions, Stand } from '@/types'
+import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
+import QSelectableTable from '@/components/QComponents/QSelectableTable.vue'
+import QInteractiveVenueMap from '@/components/QComponents/QInteractiveVenueMap.vue'
+import QModal from '@/components/QComponents/QModal.vue'
+import DestinationUrlTextInput from './Partials/DestinationUrlTextInput.vue'
+import { assignBaseUrl } from '@/utils/apiDataSenders'
 const props = defineProps<{
 	venue: VenuePageProps
+	stands: Stand[]
+	nav: NavOptions
 }>()
 
-const isGlobalHome = ref(false)
+const selectedStand = ref<Stand | 'All'>('All') // Allow 'All' as an option
+
+const changeSelectedStand = (standName: string) => {
+	if (standName === 'All') {
+		selectedStand.value = 'All'
+		console.log('All Blocks Selected')
+		return
+	}
+	for (const stand of props.stands) {
+		if (standName === stand.name) {
+			selectedStand.value = stand
+			console.log('Stand Updated')
+			return
+		}
+	}
+}
+
+const selectedBlocks = ref<BlockExtended[]>([props.stands[0].blocks[0]])
+
+const updateSelectedBlockState = (blocks: BlockExtended[]) => {
+	selectedBlocks.value = blocks
+	console.log('new Mr Selected Blocks', selectedBlocks.value)
+}
+
+const assignColorsToBlocks = (): void => {
+	const colors = ['#14E9E2', '#FFAE1F', '#ff6692', '#635BFF', '#ffffff', '#33FFF3']
+
+	props.stands.forEach((stand, index) => {
+		const color = colors[index % colors.length]
+
+		stand.blocks.forEach((block: BlockExtended) => {
+			block.color = color
+		})
+	})
+	console.log('colors assigned')
+}
+
+onMounted(() => {
+	assignColorsToBlocks()
+})
+
+const returnSelectedStandBlocksForTable = computed(() => {
+	if (selectedStand.value === 'All') {
+		// Return all blocks from all stands
+		return props.stands.flatMap((stand: Stand) => stand.blocks.map((el: BlockExtended) => el))
+	} else {
+		// Return blocks of the selected stand
+		return selectedStand.value.blocks.map((el: BlockExtended) => el)
+	}
+})
+/// Destination URL Update Logic
+const newDestinationUrl = ref('')
+
+const saveNewEndDestinationURl = async (): Promise<void> => {
+	// handle api send off
+	const assignNewUrlData: AssignBaseUrlData = {
+		blocks: selectedBlocks.value.map((block) => block.id),
+		url: newDestinationUrl.value,
+	}
+	console.log(assignNewUrlData)
+	const res = await assignBaseUrl(props.venue.id, assignNewUrlData)
+	console.log(res)
+}
 </script>
+
 <template>
-	<FullLayout :isGlobalHome="isGlobalHome">
+	<FullLayout
+		:is-global-home="false"
+		:venue="venue"
+		:nav="nav">
 		<HeaderImageAndLogo
 			:bannerUrl="venue.banner_url"
 			:logoUrl="venue.logo_url"
@@ -26,6 +100,7 @@ const isGlobalHome = ref(false)
 			:address-line1="venue.address_line1"
 			:city="venue.city"
 			class="mb-12" />
+
 		<v-row class="mb-6">
 			<v-col
 				cols="12"
@@ -44,7 +119,97 @@ const isGlobalHome = ref(false)
 							alt="Edit Settings Icon" />
 						<h3 class="h3 q-text-qrla_green">Change Link Destination</h3>
 						<p>Dynamically edit the end URL of the QRLA plaque.</p>
-						<v-btn class="q-btn-green">Change</v-btn>
+						<QModal
+							button-text="Change"
+							:total-steps="2"
+							:save-action="saveNewEndDestinationURl">
+							<template #page-0>
+								<v-row class="mb-6">
+									<v-col
+										cols="12"
+										lg="12">
+										<QCard bg="default-gray">
+											<div class="flex justify-space-between align-center w-full">
+												<div class="mb-4">
+													<h3 class="q-text-qrla_green h3 mb-2">Select Block End Destination URL To Edit</h3>
+												</div>
+												<QMenusAnchor
+													:changeSelectedStand="changeSelectedStand"
+													:label="'Stand'"
+													menu-location="start"
+													dropdown-button-color="secondary"
+													:initialSelectedItem="selectedStand === 'All' ? 'All' : selectedStand.name"
+													:dropdown-options="[...props.stands.map((el: Stand) => el.name), 'All']"></QMenusAnchor>
+											</div>
+											<v-row>
+												<v-col
+													cols="12"
+													lg="5">
+													<QCard bg="dark-primary-gradient">
+														<QSelectableTable
+															:selected-blocks="selectedBlocks"
+															:update-selected-block-state="updateSelectedBlockState"
+															:block-data="returnSelectedStandBlocksForTable"
+															select-strategy="all" />
+													</QCard>
+												</v-col>
+												<v-col
+													cols="12"
+													lg="6">
+													<QInteractiveVenueMap
+														:updateSelectedBlockState="updateSelectedBlockState"
+														:svgUrl="venue.map_svg_url"
+														:stands="stands"
+														:selected-blocks="selectedBlocks" />
+												</v-col>
+											</v-row>
+										</QCard>
+									</v-col>
+								</v-row>
+							</template>
+							<template #page-1>
+								<v-row class="mb-6">
+									<v-col
+										cols="12"
+										lg="12">
+										<QCard bg="default-gray">
+											<div class="flex justify-space-between align-center w-full">
+												<div class="mb-4">
+													<h3 class="q-text-qrla_green h3 mb-2">Select Block End Destination URL To Edit</h3>
+												</div>
+												<QMenusAnchor
+													:changeSelectedStand="changeSelectedStand"
+													:label="'Stand'"
+													menu-location="start"
+													dropdown-button-color="secondary"
+													:initialSelectedItem="selectedStand === 'All' ? 'All' : selectedStand.name"
+													:dropdown-options="[...props.stands.map((el: Stand) => el.name), 'All']"></QMenusAnchor>
+											</div>
+											<v-row>
+												<v-col
+													cols="12"
+													lg="5">
+													<QCard bg="dark-primary-gradient">
+														<QSelectableTable
+															:selected-blocks="selectedBlocks"
+															:update-selected-block-state="updateSelectedBlockState"
+															:block-data="returnSelectedStandBlocksForTable"
+															select-strategy="all" />
+													</QCard>
+												</v-col>
+												<v-col
+													offset="1"
+													cols="12"
+													lg="6"
+													class="flex align-center justify-center w-full">
+													<DestinationUrlTextInput v-model="newDestinationUrl" />
+												</v-col>
+											</v-row>
+										</QCard>
+									</v-col>
+								</v-row>
+							</template>
+						</QModal>
 					</div>
 				</QCard>
 			</v-col>
@@ -58,28 +223,13 @@ const isGlobalHome = ref(false)
 							alt="Edit Verification Icon" />
 						<h3 class="h3 q-text-qrla_green">Edit Verification Page</h3>
 						<p>Redesign the QRLA safety page by uploading a new brand logo.</p>
-						<v-btn class="q-btn-green">Edit</v-btn>
+						<v-btn
+							disabled
+							class="q-btn-green"
+							>Coming Soon</v-btn
+						>
 					</div>
 				</QCard>
-			</v-col>
-		</v-row>
-		<v-row class="mb-3">
-			<v-col
-				cols="12"
-				lg="12">
-				<QSubsectionHeader title="Select Your Blocks" />
-			</v-col>
-		</v-row>
-		<v-row class="mb-6">
-			<v-col
-				cols="12"
-				lg="6">
-				<QCard bg="default-gray">hello </QCard>
-			</v-col>
-			<v-col
-				cols="12"
-				lg="6">
-				<QCard bg="default-gray">hello </QCard>
 			</v-col>
 		</v-row>
 	</FullLayout>

@@ -1,36 +1,77 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { BasicDatatables } from '@/_mockApis/components/datatable/dataTable'
-import { QCardType, QColors } from '@/types'
-const page = ref({ title: 'Data Tables Selection' })
-const selected = ref()
+import { ref, watch } from 'vue'
+import { BlockExtended } from '@/types'
 
-/*Header Data*/
-const headers: any = ref([{ title: 'Select All', align: 'start', key: 'name' }])
-
-type BlockDataObject = {
-	circleColor: QColors
-	code: string
-	name: string
-}
 const props = defineProps<{
-	blockData: BlockDataObject[]
+	// The data in Mr Selected Blocks - ie the data the user has selected.
+	selectedBlocks: BlockExtended[]
+	// All the data that Mr Table wants to show available to the user to click.
+	blockData: BlockExtended[]
+	selectStrategy: 'single' | 'all' | 'page'
+	updateSelectedBlockState: (blocks: BlockExtended[]) => void
 }>()
+
+const internalSelectedBlocks = ref<BlockExtended[]>(props.selectedBlocks)
+
+// Watch internal state and update parent only when there is a change
+watch(
+	() => internalSelectedBlocks.value,
+	(newVal) => {
+		if (JSON.stringify(newVal) !== JSON.stringify(props.selectedBlocks)) {
+			props.updateSelectedBlockState(newVal)
+			console.log('update parent state after internal change')
+		}
+	}
+)
+
+// Watch parent state and update local only when there is a change
+// this needs revisiting it feels like a complete bodge.
+watch(
+	() => props.selectedBlocks,
+	(newVal) => {
+		if (JSON.stringify(newVal) !== JSON.stringify(internalSelectedBlocks.value)) {
+			internalSelectedBlocks.value = newVal
+			console.log('update local state after parent change')
+		}
+	}
+)
+
+const headers = ref<
+	{
+		title: string
+		align: 'start' | 'end'
+		key: string
+	}[]
+>([{ title: 'Block Name', align: 'start', key: 'name' }])
 </script>
+
 <template>
-	<v-data-table
-		items-per-page="5"
-		:headers="headers"
-		:items="blockData"
-		hover
-		show-select
-		class="border border-2 border-solid border-grey rounded-md bg-transparent block-stats-table">
-		<template v-slot:item.name="{ item }">
-			<div class="flex gap-2 align-center">
-				<div :class="`rounded-circle h-[24px] w-[24px] bg-${item.circleColor}`"></div>
-				<p>{{ item.code }}</p>
-				<p class="ml-4">{{ item.name }}</p>
-			</div>
-		</template>
-	</v-data-table>
+	<div>
+		<!-- Data Table -->
+		<v-data-table
+			:headers="headers"
+			:items="blockData"
+			items-per-page="-1"
+			:selectStrategy="selectStrategy || 'single'"
+			show-select
+			class="border border-2 border-solid border-grey rounded-md bg-transparent block-stats-table datatables max-h-[600px]"
+			v-model="internalSelectedBlocks"
+			:return-object="true">
+			<!-- Block Column -->
+			<template #item.name="{ item }">
+				<div class="flex gap-4 align-center">
+					<div
+						:class="['h-[24px]', 'w-[24px]', 'rounded-circle']"
+						:style="{ backgroundColor: item.color }"></div>
+					<span>{{ item.name }}</span>
+				</div>
+			</template>
+		</v-data-table>
+	</div>
 </template>
+
+<style scoped>
+.rounded-circle {
+	border-radius: 50%;
+}
+</style>

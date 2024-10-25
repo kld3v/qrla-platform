@@ -18,13 +18,13 @@ class StandsTableSeeder extends Seeder
             ],
             [
                 'venue_id' => 1,
-                'name' => 'East Stand',
+                'name' => 'Matthew Harding Stand (North)',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'venue_id' => 1,
-                'name' => 'Matthew Harding Stand (North)',
+                'name' => 'East Stand',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

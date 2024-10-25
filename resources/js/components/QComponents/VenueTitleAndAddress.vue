@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { VenuePageProps } from '@/types/Venue'
+import { VenuePageProps } from '@/types'
 
 const props = defineProps<{
 	name: VenuePageProps['name']
@@ -16,8 +16,8 @@ const props = defineProps<{
 
 		<v-chip
 			label
-			color="muted"
-			class="text-primary ml-8 max-w-[40px]">
+			color="primary"
+			class="text-primary ml-8 w-16 flex align-center justify-center">
 			Live
 		</v-chip>
 	</div>

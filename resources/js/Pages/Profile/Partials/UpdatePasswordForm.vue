@@ -16,33 +16,29 @@ const form = useForm({
 })
 
 const updatePassword = () => {
-	form.put(route('password.update'), {
-		preserveScroll: true,
-		onSuccess: () => {
-			form.reset()
-		},
-		onError: () => {
-			if (form.errors.password) {
-				form.reset('password', 'password_confirmation')
-				passwordInput.value?.focus()
-			}
-			if (form.errors.current_password) {
-				form.reset('current_password')
-				currentPasswordInput.value?.focus()
-			}
-		},
-	})
+  console.log('Update password function called')
+  form.put(route('password.update'), {
+    preserveScroll: true,
+    onSuccess: () => {
+      form.reset()
+    },
+    onError: () => {
+      if (form.errors.password) {
+        form.reset('password', 'password_confirmation')
+        passwordInput.value?.focus()
+      }
+      if (form.errors.current_password) {
+        form.reset('current_password')
+        currentPasswordInput.value?.focus()
+      }
+    },
+  })
 }
+
 </script>
 
 <template>
 	<section>
-		<header>
-			<h2 class="text-lg font-medium text-gray-900">Update Password</h2>
-
-			<p class="mt-1 text-sm text-gray-600">Ensure your account is using a long, random password to stay secure.</p>
-		</header>
-
 		<form
 			@submit.prevent="updatePassword"
 			class="mt-6 space-y-6">
@@ -51,7 +47,7 @@ const updatePassword = () => {
 					for="current_password"
 					value="Current Password" />
 
-				<TextInput
+				<v-text-field
 					id="current_password"
 					ref="currentPasswordInput"
 					v-model="form.current_password"
@@ -69,7 +65,7 @@ const updatePassword = () => {
 					for="password"
 					value="New Password" />
 
-				<TextInput
+				<v-text-field
 					id="password"
 					ref="passwordInput"
 					v-model="form.password"
@@ -87,7 +83,7 @@ const updatePassword = () => {
 					for="password_confirmation"
 					value="Confirm Password" />
 
-				<TextInput
+				<v-text-field
 					id="password_confirmation"
 					v-model="form.password_confirmation"
 					type="password"
@@ -100,7 +96,12 @@ const updatePassword = () => {
 			</div>
 
 			<div class="flex items-center gap-4">
-				<PrimaryButton :disabled="form.processing">Save</PrimaryButton>
+				<v-btn
+					color="primary"
+					:disabled="form.processing"
+					@click="updatePassword"
+					>Save</v-btn
+				>
 
 				<Transition
 					enter-active-class="transition ease-in-out"

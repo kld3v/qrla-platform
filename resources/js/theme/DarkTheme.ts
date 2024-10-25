@@ -27,7 +27,7 @@ const DARK_BLUE_THEME: ThemeTypes = {
 		// white text on dark blue bg
 		textPrimary: '#fff',
 		// dark blue on white/green bg
-		textSecondary: '#fff',
+		textSecondary: '#041522',
 		borderColor: '#babfc3',
 		containerBg: '#03111B',
 		background: '#041522',
