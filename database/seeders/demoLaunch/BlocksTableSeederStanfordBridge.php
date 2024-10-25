@@ -1,11 +1,11 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\demoLaunch;
 
 use Illuminate\Database\Seeder;
 use DB;
 
-class BlocksTableSeeder extends Seeder
+class BlocksTableSeederStanfordBridge extends Seeder
 {
     public function run()
     {
