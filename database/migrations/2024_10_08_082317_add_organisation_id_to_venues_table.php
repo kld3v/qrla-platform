@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('venues', function (Blueprint $table) {
             $table->dropColumn('management');
-            $table->foreignId('organisation_id')->nullable()->constrained('organisations')->cascadeOnDelete();
+            $table->foreignId('organisation_id')->nullable()->constrained('organisations')->cascadeOnDelete()->after('remember_token');
         });
     }
 

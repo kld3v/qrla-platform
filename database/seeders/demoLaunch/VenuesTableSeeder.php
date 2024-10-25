@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\demoLaunch;
 
 use Illuminate\Database\Seeder;
 use DB;
@@ -20,13 +20,33 @@ class VenuesTableSeeder extends Seeder
                 'logo_url' => 'https://upload.wikimedia.org/wikipedia/en/thumb/c/cc/Chelsea_FC.svg/800px-Chelsea_FC.svg.png',
                 'banner_url' => 'https://groundhopperguides.com/wp-content/uploads/2016/08/touring-stamford-bridge-chelsea_1041.jpg',
                 'map_svg_url' => 'https://qrla-b2b-bucket.s3.eu-west-2.amazonaws.com/platform/public/venue_svgs/1.svg',
-                'capacity' => 41837,
+                'capacity' => 40341,
                 'status' => 'Active',
                 'short_description' => 'The home of Chelsea FC.',
                 'long_description' => 'Stamford Bridge is the home of Chelsea Football Club, one of the most successful clubs in English football history.',
                 'contact_email' => 'info@chelseafc.com',
                 'contact_phone' => '0371 811 1955',
                 'organisation_id' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Swansea.com Stadium',
+                'address_line1' => 'Landore',
+                'city' => 'Swansea',
+                'country' => 'Wales',
+                'postcode' => 'SA1 2FA',
+                'type' => 'Sport',
+                'logo_url' => 'https://banner2.cleanpng.com/20190203/jao/kisspng-swansea-city-a-f-c-england-football-logo-swansea-city-afc-logos-download-1713906921319.webp',
+                'banner_url' => 'https://cdn.swanseacity.com/sites/default/files/styles/cc_2000x1125/public/2019-11/Seating%20Plan%2016x9.jpg?itok=84Gubwe5',
+                'capacity' => 21088,
+                'status' => 'Active',
+                'short_description' => 'The home of Swansea City FC - The Pride of Wales.',
+                'long_description' => 'Swansea.com Stadium is the home of Swansea City Football Club, the most successful club in Welsh football history.',
+                'contact_email' => 'contact@swanseacity.com',
+                'contact_phone' => '020 7589 8212',
+                'organisation_id' => 1,
+                'map_svg_url' => 'https://qrla-b2b-bucket.s3.eu-west-2.amazonaws.com/platform/public/venue_svgs/2.svg',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
