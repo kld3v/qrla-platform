@@ -32,6 +32,7 @@ const changeSelectedStand = (standName: string): void => {
 		}
 	}
 }
+
 const selectedBlocks = ref<BlockExtended[]>([props.stands[0].blocks[2]])
 
 const updateSelectedBlockState = (blocks: BlockExtended[]) => {

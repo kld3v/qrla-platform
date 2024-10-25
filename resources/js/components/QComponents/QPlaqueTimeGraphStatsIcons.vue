@@ -47,7 +47,17 @@
 </template>
 
 <script setup lang="ts">
+import { QPlaqueActivityGraphDataObject } from '@/types'
 import { Icon } from '@iconify/vue'
+import { computed } from 'vue'
+
+const props = defineProps<{
+	data: QPlaqueActivityGraphDataObject[] | null | undefined
+}>()
+
+const returnSumOfTotalAccesses = computed(() => {
+	return props.data.reduce()
+})
 </script>
 
 <style></style>
