@@ -2,7 +2,7 @@
 import InputError from '@/components/InputError.vue'
 import InputLabel from '@/components/InputLabel.vue'
 import { User } from '@/types'
-import { Organisation } from '@/types/Venue'
+import { Organisation } from '@/types'
 import { Link, useForm } from '@inertiajs/vue3'
 
 const props = defineProps<{

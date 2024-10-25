@@ -28,7 +28,7 @@ import { Link } from '@inertiajs/vue3'
 									class="border-e px-md-12 px-6 py-md-12 py-6">
 									<div class="d-flex">
 										<div class="logo">
-											<Link to="/">
+											<Link href="/">
 												<img
 													:src="Logoimg"
 													alt="home" />

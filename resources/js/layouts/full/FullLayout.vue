@@ -2,7 +2,7 @@
 import VerticalSidebarVue from './vertical-sidebar/VerticalSidebar.vue'
 import VerticalHeaderVue from './vertical-header/VerticalHeader.vue'
 import { useCustomizerStore } from '../../stores/customizer'
-import { VenuePageProps } from '@/types/Venue'
+import { VenuePageProps } from '@/types'
 import { NavOptions } from '@/types'
 
 const customizer = useCustomizerStore()

@@ -47,16 +47,16 @@
 
 <script setup lang="ts">
 import GOOGLEICON from '@/assets/images/svgs/icon-chrome.svg'
-import { Block } from '@/types'
+import { BlockExtended } from '@/types'
 import QCard from '@/components/QComponents/QCard.vue'
 import { ref, watch } from 'vue'
 import { getAccessesByOs } from '@/utils/apiDataFetchers'
-import { VenuePageProps } from '@/types/Venue'
+import { VenuePageProps } from '@/types'
 type IdType = 'venue' | 'block'
 
 const props = defineProps<{
 	// think of a more scalable way to type this
-	selectedItem: Block | VenuePageProps
+	selectedItem: BlockExtended | VenuePageProps
 	idType: IdType
 }>()
 

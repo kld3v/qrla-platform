@@ -2,6 +2,7 @@
 import { MailIcon } from 'vue-tabler-icons'
 import { profileDD } from '@/_mockApis/headerData'
 import { Link } from '@inertiajs/vue3'
+import QCARDAVATAR from '@/assets/images/profile/user-1.jpg'
 </script>
 
 <template>

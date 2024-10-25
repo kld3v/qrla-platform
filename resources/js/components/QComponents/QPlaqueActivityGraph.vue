@@ -1,16 +1,10 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
 import { Icon } from '@iconify/vue'
-
-interface QPlaqueActivityGraphDataObject {
-	time_group: string
-	total_access_count: number
-	seat_access_count: number
-	block_access_count: number
-}
+import { QPlaqueActivityGraphDataObject } from '@/types'
 
 const props = defineProps<{
-	data: QPlaqueActivityGraphDataObject[]
+	data: QPlaqueActivityGraphDataObject[] | null | undefined
 }>()
 
 const graphData = reactive<{
@@ -91,10 +85,12 @@ watch(
 	(newVal, oldVal) => {
 		if (newVal && newVal !== oldVal) {
 			console.log('data being passed to graph via props.data', props.data)
-			graphData.categories = props.data.map((el) => el.time_group)
-			graphData.total = props.data.map((el) => el.total_access_count)
-			graphData.taps = props.data.map((el) => el.seat_access_count)
-			graphData.scans = props.data.map((el) => el.block_access_count)
+			if (props.data) {
+				graphData.categories = props.data.map((el) => el.time_group)
+				graphData.total = props.data.map((el) => el.total_access_count)
+				graphData.taps = props.data.map((el) => el.seat_access_count)
+				graphData.scans = props.data.map((el) => el.block_access_count)
+			}
 		}
 	},
 	{ immediate: true }

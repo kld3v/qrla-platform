@@ -3,7 +3,7 @@ import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
 import FullLayout from '@/layouts/full/FullLayout.vue'
 import HeaderImageAndLogo from '@/components/QComponents/HeaderImageAndLogo.vue'
 import { computed, onMounted, ref, watch } from 'vue'
-import { VenuePageProps } from '@/types/Venue'
+import { VenuePageProps } from '@/types'
 import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.vue'
 import QCard from '@/components/QComponents/QCard.vue'
 import QPRIVACYASSET from '@/assets/images/QAssets/PlaqueManagement/privacy_asset.svg'
@@ -73,6 +73,7 @@ const returnSelectedStandBlocksForTable = computed(() => {
 })
 /// Destination URL Update Logic
 const newDestinationUrl = ref('')
+
 const saveNewEndDestinationURl = async (): Promise<void> => {
 	// handle api send off
 	const assignNewUrlData: AssignBaseUrlData = {

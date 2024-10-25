@@ -10,7 +10,7 @@ import FullLayout from '@/layouts/full/FullLayout.vue'
 import QCard from '@/components/QComponents/QCard.vue'
 import ChangeProfilePhoto from './Partials/ChangeProfilePhoto.vue'
 import QCARDAVATAR from '@/assets/images/profile/user-1.jpg'
-import { Organisation } from '@/types/Venue'
+import { Organisation } from '@/types'
 
 // Access the $page props with usePage()
 

@@ -3,11 +3,10 @@ import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
 import FullLayout from '@/layouts/full/FullLayout.vue'
 import HeaderImageAndLogo from '@/components/QComponents/HeaderImageAndLogo.vue'
 import { ref } from 'vue'
-import { VenuePageProps } from '@/types/Venue'
 import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.vue'
 import QIconCardSet from '@/components/QComponents/QIconCardSet.vue'
 import QPlaqueActivityGraphParent from '@/components/QComponents/QPlaqueActivityGraphParent.vue'
-import { NavOptions } from '@/types'
+import { NavOptions, Stand, VenuePageProps } from '@/types'
 import QDeviceStats from '@/components/QComponents/QDeviceStats.vue'
 import QBrowserStats from '@/components/QComponents/QBrowserStats.vue'
 import QTapOrScanDonut from '@/components/QComponents/QTapOrScanDonut.vue'
@@ -16,6 +15,7 @@ import BlockPerformanceComponent from './Partials/BlockPerformanceComponent.vue'
 const props = defineProps<{
 	venue: VenuePageProps
 	stats: any
+	stands: Stand[]
 	nav: NavOptions
 }>()
 
@@ -127,7 +127,9 @@ const IconCardData = [
 			<v-col
 				cols="12"
 				lg="12">
-				<BlockPerformanceComponent :selected-item="venue" :stands="venue.stands" />
+				<BlockPerformanceComponent
+					:selected-item="venue"
+					:stands="stands" />
 			</v-col>
 		</v-row>
 	</FullLayout>

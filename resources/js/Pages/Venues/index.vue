@@ -6,19 +6,20 @@ import FullLayout from '@/layouts/full/FullLayout.vue'
 import QFiltering from '@/views/tables/datatables/QFiltering.vue'
 import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
 
-import { QCardType, VenuesTableData } from '@/types'
+import { QCardType, User, VenuesTableData } from '@/types'
 import QCARDAVATAR from '@/assets/images/profile/user-1.jpg'
 import QCARDCOMPANYLOGO from '@/assets/images/QAssets/levy_logo.png'
 import QCARDSTADICON from '@/assets/images/svgs/stadium_icon.svg'
 import QCARDGRAPHICON from '@/assets/images/svgs/graph_rising.svg'
-import { VenuePageProps } from '@/types/Venue'
+import { VenuePageProps } from '@/types'
 
 const props = defineProps<{
 	venues: VenuePageProps[]
 	stats: any
 	nav: 'home'
+	auth: { user: User }
 }>()
-console.log(props)
+
 const cards: QCardType[] = [
 	{ bg: 'dark-primary-gradient', icon: QCARDSTADICON, title: 'Total Venues', dataValue: props.stats?.total_venues, color: 'primary' },
 	{ bg: 'dark-primary-gradient', icon: 'mdi-account-group', title: 'Total Plaques', dataValue: props.stats?.total_plaques, color: 'primary' },
@@ -63,7 +64,7 @@ console.log(filterVenues(props.venues))
 				<QCardBanner
 					:title="$page.props.auth.user.name"
 					subHeading="Product and Systems Manager"
-					:imageSrc="$page.props.auth.user.organisation.logo_path || QCARDCOMPANYLOGO" />
+					:imageSrc="auth.user.organisation.logo_path || QCARDCOMPANYLOGO" />
 			</v-col>
 		</v-row>
 		<v-row class="mb-6">

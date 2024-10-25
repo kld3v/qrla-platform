@@ -3,13 +3,12 @@ import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
 import FullLayout from '@/layouts/full/FullLayout.vue'
 import HeaderImageAndLogo from '@/components/QComponents/HeaderImageAndLogo.vue'
 import { computed, onMounted, ref } from 'vue'
-import { VenuePageProps } from '@/types/Venue'
 import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.vue'
 import QCard from '@/components/QComponents/QCard.vue'
 import QIconCardSet from '@/components/QComponents/QIconCardSet.vue'
 import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
 import QSelectableTable from '@/components/QComponents/QSelectableTable.vue'
-import { BlockExtended, NavOptions, QColors, Stand } from '@/types'
+import { BlockExtended, NavOptions, QColors, Stand, VenuePageProps } from '@/types'
 import QDeviceStats from '@/components/QComponents/QDeviceStats.vue'
 import QTapOrScanDonut from '@/components/QComponents/QTapOrScanDonut.vue'
 import QBrowserStats from '@/components/QComponents/QBrowserStats.vue'
@@ -28,7 +27,7 @@ const changeSelectedStand = (standName: string): void => {
 	for (const stand of props.stands) {
 		if (standName === stand.name) {
 			selectedStand.value = stand
-			console.log('Stand Updated')
+			console.log('Stand Updated', selectedStand.value)
 			return
 		}
 	}
@@ -44,7 +43,6 @@ const updateSelectedBlockState = (blocks: BlockExtended[]) => {
 
 const assignColorsToBlocks = (): void => {
 	const colors = ['#14E9E2', '#FFAE1F', '#ff6692', '#635BFF', '#ffffff', '#33FFF3']
-
 	props.stands.forEach((stand, index) => {
 		const color = colors[index % colors.length]
 
@@ -52,7 +50,6 @@ const assignColorsToBlocks = (): void => {
 			block.color = color
 		})
 	})
-	console.log('colors assigned')
 }
 
 onMounted(() => {

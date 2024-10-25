@@ -38,15 +38,15 @@
 <script setup lang="ts">
 import APPLEICON from '@/assets/images/svgs/appleIcon.svg'
 import ANDROIDICONGREEN from '@/assets/images/svgs/androidIcon.svg'
-import { Block, IdType } from '@/types'
+import { BlockExtended, IdType } from '@/types'
 import QCard from '@/components/QComponents/QCard.vue'
 import { ref, watch } from 'vue'
 import { getAccessesByOs } from '@/utils/apiDataFetchers'
-import { VenuePageProps } from '@/types/Venue'
+import { VenuePageProps } from '@/types'
 
 const props = defineProps<{
 	// think of a more scalable way to type this
-	selectedItem: Block | VenuePageProps
+	selectedItem: BlockExtended | VenuePageProps
 	idType: IdType
 }>()
 

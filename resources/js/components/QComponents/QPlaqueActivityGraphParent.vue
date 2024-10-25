@@ -31,8 +31,7 @@ import QCard from '@/components/QComponents/QCard.vue'
 import QGraphTimeScaleMenu from '@/components/QComponents/QGraphTimeScaleMenu.vue'
 import QPlaqueActivityGraph from '@/components/QComponents/QPlaqueActivityGraph.vue'
 import { getAccessesOverTime } from '@/utils/apiDataFetchers'
-import { BlockExtended, IdType, TimeRange } from '@/types'
-import { VenuePageProps } from '@/types/Venue'
+import { BlockExtended, IdType, QPlaqueActivityGraphDataObject, TimeRange, VenuePageProps } from '@/types'
 import PlaqueGraphStatsIcons from '@/components/QComponents/QPlaqueTimeGraphStatsIcons.vue'
 // Define Props
 const props = defineProps<{
@@ -40,8 +39,16 @@ const props = defineProps<{
 	idType: IdType
 }>()
 
+interface IGraphData {
+	day: { data: QPlaqueActivityGraphDataObject[] } | null
+	week: { data: QPlaqueActivityGraphDataObject[] } | null
+	month: { data: QPlaqueActivityGraphDataObject[] } | null
+	threeMonths: { data: QPlaqueActivityGraphDataObject[] } | null
+	year: { data: QPlaqueActivityGraphDataObject[] } | null
+	current: { data: QPlaqueActivityGraphDataObject[] } | null
+}
 // State for API results
-const graphData = reactive({
+const graphData = reactive<IGraphData>({
 	day: null,
 	week: null,
 	month: null,
@@ -56,12 +63,13 @@ const loading = ref(false)
 // Fetch data for different time scales
 const fetchData = async () => {
 	graphData.day = await getAccessesOverTime(props.idType, props.selectedItem.id, '1d')
-	graphData.week = await getAccessesOverTime(props.idType, props.selectedItem.id, '1w')
-	graphData.month = await getAccessesOverTime(props.idType, props.selectedItem.id, '1m')
-	graphData.threeMonths = await getAccessesOverTime(props.idType, props.selectedItem.id, '3m')
-	graphData.year = await getAccessesOverTime(props.idType, props.selectedItem.id, '1y')
+	// graphData.week = await getAccessesOverTime(props.idType, props.selectedItem.id, '1w')
+	// graphData.month = await getAccessesOverTime(props.idType, props.selectedItem.id, '1m')
+	// graphData.threeMonths = await getAccessesOverTime(props.idType, props.selectedItem.id, '3m')
+	// graphData.year = await getAccessesOverTime(props.idType, props.selectedItem.id, '1y')
 
 	// Set initial data for graph (e.g., default to last day) This needs to match the default value in the time scale menu
+	console.log(graphData.day)
 	graphData.current = graphData.threeMonths
 }
 

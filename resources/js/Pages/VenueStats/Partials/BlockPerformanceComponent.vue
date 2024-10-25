@@ -18,27 +18,27 @@
 				lg="6">
 				<QCard
 					bg="dark-primary-gradient"
-					custom-css="h-[400px]"
+					custom-css="h-[400px] max-h-[480px]"
 					:overflow-y="true">
 					<p class="h4 mb-4">Top Performing Blocks</p>
 					<!-- accesses-by-block -->
 					<BlockPerformanceRow
-						v-if="graphData.current"
-						v-for="(item, index) in graphData.current.data"
+						v-if="blockPercentData.current"
+						v-for="(item, index) in blockPercentData.current.data"
 						:key="index"
 						:visits="item.access_count"
 						:percent-of-total="item.access_percent"
 						:progress-bar-color="colors[index % 4]"
 						:block-name="item.block_name"
-						:highest-percentage="graphData.current.data[0].access_count" />
+						:highest-percentage="blockPercentData.current.data[0].access_count" />
 				</QCard>
 			</v-col>
 			<v-col
 				cols="12"
 				lg="6">
-				<QInteractiveVenueMap
-					:stands="stands"
-				/>
+				<!-- <QInteractiveVenueMap
+					:svg-url="selectedItem.map_svg_url"
+					:stands="stands" /> -->
 			</v-col>
 		</v-row>
 		<v-row>
@@ -83,44 +83,53 @@ import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
 import BlockPerformanceRow from './BlockPerformanceRow.vue'
 import QInteractiveVenueMap from '@/components/QComponents/QInteractiveVenueMap.vue'
 import { getAccessesByBlockOverTime } from '@/utils/apiDataFetchers'
-import { Block, TimeRange, Stand } from '@/types'
-import { VenuePageProps } from '@/types/Venue'
+import { BlockExtended, TimeRange, Stand, BlockShort } from '@/types'
+import { VenuePageProps } from '@/types'
 import { onMounted, reactive, ref } from 'vue'
 import { Icon } from '@iconify/vue'
 import { Link } from '@inertiajs/vue3'
 const colors = ['primary', 'warning', 'success', 'purple']
 
 const venueMapColors: string[] = [
-  '#440154FF',
-  '#481567FF',
-  '#482677FF',
-  '#453781FF',
-  '#404788FF',
-  '#39568CFF',
-  '#33638DFF',
-  '#2D708EFF',
-  '#287D8EFF',
-  '#238A8DFF',
-  '#1F968BFF',
-  '#20A387FF',
-  '#29AF7FFF',
-  '#3CBB75FF',
-  '#55C667FF',
-  '#73D055FF',
-  '#95D840FF',
-  '#B8DE29FF',
-  '#DCE319FF',
-  '#FDE725FF'
-];
-
+	'#440154FF',
+	'#481567FF',
+	'#482677FF',
+	'#453781FF',
+	'#404788FF',
+	'#39568CFF',
+	'#33638DFF',
+	'#2D708EFF',
+	'#287D8EFF',
+	'#238A8DFF',
+	'#1F968BFF',
+	'#20A387FF',
+	'#29AF7FFF',
+	'#3CBB75FF',
+	'#55C667FF',
+	'#73D055FF',
+	'#95D840FF',
+	'#B8DE29FF',
+	'#DCE319FF',
+	'#FDE725FF',
+]
 
 const props = defineProps<{
-	selectedItem: Block | VenuePageProps
+	selectedItem: VenuePageProps
 	stands: Stand[]
 }>()
 
+type dataObjectForblockPercentData = { data: BlockShort[] } | null
+
+interface IBlockPercentData {
+	day: dataObjectForblockPercentData
+	week: dataObjectForblockPercentData
+	month: dataObjectForblockPercentData
+	threeMonths: dataObjectForblockPercentData
+	year: dataObjectForblockPercentData
+	current: dataObjectForblockPercentData
+}
 // State for API results
-const graphData = reactive({
+const blockPercentData = reactive<IBlockPercentData>({
 	day: null,
 	week: null,
 	month: null,
@@ -132,38 +141,39 @@ const loading = ref(false)
 
 // Fetch data for different time scales
 const fetchData = async () => {
-	graphData.day = await getAccessesByBlockOverTime(props.selectedItem.id, '1d')
-	graphData.week = await getAccessesByBlockOverTime(props.selectedItem.id, '1w')
-	graphData.month = await getAccessesByBlockOverTime(props.selectedItem.id, '1m')
-	graphData.threeMonths = await getAccessesByBlockOverTime(props.selectedItem.id, '3m')
-	graphData.year = await getAccessesByBlockOverTime(props.selectedItem.id, '1y')
+	blockPercentData.day = await getAccessesByBlockOverTime(props.selectedItem.id, '1d')
+	blockPercentData.week = await getAccessesByBlockOverTime(props.selectedItem.id, '1w')
+	blockPercentData.month = await getAccessesByBlockOverTime(props.selectedItem.id, '1m')
+	blockPercentData.threeMonths = await getAccessesByBlockOverTime(props.selectedItem.id, '3m')
+	blockPercentData.year = await getAccessesByBlockOverTime(props.selectedItem.id, '1y')
 
-	graphData.current = graphData.threeMonths
+	if (blockPercentData.threeMonths) {
+		blockPercentData.current = blockPercentData.threeMonths
+	}
 }
 
 onMounted(async () => {
 	loading.value = !loading.value
 	await fetchData()
 	loading.value = !loading.value
-	console.log(graphData)
 })
 
 const handleTimeScaleChange = (timeScale: TimeRange) => {
 	switch (timeScale) {
 		case '1d':
-			graphData.current = graphData.day
+			blockPercentData.current = blockPercentData.day
 			break
 		case '1w':
-			graphData.current = graphData.week
+			blockPercentData.current = blockPercentData.week
 			break
 		case '1m':
-			graphData.current = graphData.month
+			blockPercentData.current = blockPercentData.month
 			break
 		case '3m':
-			graphData.current = graphData.threeMonths
+			blockPercentData.current = blockPercentData.threeMonths
 			break
 		case '1y':
-			graphData.current = graphData.year
+			blockPercentData.current = blockPercentData.year
 			break
 	}
 }
