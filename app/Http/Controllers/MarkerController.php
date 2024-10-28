@@ -20,8 +20,9 @@ class MarkerController extends Controller
 
     public function handleMarkerRedirect($short_code)
     {
+        Log::info("Short Code {$short_code}");
         $marker = $this->markerRedirectService->getMarkerByShortCode($short_code);
-    
+        Log::info("Marker {$marker}");
         if ($marker) {
             $markerable = $marker->markerable;
             $destinationUrl = $this->markerRedirectService->buildDestinationUrl($markerable, $marker->markerable_type);
