@@ -12,33 +12,33 @@ class ShortUrlShowService {
 
     public function show(Request $request, $short_code)
     {   
-        Log::channel('legacy')->info("ShortUrlShowService::show - Started", ['short_code' => $short_code]);
+        Log::info("ShortUrlShowService::show - Started", ['short_code' => $short_code]);
 
         $shortUrl = ShortUrl::byShortCode($short_code)->firstOrFail();
-        Log::channel('legacy')->info("ShortUrlShowService::show - ShortUrl found", ['short_url_id' => $shortUrl->id]);
+        Log::info("ShortUrlShowService::show - ShortUrl found", ['short_url_id' => $shortUrl->id]);
 
         if ($shortUrl->contactCard) {
             $shortUrl->destination_url = route('contact_cards.show', ['short_code' => $short_code]);
-            Log::channel('legacy')->info("ShortUrlShowService::show - Contact card found, destination URL set", ['destination_url' => $shortUrl->destination_url]);
+            Log::info("ShortUrlShowService::show - Contact card found, destination URL set", ['destination_url' => $shortUrl->destination_url]);
         }
 
         if ($shortUrl->status === 'rejected') {
-            Log::channel('legacy')->info("ShortUrlShowService::show - Status is rejected, returning view.");
+            Log::info("ShortUrlShowService::show - Status is rejected, returning view.");
             return view('link_terminated');
         } elseif ($shortUrl->status === 'pending') {
             $shortUrl->destination_url = 'https://qrla.io/page/pending';
-            Log::channel('legacy')->info("ShortUrlShowService::show - Status is pending, destination URL set to pending.");
+            Log::info("ShortUrlShowService::show - Status is pending, destination URL set to pending.");
         }
 
         if ($shortUrl->redirect && $shortUrl->redirect->redirectPreset) {
             $htmlPath = $shortUrl->redirect->redirectPreset->html_path;
-            Log::channel('legacy')->info("ShortUrlShowService::show - Redirect preset found", ['html_path' => $htmlPath]);
+            Log::info("ShortUrlShowService::show - Redirect preset found", ['html_path' => $htmlPath]);
             $filePath = base_path('app/Legacy/' . $htmlPath);
-            Log::channel('legacy')->info("ShortUrlShowService::show - Full file path for view", ['file_path' => $filePath]);
+            Log::info("ShortUrlShowService::show - Full file path for view", ['file_path' => $filePath]);
 
             $logoPath = $shortUrl->redirect->logo->path;
 
-            Log::channel('legacy')->info("ShortUrlShowService::show - Rendering view", [
+            Log::info("ShortUrlShowService::show - Rendering view", [
                 'short_url' => $shortUrl->id,
                 'file_path' => $filePath,
                 'logo_path' => $logoPath,
@@ -51,21 +51,21 @@ class ShortUrlShowService {
             ]);
         }
 
-        Log::channel('legacy')->info("ShortUrlShowService::show - No redirect preset found.");
+        Log::info("ShortUrlShowService::show - No redirect preset found.");
     }
 
     public function contactCardShow($short_code)
     {
-        Log::channel('legacy')->info("ShortUrlShowService::contactCardShow - Started", ['short_code' => $short_code]);
+        Log::info("ShortUrlShowService::contactCardShow - Started", ['short_code' => $short_code]);
 
         $contactCard = ContactCard::whereHas('shortUrl', function ($query) use ($short_code) {
             $query->where('short_code', $short_code);
         })->firstOrFail();
 
-        Log::channel('legacy')->info("ShortUrlShowService::contactCardShow - ContactCard found", ['contact_card_id' => $contactCard->id]);
+        Log::info("ShortUrlShowService::contactCardShow - ContactCard found", ['contact_card_id' => $contactCard->id]);
 
         $filePath = base_path('app/Legacy/views/contact_cards/show.blade.php');
-        Log::channel('legacy')->info("ShortUrlShowService::contactCardShow - Rendering view", ['file_path' => $filePath]);
+        Log::info("ShortUrlShowService::contactCardShow - Rendering view", ['file_path' => $filePath]);
 
         return View::file($filePath, compact('contactCard', 'short_code'));
     }
