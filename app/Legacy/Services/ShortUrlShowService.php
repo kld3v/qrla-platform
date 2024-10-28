@@ -7,11 +7,12 @@ use Illuminate\Http\Request;
 use App\Legacy\Models\ContactCard;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Log;
+use JeroenDesloovere\VCard\VCard;
 
 class ShortUrlShowService {
 
     public function show(Request $request, $short_code)
-    {   
+    {
         Log::info("ShortUrlShowService::show - Started", ['short_code' => $short_code]);
 
         $shortUrl = ShortUrl::byShortCode($short_code)->firstOrFail();
@@ -68,5 +69,56 @@ class ShortUrlShowService {
         Log::info("ShortUrlShowService::contactCardShow - Rendering view", ['file_path' => $filePath]);
 
         return View::file($filePath, compact('contactCard', 'short_code'));
+    }
+
+    public function downloadContactCard($short_code)
+    {
+        Log::info("ShortUrlShowService::downloadContactCard - Started", ['short_code' => $short_code]);
+
+        $contactCard = ContactCard::whereHas('shortUrl', function ($query) use ($short_code) {
+            $query->where('short_code', $short_code);
+        })->firstOrFail();
+
+        Log::info("ShortUrlShowService::downloadContactCard - ContactCard found", ['contact_card_id' => $contactCard->id]);
+
+        $vcard = new VCard();
+        $nameParts = explode(' ', $contactCard->name);
+        $lastName = array_pop($nameParts);
+        $firstName = implode(' ', $nameParts);
+        $vcard->addName($lastName, $firstName);
+
+        if ($contactCard->company) {
+            $vcard->addCompany($contactCard->company);
+        }
+        if ($contactCard->position) {
+            $vcard->addJobtitle($contactCard->position);
+        }
+        if ($contactCard->email) {
+            $vcard->addEmail($contactCard->email);
+        }
+        if ($contactCard->website) {
+            $vcard->addURL($contactCard->website);
+        }
+        if ($contactCard->phone_numbers && is_array($contactCard->phone_numbers)) {
+            foreach ($contactCard->phone_numbers as $phone) {
+                $type = strtoupper($phone['type']);
+                $number = $phone['number'];
+
+                if (!str_starts_with($number, '+44')) {
+                    if (str_starts_with($number, '0')) {
+                        $number = substr($number, 1);
+                    }
+                    $number = '+44' . $number;
+                }
+
+                $vcard->addPhoneNumber($number, $type);
+            }
+        }
+
+        $fileName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $contactCard->name) . '.vcf';
+
+        return response($vcard->getOutput())
+            ->header('Content-Type', 'text/vcard')
+            ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
     }
 }
