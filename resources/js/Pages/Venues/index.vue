@@ -69,7 +69,8 @@ const filterVenues = (array: VenuePageProps[]): VenuesTableData[] => {
 		<v-row class="mb-6">
 			<v-col
 				v-for="(card, index) in cards"
-				:cols="index === 0 ? 6 : 3">
+				:cols="12"
+				:md="index === 0 ? 6 : 3">
 				<QIconCard :card="card" />
 			</v-col>
 		</v-row>
