@@ -83,6 +83,7 @@
 					repeatCount="indefinite" />
 			</path>
 		</svg>
+		<p class="q-text-qrla_green">Compiling Data...</p>
 	</div>
 </template>
 
@@ -96,8 +97,10 @@ const shapePath = ref('M 90 100 Q 100 90 110 100 Q 100 110 90 100 Z')
 <style scoped>
 .loading-container {
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	gap: 8px;
 	height: 400px; /* Matches the card height */
 }
 </style>

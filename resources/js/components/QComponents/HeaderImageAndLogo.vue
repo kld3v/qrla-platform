@@ -22,7 +22,7 @@ const props = defineProps<{
 				class="border-4 border-solid rounded-full border-green-500 w-[240px] h-[240px] absolute top-[150px] left-[9.66%]" />
 		</div>
 		<div class="w-full flex flex-row mt-4 flex-wrap">
-			<div class="h-[80px] w-[400px] min-w-[300px]"></div>
+			<div class="h-[80px] w-full max-w-[420px]"></div>
 			<div class="text-left flex-row flex">
 				<div>
 					<h1 class="text-5xl">{{ name }}</h1>

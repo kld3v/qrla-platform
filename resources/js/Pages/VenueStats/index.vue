@@ -66,12 +66,11 @@ const IconCardData = [
 		<HeaderImageAndLogo
 			:bannerUrl="venue.banner_url"
 			:logoUrl="venue.logo_url"
-			class="mb-6" />
-		<VenueTitleAndAddress
 			:name="venue.name"
 			:address-line1="venue.address_line1"
 			:city="venue.city"
-			class="mb-12" />
+			class="mb-6" />
+
 		<v-row class="mb-6">
 			<v-col
 				cols="12"

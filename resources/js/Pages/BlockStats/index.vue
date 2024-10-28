@@ -107,12 +107,10 @@ const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blo
 		<HeaderImageAndLogo
 			:bannerUrl="venue.banner_url"
 			:logoUrl="venue.logo_url"
-			class="mb-6" />
-		<VenueTitleAndAddress
 			:name="venue.name"
 			:address-line1="venue.address_line1"
 			:city="venue.city"
-			class="mb-12" />
+			class="mb-6" />
 		<v-row class="mb-6">
 			<v-col
 				cols="12"
@@ -142,7 +140,7 @@ const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blo
 					<v-row>
 						<v-col
 							cols="12"
-							lg="6">
+							lg="5">
 							<QCard bg="dark-primary-gradient">
 								<QSelectableTable
 									:selected-blocks="selectedBlocks"
@@ -153,7 +151,8 @@ const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blo
 						</v-col>
 						<v-col
 							cols="12"
-							lg="6">
+							lg="7"
+							class="flex justify-center align-center">
 							<QInteractiveVenueMap
 								:updateSelectedBlockState="updateSelectedBlockState"
 								:svgUrl="venue.map_svg_url"
