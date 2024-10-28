@@ -25,7 +25,9 @@ class MarkerController extends Controller
             $markerable = $marker->markerable;
             $destinationUrl = $this->markerRedirectService->buildDestinationUrl($markerable, $marker->markerable_type);
             $redirectData = $this->markerRedirectService->getRedirectData($markerable);
-    
+            
+            \Log::channel('legacy')->info("Marker found, {$marker}");
+
             return view($redirectData['presetView'], [
                 'destination_url' => $destinationUrl,
                 'logoPath' => $redirectData['logoPath'],
