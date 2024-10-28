@@ -1,4 +1,6 @@
 branch-defaults:
+  dev:
+    environment: Qrla-b2b-env-prod
   levy-group-redirect-fix:
     environment: Qrla-b2b-env-prod
   master:
