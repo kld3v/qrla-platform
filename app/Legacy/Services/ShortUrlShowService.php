@@ -19,8 +19,8 @@ class ShortUrlShowService {
         Log::info("ShortUrlShowService::show - ShortUrl found", ['short_url_id' => $shortUrl->id]);
 
         if ($shortUrl->contactCard) {
-            $shortUrl->destination_url = $this->contactCardShow($short_code);
             Log::info("ShortUrlShowService::show - Contact card found, destination URL set", ['destination_url' => $shortUrl->destination_url]);
+            return $this->contactCardShow($short_code);
         }
 
         if ($shortUrl->status === 'rejected') {
@@ -53,22 +53,6 @@ class ShortUrlShowService {
         }
 
         Log::info("ShortUrlShowService::show - No redirect preset found.");
-    }
-
-    public function contactCardShow($short_code)
-    {
-        Log::info("ShortUrlShowService::contactCardShow - Started", ['short_code' => $short_code]);
-
-        $contactCard = ContactCard::whereHas('shortUrl', function ($query) use ($short_code) {
-            $query->where('short_code', $short_code);
-        })->firstOrFail();
-
-        Log::info("ShortUrlShowService::contactCardShow - ContactCard found", ['contact_card_id' => $contactCard->id]);
-
-        $filePath = base_path('app/Legacy/views/contact_cards/show.blade.php');
-        Log::info("ShortUrlShowService::contactCardShow - Rendering view", ['file_path' => $filePath]);
-
-        return View::file($filePath, compact('contactCard', 'short_code'));
     }
 
     public function contactCardShow($short_code)
