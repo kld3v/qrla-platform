@@ -1,2 +1,2 @@
 #!/bin/bash
-yum install -y php74-zip
+yum install -y php-zip
