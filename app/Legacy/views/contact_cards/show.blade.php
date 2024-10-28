@@ -293,7 +293,10 @@
                 </p>
             </div>
         </div>
-        <a href="{{ action([\App\Legacy\Services\ShortUrlShowService::class, 'downloadContactCard'], ['short_code' => $short_code]) }}" class="poppins-bold button__add-to-contacts">
+        <a 
+            href="data:text/vcard;base64,{{ $vcardContent }}" 
+            download="{{ $contactCard->name }}.vcf" 
+            class="poppins-bold button__add-to-contacts">
             Add to Contacts
             <img id="addToContactIcon" src="{{ asset('assets/addContact.svg') }}">
         </a>

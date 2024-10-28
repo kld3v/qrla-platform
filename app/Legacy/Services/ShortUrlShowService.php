@@ -71,22 +71,23 @@ class ShortUrlShowService {
         return View::file($filePath, compact('contactCard', 'short_code'));
     }
 
-    public function downloadContactCard($short_code)
+    public function contactCardShow($short_code)
     {
-        Log::info("ShortUrlShowService::downloadContactCard - Started", ['short_code' => $short_code]);
-
+        Log::info("ShortUrlShowService::contactCardShow - Started", ['short_code' => $short_code]);
+    
         $contactCard = ContactCard::whereHas('shortUrl', function ($query) use ($short_code) {
             $query->where('short_code', $short_code);
         })->firstOrFail();
-
-        Log::info("ShortUrlShowService::downloadContactCard - ContactCard found", ['contact_card_id' => $contactCard->id]);
-
+    
+        Log::info("ShortUrlShowService::contactCardShow - ContactCard found", ['contact_card_id' => $contactCard->id]);
+    
+        // Generate the vCard as a Base64 string
         $vcard = new VCard();
         $nameParts = explode(' ', $contactCard->name);
         $lastName = array_pop($nameParts);
         $firstName = implode(' ', $nameParts);
         $vcard->addName($lastName, $firstName);
-
+        
         if ($contactCard->company) {
             $vcard->addCompany($contactCard->company);
         }
@@ -103,22 +104,24 @@ class ShortUrlShowService {
             foreach ($contactCard->phone_numbers as $phone) {
                 $type = strtoupper($phone['type']);
                 $number = $phone['number'];
-
+    
                 if (!str_starts_with($number, '+44')) {
                     if (str_starts_with($number, '0')) {
                         $number = substr($number, 1);
                     }
                     $number = '+44' . $number;
                 }
-
+    
                 $vcard->addPhoneNumber($number, $type);
             }
         }
-
-        $fileName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $contactCard->name) . '.vcf';
-
-        return response($vcard->getOutput())
-            ->header('Content-Type', 'text/vcard')
-            ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
+    
+        $vcardContent = base64_encode($vcard->getOutput());
+    
+        $filePath = base_path('app/Legacy/views/contact_cards/show.blade.php');
+        Log::info("ShortUrlShowService::contactCardShow - Rendering view", ['file_path' => $filePath]);
+    
+        return View::file($filePath, compact('contactCard', 'short_code', 'vcardContent'));
     }
+    
 }
