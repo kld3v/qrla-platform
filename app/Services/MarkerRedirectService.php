@@ -19,7 +19,7 @@ class MarkerRedirectService
                     ]);
                 },
             ])
-            ->firstOrFail();
+            ->first();
     }
 
     public function buildDestinationUrl($markerable, $type)
