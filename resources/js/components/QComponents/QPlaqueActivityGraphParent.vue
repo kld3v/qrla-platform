@@ -10,7 +10,7 @@
 				class="text-left flex flex-col gap-y-2">
 				<h3 class="q-text-qrla_green h3">QRLA Plaque Activity</h3>
 				<p class="text-subtitle-1">Overview of Tap or Scans through plaques</p>
-				<p v-if="loading">Loading...</p>
+				<QSpicyLoading v-if="loading" />
 				<QPlaqueActivityGraph
 					v-else
 					:data="graphData?.current?.data" />
@@ -33,6 +33,7 @@ import QPlaqueActivityGraph from '@/components/QComponents/QPlaqueActivityGraph.
 import { getAccessesOverTime } from '@/utils/apiDataFetchers'
 import { BlockExtended, IdType, QPlaqueActivityGraphDataObject, TimeRange, VenuePageProps } from '@/types'
 import PlaqueGraphStatsIcons from '@/components/QComponents/QPlaqueTimeGraphStatsIcons.vue'
+import QSpicyLoading from './QSpicyLoading.vue'
 // Define Props
 const props = defineProps<{
 	selectedItem: BlockExtended | VenuePageProps

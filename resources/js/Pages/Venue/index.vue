@@ -2,7 +2,6 @@
 import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
 import FullLayout from '@/layouts/full/FullLayout.vue'
 import HeaderImageAndLogo from '@/components/QComponents/HeaderImageAndLogo.vue'
-import { ref } from 'vue'
 import { VenuePageProps } from '@/types'
 import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.vue'
 import QIconCardSet from '@/components/QComponents/QIconCardSet.vue'
