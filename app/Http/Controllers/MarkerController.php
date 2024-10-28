@@ -20,21 +20,21 @@ class MarkerController extends Controller
     public function handleMarkerRedirect($short_code)
     {
         $marker = $this->markerRedirectService->getMarkerByShortCode($short_code);
-
+    
         if ($marker) {
             $markerable = $marker->markerable;
-
             $destinationUrl = $this->markerRedirectService->buildDestinationUrl($markerable, $marker->markerable_type);
-
             $redirectData = $this->markerRedirectService->getRedirectData($markerable);
-
+    
             return view($redirectData['presetView'], [
                 'destination_url' => $destinationUrl,
                 'logoPath' => $redirectData['logoPath'],
                 'domain' => parse_url($destinationUrl, PHP_URL_HOST),
             ]);
         }
-
+    
+        \Log::channel('legacy')->info("Marker not found, attempting legacy lookup with ShortUrlShowService for short_code: {$short_code}");
+    
         try {
             return $this->shortUrlShowService->show(request(), $short_code);
         } catch (\Exception $e) {
@@ -42,4 +42,5 @@ class MarkerController extends Controller
             return abort(404, 'Short code not found.');
         }
     }
+    
 }
