@@ -38,7 +38,6 @@ const filterVenues = (array: VenuePageProps[]): VenuesTableData[] => {
 		}
 	})
 }
-console.log(filterVenues(props.venues))
 </script>
 <template>
 	<FullLayout
@@ -64,7 +63,7 @@ console.log(filterVenues(props.venues))
 				<QCardBanner
 					:title="$page.props.auth.user.name"
 					subHeading="Product and Systems Manager"
-					:imageSrc="auth.user.organisation.logo_path || QCARDCOMPANYLOGO" />
+					:imageSrc="auth.user.organisation?.logo_path || QCARDCOMPANYLOGO" />
 			</v-col>
 		</v-row>
 		<v-row class="mb-6">

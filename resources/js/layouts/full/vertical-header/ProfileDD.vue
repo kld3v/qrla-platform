@@ -3,6 +3,22 @@ import { MailIcon } from 'vue-tabler-icons'
 import { profileDD } from '@/_mockApis/headerData'
 import { Link } from '@inertiajs/vue3'
 import QCARDAVATAR from '@/assets/images/profile/user-1.jpg'
+import { router } from '@inertiajs/vue3'
+
+const handleClick = (item: any) => {
+	if (item.disabled) {
+		return
+	}
+
+	// Scroll to top
+	window.scrollTo({ top: 0, behavior: 'smooth' })
+
+	if (item.type === 'external') {
+		window.open(item.href, '_blank')
+	} else {
+		router.visit(item.href)
+	}
+}
 </script>
 
 <template>
@@ -53,13 +69,12 @@ import QCARDAVATAR from '@/assets/images/profile/user-1.jpg'
 							:key="item.title"
 							class="py-0 px-2 rounded-md custom-text-primary"
 							color="primary"
-							:to="item.href">
+							:to="item.href"
+							@click="() => handleClick(item)"
+							link>
 							<div class="d-flex gap-3 align-center">
-								<Link
-									:href="route(`${item.route}`)"
-									class="text-subtitle-1 heading custom-title"
-									>{{ item.title }}</Link
-								>
+								{{ item.title }}
+
 								<v-chip
 									size="small"
 									color="error"

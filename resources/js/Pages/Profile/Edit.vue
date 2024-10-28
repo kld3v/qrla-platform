@@ -49,7 +49,7 @@ const accountPageComponents: { title: string; subtitle: string; component: keyof
 		component: 'ChangeProfilePhoto',
 		props: {
 			endpoint: route('organisation.uploadLogo'),
-			defaultImage: props.organisation.logo_path,
+			defaultImage: props.organisation?.logo_path,
 		},
 	},
 ]
@@ -78,7 +78,7 @@ const componentMap = {
 				cols="12"
 				lg="3">
 				<QCardBanner
-					:title="props.auth.user.name"
+					:title="props.auth.user?.name"
 					buttonText="Manage Account"
 					:hideButton="true"
 					:imageSrc="props.auth.user.profile_photo_url || QCARDAVATAR" />
@@ -87,9 +87,9 @@ const componentMap = {
 				cols="12"
 				lg="3">
 				<QCardBanner
-					:title="props.organisation.name"
+					:title="props.organisation?.name"
 					subHeading="Product and Systems Manager"
-					:imageSrc="props.organisation.logo_path" />
+					:imageSrc="props.organisation?.logo_path" />
 			</v-col>
 		</v-row>
 		<v-row class="mb-6">
