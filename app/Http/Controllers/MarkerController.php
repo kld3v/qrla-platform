@@ -34,19 +34,21 @@ class MarkerController extends Controller
                 'logoPath' => $redirectData['logoPath'],
                 'domain' => parse_url($destinationUrl, PHP_URL_HOST),
             ]);
+        } else {
+            return $this->legacyShortUrlShow($short_code);
         }
     
-        Log::info("Marker not found, attempting legacy lookup with ShortUrlShowService for short_code: {$short_code}");
+        // Log::info("Marker not found, attempting legacy lookup with ShortUrlShowService for short_code: {$short_code}");
     
-        try {
-            return $this->shortUrlShowService->show(request(), $short_code);
-        } catch (\Exception $e) {
-            Log::error("Legacy lookup failed for short code: {$short_code}", ['exception' => $e]);
-            return abort(404, 'Short code not found.');
-        }
+        // try {
+        //     return $this->shortUrlShowService->show(request(), $short_code);
+        // } catch (\Exception $e) {
+        //     Log::error("Legacy lookup failed for short code: {$short_code}", ['exception' => $e]);
+        //     return abort(404, 'Short code not found.');
+        // }
     }
 
-    public function testShortUrlShow($short_code)
+    public function legacyShortUrlShow($short_code)
     {
         Log::info("Testing ShortUrlShowService for short_code: {$short_code}");
 

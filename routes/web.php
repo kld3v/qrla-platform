@@ -65,4 +65,4 @@ require __DIR__.'/auth.php';
 
 Route::get('/{short_code}', [MarkerController::class, 'handleMarkerRedirect'])->name('markers.redirect');
 
-Route::get('/test-short-url/{short_code}', [MarkerController::class, 'testShortUrlShow']);
+// Route::get('/test-short-url/{short_code}', [MarkerController::class, 'testShortUrlShow']);
