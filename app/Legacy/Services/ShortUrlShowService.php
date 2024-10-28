@@ -18,7 +18,7 @@ class ShortUrlShowService {
         Log::info("ShortUrlShowService::show - ShortUrl found", ['short_url_id' => $shortUrl->id]);
 
         if ($shortUrl->contactCard) {
-            $shortUrl->destination_url = route('contact_cards.show', ['short_code' => $short_code]);
+            $shortUrl->destination_url = $this->contactCardShow($short_code);
             Log::info("ShortUrlShowService::show - Contact card found, destination URL set", ['destination_url' => $shortUrl->destination_url]);
         }
 

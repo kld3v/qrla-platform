@@ -20,9 +20,8 @@ class MarkerController extends Controller
 
     public function handleMarkerRedirect($short_code)
     {
-        Log::info("Short Code {$short_code}");
         $marker = $this->markerRedirectService->getMarkerByShortCode($short_code);
-        Log::info("Marker {$marker}");
+
         if ($marker) {
             $markerable = $marker->markerable;
             $destinationUrl = $this->markerRedirectService->buildDestinationUrl($markerable, $marker->markerable_type);
@@ -35,29 +34,13 @@ class MarkerController extends Controller
                 'logoPath' => $redirectData['logoPath'],
                 'domain' => parse_url($destinationUrl, PHP_URL_HOST),
             ]);
-        } else {
-            return $this->legacyShortUrlShow($short_code);
-        }
+        } 
     
-        // Log::info("Marker not found, attempting legacy lookup with ShortUrlShowService for short_code: {$short_code}");
-    
-        // try {
-        //     return $this->shortUrlShowService->show(request(), $short_code);
-        // } catch (\Exception $e) {
-        //     Log::error("Legacy lookup failed for short code: {$short_code}", ['exception' => $e]);
-        //     return abort(404, 'Short code not found.');
-        // }
-    }
-
-    public function legacyShortUrlShow($short_code)
-    {
-        Log::info("Testing ShortUrlShowService for short_code: {$short_code}");
-
         try {
             return $this->shortUrlShowService->show(request(), $short_code);
         } catch (\Exception $e) {
-            Log::error("ShortUrlShowService test failed for short_code: {$short_code}", ['exception' => $e]);
-            return response()->json(['error' => 'Short code not found or service failure.'], 404);
+            Log::error("Legacy lookup failed for short code: {$short_code}", ['exception' => $e]);
+            return abort(404, 'Short code not found.');
         }
     }
 
