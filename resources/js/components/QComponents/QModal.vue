@@ -43,7 +43,7 @@ const save = async () => {
 <template>
 	<v-dialog
 		v-model="dialog"
-		class="w-[1400px] h-[1200px]">
+		class="w-[1400px] h-[95%]">
 		<template v-slot:activator="{ props }">
 			<v-btn
 				color="primary"

@@ -20,7 +20,6 @@ const props = defineProps<{
 	stands: Stand[]
 	nav: NavOptions
 }>()
-console.log(props)
 
 const selectedStand = ref<Stand>(props.stands[0])
 const changeSelectedStand = (standName: string): void => {
