@@ -45,4 +45,17 @@ class MarkerController extends Controller
             return abort(404, 'Short code not found.');
         }
     }
+
+    public function testShortUrlShow($short_code)
+    {
+        Log::info("Testing ShortUrlShowService for short_code: {$short_code}");
+
+        try {
+            return $this->shortUrlShowService->show(request(), $short_code);
+        } catch (\Exception $e) {
+            Log::error("ShortUrlShowService test failed for short_code: {$short_code}", ['exception' => $e]);
+            return response()->json(['error' => 'Short code not found or service failure.'], 404);
+        }
+    }
+
 }
