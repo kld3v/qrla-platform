@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\MarkerRedirectService;
 use App\Legacy\Services\ShortUrlShowService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class MarkerController extends Controller
 {
@@ -26,7 +27,7 @@ class MarkerController extends Controller
             $destinationUrl = $this->markerRedirectService->buildDestinationUrl($markerable, $marker->markerable_type);
             $redirectData = $this->markerRedirectService->getRedirectData($markerable);
             
-            \Log::channel('legacy')->info("Marker found, {$marker}");
+            Log::channel('legacy')->info("Marker found, {$marker}");
 
             return view($redirectData['presetView'], [
                 'destination_url' => $destinationUrl,
@@ -35,12 +36,12 @@ class MarkerController extends Controller
             ]);
         }
     
-        \Log::channel('legacy')->info("Marker not found, attempting legacy lookup with ShortUrlShowService for short_code: {$short_code}");
+        Log::channel('legacy')->info("Marker not found, attempting legacy lookup with ShortUrlShowService for short_code: {$short_code}");
     
         try {
             return $this->shortUrlShowService->show(request(), $short_code);
         } catch (\Exception $e) {
-            \Log::channel('legacy')->error("Legacy lookup failed for short code: {$short_code}", ['exception' => $e]);
+            Log::channel('legacy')->error("Legacy lookup failed for short code: {$short_code}", ['exception' => $e]);
             return abort(404, 'Short code not found.');
         }
     }
