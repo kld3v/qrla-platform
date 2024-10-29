@@ -131,54 +131,60 @@ class StatsOverTimeService
             $osData = [];
             $browsers = [];
         } else {
-            // Prepare base query
+            // Prepare base query without filtering out 'Unknown', null, or zero values
             $baseQuery = AccessLog::whereIn('marker_id', $markerIds);
     
             if ($startTime && $endTime) {
                 $baseQuery->whereBetween('accessed_at', [$startTime, $endTime]);
             }
     
-            // Get total access count
-            $totalAccessCount = $baseQuery->count();
-    
-            // Clone queries for OS and browsers
-            $osQuery = clone $baseQuery;
-            $browserQuery = clone $baseQuery;
-    
-            // Get OS counts and calculate percentages
-            $osData = $osQuery->select('os', DB::raw('COUNT(*) as access_count'))
+            // Retrieve OS and browser data
+            $osResults = $baseQuery->select('os', DB::raw('COUNT(*) as access_count'))
                 ->groupBy('os')
                 ->orderBy('access_count', 'desc')
                 ->get()
-                ->map(function ($item) use ($totalAccessCount) {
-                    $percentage = $totalAccessCount > 0 ? ($item->access_count / $totalAccessCount) * 100 : 0;
-                    return [
-                        'os' => $item->os ?: 'Unknown',
-                        'access_percentage' => round($percentage, 2),
-                    ];
-                })
                 ->toArray();
     
-            // Get browser counts and calculate percentages
-            $browsers = $browserQuery->select('browser', DB::raw('COUNT(*) as access_count'))
+            $browserResults = $baseQuery->select('browser', DB::raw('COUNT(*) as access_count'))
                 ->groupBy('browser')
                 ->orderBy('access_count', 'desc')
                 ->get()
-                ->map(function ($item) use ($totalAccessCount) {
-                    $percentage = $totalAccessCount > 0 ? ($item->access_count / $totalAccessCount) * 100 : 0;
-                    return [
-                        'browser' => $item->browser ?: 'Unknown',
-                        'access_percentage' => round($percentage, 2),
-                    ];
-                })
                 ->toArray();
+    
+            // Filter and calculate OS percentages in PHP
+            $filteredOsData = array_filter($osResults, function ($item) {
+                return $item['os'] !== null && $item['os'] !== 'Unknown' && $item['os'] !== '0';
+            });
+            $filteredTotalAccessCount = array_sum(array_column($filteredOsData, 'access_count'));
+    
+            $osData = array_map(function ($item) use ($filteredTotalAccessCount) {
+                $percentage = $filteredTotalAccessCount > 0 ? ($item['access_count'] / $filteredTotalAccessCount) * 100 : 0;
+                return [
+                    'os' => $item['os'],
+                    'access_percentage' => round($percentage, 1),
+                ];
+            }, $filteredOsData);
+    
+            // Filter and calculate browser percentages in PHP
+            $filteredBrowsers = array_filter($browserResults, function ($item) {
+                return $item['browser'] !== null && $item['browser'] !== 'Unknown' && $item['browser'] !== '0';
+            });
+            $filteredBrowserTotalAccessCount = array_sum(array_column($filteredBrowsers, 'access_count'));
+    
+            $browsers = array_map(function ($item) use ($filteredBrowserTotalAccessCount) {
+                $percentage = $filteredBrowserTotalAccessCount > 0 ? ($item['access_count'] / $filteredBrowserTotalAccessCount) * 100 : 0;
+                return [
+                    'browser' => $item['browser'],
+                    'access_percentage' => round($percentage, 1),
+                ];
+            }, $filteredBrowsers);
         }
     
         return [
             'os' => $osData,
             'browsers' => $browsers,
         ];
-    }
+    }    
     
 
     public function getAccessesByMarkerType($venueId, $blockId, $startTime, $endTime)
