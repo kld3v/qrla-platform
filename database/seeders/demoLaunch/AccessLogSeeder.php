@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\demoLaunch;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +20,7 @@ class AccessLogSeeder extends Seeder
             ->toArray();
 
         // Define some blocks that are busier (e.g., blocks 1, 2, 3 are busier)
-        $busierBlocks = array_fill(0, 2 * count($blockMarkers), $blockMarkers[array_rand($blockMarkers)]); // Increase chance for busy blocks
+        $busierBlocks = array_fill(0, 1.8 * count($blockMarkers), $blockMarkers[array_rand($blockMarkers)]); // Increase chance for busy blocks
 
         $totalRecordsForBlocks = 200000;
         $totalRecordsForAll = 300000;

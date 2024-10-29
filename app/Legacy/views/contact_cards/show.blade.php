@@ -293,12 +293,13 @@
                 </p>
             </div>
         </div>
-        <div class="add-to-contacts">
-            <a href="{{ route('contact_cards.download', ['short_code' => $short_code]) }}" class="poppins-bold button__add-to-contacts">
-                Add to Contacts
-                <img id="addToContactIcon" src="{{ asset('assets/addContact.svg') }}">
-            </a>
-        </div>
+        <a 
+            href="data:text/vcard;base64,{{ $vcardContent }}" 
+            download="{{ $contactCard->name }}.vcf" 
+            class="poppins-bold button__add-to-contacts">
+            Add to Contacts
+            <img id="addToContactIcon" src="{{ asset('assets/addContact.svg') }}">
+        </a>
     </div>
 </body>
 </html>

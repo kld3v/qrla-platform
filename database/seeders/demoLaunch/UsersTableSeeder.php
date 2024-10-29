@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\demoLaunch;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -19,6 +19,8 @@ class UsersTableSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'remember_token' => Str::random(10),
                 'organisation_id' => 1,
+                'role' => 'Admin',
+                'phone'=> '+44 7000000000',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -29,6 +31,8 @@ class UsersTableSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'remember_token' => Str::random(10),
                 'organisation_id' => 1,
+                'role' => 'Venue Manager',
+                'phone'=> '+44 7000000000',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

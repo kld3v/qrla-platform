@@ -1,4 +1,6 @@
 branch-defaults:
+  dev:
+    environment: Qrla-b2b-env-prod
   levy-group-redirect-fix:
     environment: Qrla-b2b-env-prod
   master:
@@ -9,6 +11,7 @@ environment-defaults:
     repository: null
 global:
   application_name: qrla-b2b
+  branch: null
   default_ec2_keyname: QRLA b2b
   default_platform: PHP 8.2 running on 64bit Amazon Linux 2023
   default_region: eu-west-2
@@ -16,6 +19,7 @@ global:
   instance_profile: null
   platform_name: null
   platform_version: null
-  profile: null
+  profile: eb-cli
+  repository: null
   sc: git
   workspace_type: Application
