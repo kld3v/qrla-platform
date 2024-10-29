@@ -28,13 +28,13 @@ class SeedDemoProductLaunch extends Command
             \Database\Seeders\demoLaunch\VenueUserTableSeeder::class,
             \Database\Seeders\demoLaunch\BaseUrlsTableSeeder::class,
             \Database\Seeders\demoLaunch\StandsTableSeeder::class,
+            \Database\Seeders\demoLaunch\RedirectPresetSeeder::class,
+            \Database\Seeders\demoLaunch\LogoSeeder::class,
+            \Database\Seeders\demoLaunch\RedirectSeeder::class,
             \Database\Seeders\demoLaunch\BlocksTableSeederStanfordBridge::class,
             \Database\Seeders\demoLaunch\BlocksTableSeederSwanseacom::class,
             \Database\Seeders\demoLaunch\SeatsTableSeeder::class,
             \Database\Seeders\demoLaunch\MarkersTableSeeder::class,
-            \Database\Seeders\demoLaunch\RedirectPresetSeeder::class,
-            \Database\Seeders\demoLaunch\LogoSeeder::class,
-            \Database\Seeders\demoLaunch\RedirectSeeder::class,
             \Database\Seeders\demoLaunch\AccessLogSeeder::class,
         ];
 
