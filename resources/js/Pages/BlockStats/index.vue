@@ -51,10 +51,7 @@ const assignColorsToBlocks = (): void => {
 		})
 	})
 }
-
-onMounted(() => {
-	assignColorsToBlocks()
-})
+assignColorsToBlocks()
 
 // to be relpaced with prop data
 const IconCardData = ref<any>([
