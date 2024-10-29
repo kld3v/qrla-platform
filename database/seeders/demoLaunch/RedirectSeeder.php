@@ -18,5 +18,10 @@ class RedirectSeeder extends Seeder
             'logo_id' => '1',
             'redirect_preset_id' => '1'
         ]);
+        Redirect::create([
+            'base_url_id' => '1',
+            'logo_id' => '2',
+            'redirect_preset_id' => '1'
+        ]);
     }
 }
