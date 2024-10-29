@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('blocks', function (Blueprint $table) {
             $table->foreignId('redirect_id')->constrained()->nullable();
-            $table->dropColumn('base_urls');
+            $table->dropColumn('base_url_id');
         });
     }
 
