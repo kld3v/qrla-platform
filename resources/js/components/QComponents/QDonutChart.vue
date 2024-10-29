@@ -9,7 +9,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import UiChildCard from '../shared/UiChildCard.vue'
 const props = defineProps<{
 	labels: string[]
 	data: number[]

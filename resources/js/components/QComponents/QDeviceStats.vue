@@ -29,15 +29,6 @@
 						>
 						<p>{{ operatingSystemStats ? operatingSystemStats.Android : '0' }} %</p>
 					</div>
-					<div class="flex justify-space-between align-center mt-4">
-						<span class="flex align-center">
-							<img
-								:src="ANDROIDICONGREEN"
-								alt="Green Android Icon" />
-							<p class="ml-4 mt-1 muted">Unknown</p></span
-						>
-						<p>{{ operatingSystemStats ? operatingSystemStats.Unknown : '0' }} %</p>
-					</div>
 				</QCard>
 			</v-col>
 		</v-row>

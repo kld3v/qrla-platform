@@ -13,9 +13,19 @@
 <script setup lang="ts">
 import QCard from '@/components/QComponents/QCard.vue'
 import QDonutChart from '@/components/QComponents/QDonutChart.vue'
+import { VenuePageProps } from '@/types'
+import { getAccessByMarkerType } from '@/utils/apiDataFetchers'
+import { onMounted } from 'vue'
 const props = defineProps<{
+	venue: VenuePageProps
 	data: number[]
 }>()
+console.log(props)
+
+onMounted(async () => {
+	let res = await getAccessByMarkerType('venue', props.venue.id)
+	console.log(res)
+})
 </script>
 
 <style></style>

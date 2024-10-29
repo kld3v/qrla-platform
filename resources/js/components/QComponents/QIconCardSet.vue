@@ -50,7 +50,7 @@ const gridColsClass = computed(() => {
 		elevation="10"
 		class="overflow-hidden">
 		<v-card-item :class="bgClass">
-			<h2 class="h2 q-text-qrla_green mb-4">{{ blockName ? `Overview for block ${blockName}` : 'General Overview' }}</h2>
+			<h2 class="h2 q-text-qrla_green mb-4">{{ blockName ? `Overview for Block ${blockName}` : 'General Overview' }}</h2>
 			<div :class="`grid ${gridColsClass} gap-4`">
 				<div
 					v-for="card in props.IconCardData"

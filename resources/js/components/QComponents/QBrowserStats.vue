@@ -12,7 +12,9 @@
 					bg="dark-primary-gradient"
 					custom-css="flex flex-col justify-space-between"
 					style="height: 200px; display: flex; height: auto; justify-content: space-evenly; flex-direction: column">
-					<QSpicyLoading v-if="loading"> </QSpicyLoading>
+					<QSpicyLoading v-if="loading">
+						<p class="q-text-qrla_green">Gathering Browser Data...</p>
+					</QSpicyLoading>
 					<div
 						v-else
 						v-for="(value, browser) in stats"
@@ -83,7 +85,6 @@ watch(
 			let res = await getAccessesByOsAndBrowser(props.idType, props.selectedItem.id)
 			updateDeviceStats(res.data.browsers)
 			loading.value = false
-			console.log(res, stats.value)
 		}
 	},
 	{ immediate: true } // Add immediate option if you want to call it on component mount as well

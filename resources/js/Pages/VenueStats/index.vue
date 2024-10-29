@@ -18,7 +18,7 @@ const props = defineProps<{
 	stands: Stand[]
 	nav: NavOptions
 }>()
-
+console.log(props)
 const isGlobalHome = ref(false)
 
 // to be relpaced with prop data
@@ -116,7 +116,7 @@ const IconCardData = [
 				cols="12"
 				lg="4">
 				<QTapOrScanDonut
-					:labels="['Taps', 'Scans']"
+					:venue="venue"
 					:data="[stats.total_block_visits, stats.total_seat_visits]" />
 			</v-col>
 		</v-row>
