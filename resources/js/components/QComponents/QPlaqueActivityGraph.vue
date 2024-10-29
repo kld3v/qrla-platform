@@ -84,7 +84,6 @@ watch(
 	() => props.data,
 	(newVal, oldVal) => {
 		if (newVal && newVal !== oldVal) {
-			console.log('data being passed to graph via props.data', props.data)
 			if (props.data) {
 				graphData.categories = props.data.map((el) => el.time_group)
 				graphData.total = props.data.map((el) => el.total_access_count)

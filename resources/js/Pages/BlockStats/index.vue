@@ -21,6 +21,7 @@ const props = defineProps<{
 	nav: NavOptions
 }>()
 
+console.log(props)
 const selectedStand = ref<Stand>(props.stands[0])
 const changeSelectedStand = (standName: string): void => {
 	for (const stand of props.stands) {
@@ -32,12 +33,11 @@ const changeSelectedStand = (standName: string): void => {
 	}
 }
 
-const selectedBlocks = ref<BlockExtended[]>([props.stands[0].blocks[2]])
+const selectedBlocks = ref<BlockExtended[]>([props.stands[0].blocks[0]])
 
 const updateSelectedBlockState = (blocks: BlockExtended[]) => {
 	// Use slice instead of splice to avoid modifying the original array
 	selectedBlocks.value = blocks.slice(blocks.length - 1, blocks.length)
-
 	console.log('new Mr Selected Blocks', selectedBlocks.value)
 }
 

@@ -20,7 +20,6 @@ const props = defineProps<{
 }>()
 
 const isGlobalHome = ref(false)
-console.log(props)
 
 // to be relpaced with prop data
 const IconCardData = [

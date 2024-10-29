@@ -5,15 +5,15 @@ import utc from 'dayjs/plugin/utc'
 
 dayjs.extend(utc)
 
-export const getAccessesByOs = async (idType: IdType, id: number): Promise<any> => {
+export const getAccessesByOsAndBrowser = async (idType: IdType, id: number): Promise<any> => {
 	let params: any = {}
 
-	const now = dayjs().utc().toISOString()
-	const oneWeekAgo = dayjs().utc().subtract(7, 'days').toISOString()
-
+	// const now = dayjs().utc().toISOString()
+	// const oneWeekAgo = dayjs().utc().subtract(7, 'days').toISOString()
+	// All time
 	// Add the time params
-	params.start_time = now
-	params.end_time = oneWeekAgo
+	// params.start_time = now
+	// params.end_time = oneWeekAgo
 
 	switch (idType) {
 		case 'venue':
@@ -26,6 +26,7 @@ export const getAccessesByOs = async (idType: IdType, id: number): Promise<any> 
 			break
 	}
 
+	console.log(params)
 	const res = await axios.get('/stats/accesses-by-os-browser', { params })
 
 	return res

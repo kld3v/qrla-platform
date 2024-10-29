@@ -126,3 +126,5 @@ interface QPlaqueActivityGraphDataObject {
 	seat_access_count: number
 	block_access_count: number
 }
+
+export type DeviceBrowserDataObject = { os: string; access_percentage: number; browser: string }

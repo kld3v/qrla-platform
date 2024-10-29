@@ -11,33 +11,18 @@
 				<QCard
 					bg="dark-primary-gradient"
 					custom-css="flex flex-col justify-space-between"
-					style="height: 200px; display: flex; height: 200px; justify-content: space-evenly; flex-direction: column">
-					<div class="flex justify-space-between align-center">
-						<span class="flex align-center">
+					style="height: 200px; display: flex; height: auto; justify-content: space-evenly; flex-direction: column">
+					<p v-if="loading">Loading</p>
+					<div
+						v-for="(value, browser) in stats"
+						class="flex justify-space-between align-center">
+						<span class="flex align-center mt-2">
 							<img
 								:src="GOOGLEICON"
 								alt="Green Apple Icon" />
-							<p class="ml-4 mt-2 muted">Chrome</p></span
+							<p class="ml-4 mt-2 muted">{{ browser }}</p></span
 						>
-						<p>{{ stats.chrome ? stats.chrome : 0 }} %</p>
-					</div>
-					<div class="flex justify-space-between align-center mt-4">
-						<span class="flex align-center">
-							<img
-								:src="GOOGLEICON"
-								alt="Green Android Icon" />
-							<p class="ml-4 mt-1 muted">Firefox</p></span
-						>
-						<p>{{ stats.firefox ? stats.firefox : 0 }} %</p>
-					</div>
-					<div class="flex justify-space-between align-center mt-4">
-						<span class="flex align-center">
-							<img
-								:src="GOOGLEICON"
-								alt="Green Android Icon" />
-							<p class="ml-4 mt-1 muted">Edge</p></span
-						>
-						<p>{{ stats.edge ? stats.edge : 0 }} %</p>
+						<p>{{ browser ? value : 0 }} %</p>
 					</div>
 				</QCard>
 			</v-col>
@@ -50,8 +35,9 @@ import GOOGLEICON from '@/assets/images/svgs/icon-chrome.svg'
 import { BlockExtended } from '@/types'
 import QCard from '@/components/QComponents/QCard.vue'
 import { ref, watch } from 'vue'
-import { getAccessesByOs } from '@/utils/apiDataFetchers'
+import { getAccessesByOsAndBrowser } from '@/utils/apiDataFetchers'
 import { VenuePageProps } from '@/types'
+import { DeviceBrowserDataObject } from '@/types'
 type IdType = 'venue' | 'block'
 
 const props = defineProps<{
@@ -61,20 +47,27 @@ const props = defineProps<{
 }>()
 
 const stats = ref({
-	chrome: 0,
-	firefox: 0,
-	edge: 0,
+	Chrome: 0,
+	Firefox: 0,
+	Edge: 0,
 })
 
+function updateDeviceStats(array: DeviceBrowserDataObject[]) {
+	array.forEach((obj) => {
+		stats.value[obj.browser as keyof typeof stats.value] = obj.access_percentage
+	})
+}
+const loading = ref(false)
 watch(
 	() => props.selectedItem, // Explicitly watch the selectedItem prop
 	async (newVal, oldVal) => {
 		if (newVal && newVal.id !== oldVal?.id) {
 			// Check if the value has actually changed
-			let res = await getAccessesByOs(props.idType, props.selectedItem.id)
-			stats.value.chrome = res.data.browsers[0]
-			stats.value.firefox = res.data.browsers[1]
-			stats.value.edge = res.data.browsers[2]
+			loading.value = true
+			let res = await getAccessesByOsAndBrowser(props.idType, props.selectedItem.id)
+			updateDeviceStats(res.data.browsers)
+			loading.value = false
+			console.log(res, stats.value)
 		}
 	},
 	{ immediate: true } // Add immediate option if you want to call it on component mount as well

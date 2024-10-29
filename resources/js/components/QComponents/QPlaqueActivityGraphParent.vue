@@ -70,7 +70,6 @@ const fetchData = async () => {
 	graphData.year = await getAccessesOverTime(props.idType, props.selectedItem.id, '1y')
 
 	// Set initial data for graph (e.g., default to last day) This needs to match the default value in the time scale menu
-	console.log(graphData.day)
 	graphData.current = graphData.threeMonths
 }
 
