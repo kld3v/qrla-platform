@@ -14,8 +14,8 @@ class MarkerRedirectService
             ->with([
                 'markerable' => function ($morphTo) {
                     $morphTo->morphWith([
-                        Block::class => ['baseUrl.redirect.logo', 'baseUrl.redirect.preset'],
-                        Seat::class => ['block.baseUrl.redirect.logo', 'block.baseUrl.redirect.preset'],
+                        Block::class => ['redirect.logo', 'redirect.preset'],
+                        Seat::class => ['block.redirect.logo', 'block.redirect.preset'],
                     ]);
                 },
             ])
@@ -25,13 +25,13 @@ class MarkerRedirectService
     public function buildDestinationUrl($markerable, $type)
     {
         if ($type === 'block') {
-            $baseUrl = $markerable->baseUrl->url;
+            $baseUrl = $markerable->redirect->baseUrl->url;
             $stand = $markerable->stand->name;
             $block = $markerable->name;
             return $baseUrl . "?stand=" . urlencode($stand) . "&block=" . urlencode($block);
         } elseif ($type === 'seat') {
             $block = $markerable->block;
-            $baseUrl = $block->baseUrl->url;
+            $baseUrl = $block->redirect->baseUrl->url;
             $stand = $block->stand->name;
             $blockName = $block->name;
             $row = $markerable->row;
@@ -45,14 +45,13 @@ class MarkerRedirectService
     public function getRedirectData($markerable)
     {
         if ($markerable instanceof Block) {
-            $baseUrl = $markerable->baseUrl;
+            $redirect = $markerable->redirect;
         } elseif ($markerable instanceof Seat) {
-            $baseUrl = $markerable->block->baseUrl;
+            $redirect = $markerable->block->redirect;
         } else {
             abort(404, 'Marker type not supported.');
         }
 
-        $redirect = $baseUrl->redirect;
         $logo = $redirect->logo;
         $logoPath = $logo ? $logo->path : null;
         $presetView = 'redirect_presets.' . $redirect->preset->file_name;

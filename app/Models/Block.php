@@ -12,7 +12,7 @@ class Block extends Model
     protected $fillable = [
         'name',
         'stand_id', 
-        'base_url_id',
+        'redirect_id',
         'plaques',
         'access_rate'
     ];
@@ -22,9 +22,9 @@ class Block extends Model
         return $this->belongsTo(Stand::class);
     }
 
-    public function baseUrl()
+    public function redirect()
     {
-        return $this->belongsTo(BaseUrl::class);
+        return $this->belongsTo(Redirect::class);
     }
 
     public function seats()

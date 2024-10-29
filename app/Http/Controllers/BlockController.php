@@ -81,15 +81,28 @@ class BlockController extends Controller
 
         $baseUrl = BaseUrl::create(['url' => $data['url']]);
 
-        foreach ($blocks as $block) {
-            $block->update(['base_url_id' => $baseUrl->id]);
-        }
+        $baseUrl = BaseUrl::create(['url' => $data['url']]);
 
+        $updatedBlocks = [];
+    
+        foreach ($blocks as $block) {
+            $existingRedirect = $block->redirect;
+    
+            if ($existingRedirect) {
+                $newRedirect = $existingRedirect->replicate();
+                $newRedirect->base_url_id = $baseUrl->id;
+                $newRedirect->save();
+
+                $block->update(['redirect_id' => $newRedirect->id]);
+                $updatedBlocks[] = $block;
+            }
+        }
+        
         return response()->json([
-            'message' => 'BaseUrl successfully assigned to blocks',
+            'message' => 'BaseUrl and associated Redirects successfully assigned to blocks',
             'base_url' => $baseUrl,
-            'updated_blocks' => $blocks
-        ]);
+            'updated_blocks' => $updatedBlocks
+        ]);    
     }
     
 }
