@@ -6,11 +6,11 @@
 				<QGraphTimeScaleMenu :handle-time-scale-change="handleTimeScaleChange" />
 			</div>
 			<QMenusAnchor
-				:initial-selected-item="'selection'"
+				:initial-selected-item="'All'"
 				label="Blocks"
 				menu-location="start"
 				dropdown-button-color="secondary"
-				:dropdown-options="['all']"></QMenusAnchor>
+				:dropdown-options="['All']"></QMenusAnchor>
 		</div>
 		<v-row>
 			<v-col
@@ -18,9 +18,11 @@
 				lg="6">
 				<QCard
 					bg="dark-primary-gradient"
-					custom-css="h-[400px] max-h-[480px]"
+					custom-css="h-[400px] max-h-[480px] h-full"
 					:overflow-y="true">
 					<p class="h4 mb-4">Top Performing Blocks</p>
+
+					<QSpicyLoading v-if="loading"> </QSpicyLoading>
 					<!-- accesses-by-block -->
 					<BlockPerformanceRow
 						v-if="blockPercentData.current"
@@ -78,6 +80,7 @@
 <script setup lang="ts">
 import STADIUMCHAIRS from '@/assets/images/QAssets/VenuePerformance/asset1.png'
 import QCard from '@/components/QComponents/QCard.vue'
+import QSpicyLoading from '@/components/QComponents/QSpicyLoading.vue'
 import QGraphTimeScaleMenu from '@/components/QComponents/QGraphTimeScaleMenu.vue'
 import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
 import BlockPerformanceRow from './BlockPerformanceRow.vue'

@@ -2,7 +2,6 @@
 import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
 import FullLayout from '@/layouts/full/FullLayout.vue'
 import HeaderImageAndLogo from '@/components/QComponents/HeaderImageAndLogo.vue'
-import { ref } from 'vue'
 import { VenuePageProps } from '@/types'
 import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.vue'
 import QIconCardSet from '@/components/QComponents/QIconCardSet.vue'
@@ -85,12 +84,11 @@ const IconCardData = [
 		<HeaderImageAndLogo
 			:bannerUrl="venue.banner_url"
 			:logoUrl="venue.logo_url"
-			class="mb-6" />
-		<VenueTitleAndAddress
 			:name="venue.name"
 			:address-line1="venue.address_line1"
 			:city="venue.city"
 			class="mb-12" />
+
 		<v-row class="mb-6">
 			<v-col
 				cols="12"

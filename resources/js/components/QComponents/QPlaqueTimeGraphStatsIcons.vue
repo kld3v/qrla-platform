@@ -11,7 +11,7 @@
 			</v-avatar>
 			<div class="ml-2">
 				<p>Total</p>
-				<p class="q-text-qrla_green font-bold">1126</p>
+				<p class="q-text-qrla_green font-bold">{{ returnSumOfTotalAccesses }}</p>
 			</div>
 		</div>
 		<div class="flex flex-row">
@@ -26,7 +26,7 @@
 			</v-avatar>
 			<div class="ml-2">
 				<p>Taps</p>
-				<p class="q-text-qrla_green font-bold">1126</p>
+				<p class="q-text-qrla_green font-bold">{{ returnSumOfTotalTaps }}</p>
 			</div>
 		</div>
 		<div class="flex flex-row">
@@ -40,14 +40,32 @@
 			</v-avatar>
 			<div class="ml-2">
 				<p>Scans</p>
-				<p class="q-text-qrla_green font-bold">1126</p>
+				<p class="q-text-qrla_green font-bold">{{ returnSumOfTotalScans }}</p>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
+import { QPlaqueActivityGraphDataObject } from '@/types'
 import { Icon } from '@iconify/vue'
+import { computed } from 'vue'
+
+const props = defineProps<{
+	data: QPlaqueActivityGraphDataObject[] | null | undefined
+}>()
+
+const returnSumOfTotalAccesses = computed(() => {
+	if (props.data) return props.data.reduce((sum, item) => sum + item.total_access_count, 0)
+})
+
+const returnSumOfTotalTaps = computed(() => {
+	if (props.data) return props.data.reduce((sum, item) => sum + item.seat_access_count, 0)
+})
+
+const returnSumOfTotalScans = computed(() => {
+	if (props.data) return props.data.reduce((sum, item) => sum + item.block_access_count, 0)
+})
 </script>
 
 <style></style>

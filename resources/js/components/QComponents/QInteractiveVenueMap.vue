@@ -35,7 +35,6 @@ const updateInternalBlocksState = (block: BlockExtended) => {
 
 const svgContent = ref('')
 const svgContainer = ref<SVGElement | null>(null)
-const standColorMap = ref({})
 const blockColorMap = ref({})
 
 const createBlockColorMap = () => {
@@ -62,8 +61,6 @@ const loadSvgFile = async () => {
 }
 
 const handlePolygonClick = (polygonIdWithUnderscores: string) => {
-	console.log('Polygon clicked:', polygonIdWithUnderscores)
-
 	let clickedBlock: BlockExtended | null = null
 
 	// Find the block that corresponds to the clicked polygon
@@ -88,6 +85,7 @@ const handlePolygonClick = (polygonIdWithUnderscores: string) => {
 }
 
 const addPolygonHoverEffects = () => {
+	console.log('run!')
 	let polygons: NodeListOf<SVGPolygonElement> | null = null
 
 	if (svgContainer.value) {
@@ -165,7 +163,6 @@ watch(
 	(newVal, oldVal) => {
 		// internalSelectedBlocks.value = newVal
 		// console.log('local state: updated and next tick called!', internalSelectedBlocks.value)
-		console.log('addPolygonHoverEffects')
 		internalSelectedBlocks.value = newVal
 		nextTick(() => {
 			addPolygonHoverEffects()

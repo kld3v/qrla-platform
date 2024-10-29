@@ -48,33 +48,27 @@ const submit = () => {
 				cols="12"
 				lg="5"
 				xl="4"
-				class="bg-white auth">
+				class="bg-surface auth">
 				<div class="d-flex justify-center align-center h-100">
 					<div class="mt-xl-0 mt-5 auth-card">
 						<LogoIcon />
-						<h2 class="text-h3 my-3 text-q-color-blue">Sign in</h2>
-						<div class="mb-6 text-q-color-blue">Your Admin Dashboard</div>
+						<h2 class="text-h3 my-3">Sign in</h2>
+						<div class="mb-6">Your Admin Dashboard</div>
 						<Form
 							class="mt-5"
 							@submit="submit">
-							<v-label class="font-weight-semibold pb-2 opacity-1"
-								><p
-									style="opacity: 1"
-									class="!text-q-color-blue">
-									Username
-								</p></v-label
-							>
+							<v-label class="font-weight-semibold pb-2 text-white opacity-1"> Email </v-label>
 							<VTextField
 								v-model="form.email"
 								:rules="emailRules"
-								class="mb-8 !bg-white"
+								class="mb-8 !text-black"
 								required
-								hide-details="auto"></VTextField>
+								hide-details="auto" />
 
 							<InputError
 								class=""
 								:message="form.errors.email" />
-							<v-label class="font-weight-semibold pb-2 opacity-1">Password</v-label>
+							<v-label class="font-weight-semibold pb-2 opacity-1 text-white">Password</v-label>
 							<VTextField
 								v-model="form.password"
 								:rules="passwordRules"
@@ -88,7 +82,7 @@ const submit = () => {
 								:message="form.errors.password" />
 							<div class="d-flex flex-wrap align-center my-3 ml-n2">
 								<v-checkbox
-									class="pe-2"
+									class="pe-2 text-white opacity-1"
 									v-model="form.remember"
 									:rules="[(v: any) => !!v || 'You must agree to continue!']"
 									required
@@ -96,7 +90,7 @@ const submit = () => {
 									color="primary">
 									<template
 										v-slot:label
-										class="font-weight-medium"
+										class="font-weight-medium text-white"
 										>Remember this Device</template
 									>
 								</v-checkbox>
@@ -153,16 +147,10 @@ const submit = () => {
 							lg="7">
 							<h1 class="text-h1 text-white lh-normal mb-4">Welcome to</h1>
 							<img
+								class="ml-[-18px]"
 								:src="QRLATITLE"
 								alt="qrla title" />
 							<p class="text-h6 text-white opacity-80 font-weight-regular mt-4 lh-md">Connecting you to your customers via the physical-digital space.</p>
-							<v-btn
-								to="/"
-								size="large"
-								color="primary"
-								class="mt-5">
-								Learn More
-							</v-btn>
 						</v-col>
 					</v-row>
 				</div>

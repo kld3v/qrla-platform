@@ -11,5 +11,4 @@ defineProps<{
 	<SideLogin
 		:can-reset-password="canResetPassword"
 		:status="status" />
-	<!-- <BoxedLogin /> -->
 </template>

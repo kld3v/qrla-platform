@@ -20,6 +20,13 @@ import { Icon } from '@iconify/vue'
 		<img
 			src="@/assets/images/QAssets/LOGO.png"
 			alt="matdash-img"
-			class="absolute top-[18%] mr-4" />
+			class="absolute top-[18%] mr-4 logo-image" />
 	</v-card>
 </template>
+<style lang="scss">
+@media (max-width: 1700px) {
+	.logo-image {
+		display: none;
+	}
+}
+</style>
