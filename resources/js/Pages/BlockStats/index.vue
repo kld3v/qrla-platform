@@ -34,11 +34,25 @@ const changeSelectedStand = (standName: string): void => {
 }
 
 const selectedBlocks = ref<BlockExtended[]>([props.stands[0].blocks[0]])
+const targetSection = ref(null)
+function scrollToSection() {
+	const offset = 40 // Offset in pixels
 
+	// Calculate the scroll position with the offset
+	//@ts-ignore
+	const sectionPosition = targetSection.value?.$el.getBoundingClientRect().top + window.pageYOffset - offset
+
+	// Scroll to the calculated position
+	window.scrollTo({
+		top: sectionPosition,
+		behavior: 'smooth',
+	})
+}
 const updateSelectedBlockState = (blocks: BlockExtended[]) => {
 	// Use slice instead of splice to avoid modifying the original array
 	selectedBlocks.value = blocks.slice(blocks.length - 1, blocks.length)
 	console.log('new Mr Selected Blocks', selectedBlocks.value)
+	scrollToSection()
 }
 
 const assignColorsToBlocks = (): void => {
@@ -165,6 +179,7 @@ const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blo
 				cols="12"
 				lg="12">
 				<QIconCardSet
+					ref="targetSection"
 					:block-name="selectedBlocks[0].name"
 					:IconCardData="IconCardData"
 					bg="#151C25" />

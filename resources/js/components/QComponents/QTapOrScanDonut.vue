@@ -23,7 +23,6 @@ const props = defineProps<{
 	selectedItem: BlockExtended | VenuePageProps
 	idType: IdType
 }>()
-console.log(props)
 const loading = ref(false)
 const data = ref<
 	{
@@ -55,7 +54,6 @@ watch(
 			let res = await getAccessByMarkerType(props.idType, props.selectedItem.id)
 			loading.value = false
 			data.value = res.data
-			console.log(res)
 		}
 	},
 	{ immediate: true } // Add immediate option if you want to call it on component mount as well
