@@ -27,7 +27,8 @@ class Venue extends Model
         'organisation_id',
         'plaques',
         'access_rate',
-        'map_svg_url'
+        'map_svg_url',
+        'plaque_image_url'
     ];
 
 

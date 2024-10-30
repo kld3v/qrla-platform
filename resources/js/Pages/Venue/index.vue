@@ -128,9 +128,9 @@ const IconCardData = [
 							</Link>
 						</div>
 						<img
-							:src="HorizontalPlaque"
-							class="h-full mt-2"
-							alt="HorizontalPlaque" />
+								:src="venue.plaque_image_url"
+								class="h-full mt-2 max-w-[500px]"
+								alt="Plaque Image" />
 					</div>
 				</QCard>
 			</v-col>

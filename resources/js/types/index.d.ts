@@ -105,6 +105,7 @@ export type VenuePageProps = {
 	plaques: number
 	access_rate: string
 	map_svg_url: string
+	plaque_image_url: string
 }
 export interface Organisation {
 	id: number
