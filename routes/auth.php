@@ -19,6 +19,9 @@ Route::middleware('guest')->group(function () {
 
     Route::post('register', [RegisteredUserController::class, 'store']);
 
+    Route::get('/register/{token}', [RegisteredUserController::class, 'showRegistrationFormWithToken'])
+        ->name('register.token');
+
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
                 ->name('login');
 

@@ -3,5 +3,5 @@ import SideRegister from '@/views/authentication/SideRegister.vue'
 </script>
 
 <template>
-	<SideRegister />
+	<SideRegister :token="page.props.token" />
 </template>
