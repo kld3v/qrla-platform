@@ -131,47 +131,61 @@ class StatsOverTimeService
             $osData = [];
             $browsers = [];
         } else {
-            // Prepare base query
+            // Prepare base query without filtering out 'Unknown', null, or zero values
             $baseQuery = AccessLog::whereIn('marker_id', $markerIds);
     
             if ($startTime && $endTime) {
                 $baseQuery->whereBetween('accessed_at', [$startTime, $endTime]);
             }
     
-            // Get total access count
-            $totalAccessCount = $baseQuery->count();
-    
-            // Clone queries for OS and browsers
-            $osQuery = clone $baseQuery;
-            $browserQuery = clone $baseQuery;
-    
-            // Get OS counts and calculate percentages
-            $osData = $osQuery->select('os', DB::raw('COUNT(*) as access_count'))
+            // Retrieve OS and browser data
+            $osResults = $baseQuery->select('os', DB::raw('COUNT(*) as access_count'))
                 ->groupBy('os')
                 ->orderBy('access_count', 'desc')
                 ->get()
-                ->map(function ($item) use ($totalAccessCount) {
-                    $percentage = $totalAccessCount > 0 ? ($item->access_count / $totalAccessCount) * 100 : 0;
-                    return [
-                        'os' => $item->os ?: 'Unknown',
-                        'access_percentage' => round($percentage, 2),
-                    ];
-                })
                 ->toArray();
     
-            // Get browser counts and calculate percentages
-            $browsers = $browserQuery->select('browser', DB::raw('COUNT(*) as access_count'))
+            $browserResults = $baseQuery->select('browser', DB::raw('COUNT(*) as access_count'))
                 ->groupBy('browser')
                 ->orderBy('access_count', 'desc')
                 ->get()
-                ->map(function ($item) use ($totalAccessCount) {
-                    $percentage = $totalAccessCount > 0 ? ($item->access_count / $totalAccessCount) * 100 : 0;
-                    return [
-                        'browser' => $item->browser ?: 'Unknown',
-                        'access_percentage' => round($percentage, 2),
-                    ];
-                })
                 ->toArray();
+    
+            $filteredOsData = array_filter($osResults, function ($item) {
+                return $item['os'] !== null && $item['os'] !== 'Unknown' && $item['os'] !== '0' && $item['os'] !== '';
+            });
+            $filteredTotalAccessCount = array_sum(array_column($filteredOsData, 'access_count'));
+    
+            $osData = array_values(array_map(function ($item) use ($filteredTotalAccessCount) {
+                $percentage = $filteredTotalAccessCount > 0 ? ($item['access_count'] / $filteredTotalAccessCount) * 100 : 0;
+                return [
+                    'os' => $item['os'],
+                    'access_percentage' => round($percentage, 1),
+                ];
+            }, $filteredOsData));
+    
+            // Aggregate browser counts by browser name, excluding empty, null, "Unknown", and "0" values
+            $aggregatedBrowsers = [];
+            foreach ($browserResults as $browser) {
+                $name = $browser['browser'];
+                if ($name !== null && $name !== 'Unknown' && $name !== '0' && $name !== '') {
+                    if (!isset($aggregatedBrowsers[$name])) {
+                        $aggregatedBrowsers[$name] = 0;
+                    }
+                    $aggregatedBrowsers[$name] += $browser['access_count'];
+                }
+            }
+    
+            // Calculate browser percentages based on aggregated data
+            $filteredBrowserTotalAccessCount = array_sum($aggregatedBrowsers);
+    
+            $browsers = array_values(array_map(function ($name) use ($aggregatedBrowsers, $filteredBrowserTotalAccessCount) {
+                $percentage = $filteredBrowserTotalAccessCount > 0 ? ($aggregatedBrowsers[$name] / $filteredBrowserTotalAccessCount) * 100 : 0;
+                return [
+                    'browser' => $name,
+                    'access_percentage' => round($percentage, 1),
+                ];
+            }, array_keys($aggregatedBrowsers)));
         }
     
         return [
@@ -179,6 +193,7 @@ class StatsOverTimeService
             'browsers' => $browsers,
         ];
     }
+    
     
 
     public function getAccessesByMarkerType($venueId, $blockId, $startTime, $endTime)

@@ -50,7 +50,7 @@ const gridColsClass = computed(() => {
 		elevation="10"
 		class="overflow-hidden">
 		<v-card-item :class="bgClass">
-			<h2 class="h2 q-text-qrla_green mb-4">{{ blockName ? `Overview for block ${blockName}` : 'General Overview' }}</h2>
+			<h2 class="h2 q-text-qrla_green mb-4">{{ blockName ? `Overview for Block ${blockName}` : 'General Overview' }}</h2>
 			<div :class="`grid ${gridColsClass} gap-4`">
 				<div
 					v-for="card in props.IconCardData"
@@ -76,7 +76,7 @@ const gridColsClass = computed(() => {
 						<p class="mb-1">{{ card.title }}</p>
 						<div class="flex gap-x-2 align-center justify-center">
 							<h3 class="text-h3 heading">{{ card.data }}</h3>
-							<p v-if="card.delta">{{ card.delta > 0 ? '+' : null }}{{ card.delta }}%</p>
+							<!-- <p v-if="card.delta">{{ card.delta > 0 ? '+' : null }}{{ card.delta }}%</p> -->
 						</div>
 						<Link
 							v-if="card.link"

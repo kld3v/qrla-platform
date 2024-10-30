@@ -14,6 +14,7 @@ import QTapOrScanDonut from '@/components/QComponents/QTapOrScanDonut.vue'
 import QBrowserStats from '@/components/QComponents/QBrowserStats.vue'
 import QPlaqueTimeGraph from '@/components/QComponents/QPlaqueActivityGraphParent.vue'
 import QInteractiveVenueMap from '@/components/QComponents/QInteractiveVenueMap.vue'
+import { formatNumberWithCommas } from '@/utils/helpers/numbers'
 
 const props = defineProps<{
 	venue: VenuePageProps
@@ -21,6 +22,7 @@ const props = defineProps<{
 	nav: NavOptions
 }>()
 
+console.log(props)
 const selectedStand = ref<Stand>(props.stands[0])
 const changeSelectedStand = (standName: string): void => {
 	for (const stand of props.stands) {
@@ -32,13 +34,26 @@ const changeSelectedStand = (standName: string): void => {
 	}
 }
 
-const selectedBlocks = ref<BlockExtended[]>([props.stands[0].blocks[2]])
+const selectedBlocks = ref<BlockExtended[]>([props.stands[0].blocks[0]])
+const targetSection = ref(null)
+function scrollToSection() {
+	const offset = 40 // Offset in pixels
 
+	// Calculate the scroll position with the offset
+	//@ts-ignore
+	const sectionPosition = targetSection.value?.$el.getBoundingClientRect().top + window.pageYOffset - offset
+
+	// Scroll to the calculated position
+	window.scrollTo({
+		top: sectionPosition,
+		behavior: 'smooth',
+	})
+}
 const updateSelectedBlockState = (blocks: BlockExtended[]) => {
 	// Use slice instead of splice to avoid modifying the original array
 	selectedBlocks.value = blocks.slice(blocks.length - 1, blocks.length)
-
 	console.log('new Mr Selected Blocks', selectedBlocks.value)
+	scrollToSection()
 }
 
 const assignColorsToBlocks = (): void => {
@@ -51,28 +66,25 @@ const assignColorsToBlocks = (): void => {
 		})
 	})
 }
-
-onMounted(() => {
-	assignColorsToBlocks()
-})
+assignColorsToBlocks()
 
 // to be relpaced with prop data
 const IconCardData = ref<any>([
 	{
 		bg: 'primary-gradient',
-		icon: 'lucide:nfc',
+		icon: 'iconamoon:eye',
 		color: 'primary',
 		title: 'Total Visits',
-		data: selectedBlocks.value[0].stats.total_visits,
+		data: formatNumberWithCommas(selectedBlocks.value[0].stats.total_visits),
 		link: '',
 		delta: 40,
 	},
 	{
 		bg: 'purple-gradient',
-		icon: 'streamline:wave-signal-solid',
+		icon: 'lucide:nfc',
 		color: 'purple',
 		title: 'Visits By Tap',
-		data: selectedBlocks.value[0].stats.total_seat_visits,
+		data: formatNumberWithCommas(selectedBlocks.value[0].stats.total_seat_visits),
 		link: '',
 		delta: -23,
 	},
@@ -81,13 +93,13 @@ const IconCardData = ref<any>([
 		icon: 'uil:qrcode-scan',
 		color: 'success',
 		title: 'Visits By Scan',
-		data: selectedBlocks.value[0].stats.total_block_visits,
+		data: formatNumberWithCommas(selectedBlocks.value[0].stats.total_block_visits),
 		link: '',
 		delta: 12,
 	},
 	{
 		bg: 'error-gradient',
-		icon: 'ic:baseline-sync-problem',
+		icon: 'ph:chart-line-up',
 		color: 'error',
 		title: 'Average Activity Level',
 		data: selectedBlocks.value[0].access_rate,
@@ -95,6 +107,7 @@ const IconCardData = ref<any>([
 		delta: 40,
 	},
 ])
+console.log(selectedBlocks.value)
 
 const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blocks.map((el: BlockExtended) => el))
 </script>
@@ -167,6 +180,7 @@ const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blo
 				cols="12"
 				lg="12">
 				<QIconCardSet
+					ref="targetSection"
 					:block-name="selectedBlocks[0].name"
 					:IconCardData="IconCardData"
 					bg="#151C25" />
@@ -203,7 +217,9 @@ const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blo
 			<v-col
 				cols="12"
 				lg="4">
-				<QTapOrScanDonut :data="[selectedBlocks[0].stats.total_block_visits, selectedBlocks[0].stats.total_seat_visits]" />
+				<QTapOrScanDonut
+					:selected-item="selectedBlocks[0]"
+					idType="block" />
 			</v-col>
 		</v-row>
 	</FullLayout>

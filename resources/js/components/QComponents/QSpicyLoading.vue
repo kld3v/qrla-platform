@@ -83,7 +83,7 @@
 					repeatCount="indefinite" />
 			</path>
 		</svg>
-		<p class="q-text-qrla_green">Compiling Data...</p>
+		<slot> </slot>
 	</div>
 </template>
 

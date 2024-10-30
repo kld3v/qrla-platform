@@ -3,7 +3,6 @@ import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
 import FullLayout from '@/layouts/full/FullLayout.vue'
 import HeaderImageAndLogo from '@/components/QComponents/HeaderImageAndLogo.vue'
 import { VenuePageProps } from '@/types'
-import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.vue'
 import QIconCardSet from '@/components/QComponents/QIconCardSet.vue'
 import QCard from '@/components/QComponents/QCard.vue'
 import HorizontalPlaque from '@/assets/images/QAssets/chelspng 1horizontal_plaque.png'
@@ -112,7 +111,7 @@ const IconCardData = [
 				<QCard bg="dark-primary-gradient">
 					<div class="flex justify-center gap-x-8 align-center">
 						<div class="text-left flex flex-col gap-4 max-w-[400px]">
-							<h3 class="h3">Your Qrla Plaques!</h3>
+							<h3 class="h3">Your QRLA Plaques!</h3>
 							<p
 								class="h3"
 								style="font-weight: 100">

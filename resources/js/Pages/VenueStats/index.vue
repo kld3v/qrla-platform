@@ -11,6 +11,7 @@ import QDeviceStats from '@/components/QComponents/QDeviceStats.vue'
 import QBrowserStats from '@/components/QComponents/QBrowserStats.vue'
 import QTapOrScanDonut from '@/components/QComponents/QTapOrScanDonut.vue'
 import BlockPerformanceComponent from './Partials/BlockPerformanceComponent.vue'
+import { formatNumberWithCommas } from '@/utils/helpers/numbers'
 
 const props = defineProps<{
 	venue: VenuePageProps
@@ -18,9 +19,8 @@ const props = defineProps<{
 	stands: Stand[]
 	nav: NavOptions
 }>()
-
-const isGlobalHome = ref(false)
 console.log(props)
+const isGlobalHome = ref(false)
 
 // to be relpaced with prop data
 const IconCardData = [
@@ -29,7 +29,7 @@ const IconCardData = [
 		icon: 'lucide:nfc',
 		color: 'primary',
 		title: 'Venue Capacity',
-		data: props.venue.capacity,
+		data: formatNumberWithCommas(props.venue.capacity),
 		link: '',
 	},
 	{
@@ -45,7 +45,7 @@ const IconCardData = [
 		icon: 'uil:qrcode-scan',
 		color: 'success',
 		title: 'QRLA Plaques',
-		data: props.venue.plaques,
+		data: formatNumberWithCommas(props.venue.plaques),
 		link: '',
 	},
 	{
@@ -117,7 +117,8 @@ const IconCardData = [
 				cols="12"
 				lg="4">
 				<QTapOrScanDonut
-					:labels="['Taps', 'Scans']"
+					:selected-item="venue"
+					id-type="venue"
 					:data="[stats.total_block_visits, stats.total_seat_visits]" />
 			</v-col>
 		</v-row>
