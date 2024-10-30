@@ -148,7 +148,8 @@ const saveNewEndDestinationURl = async (): Promise<void> => {
 															:selected-blocks="selectedBlocks"
 															:update-selected-block-state="updateSelectedBlockState"
 															:block-data="returnSelectedStandBlocksForTable"
-															select-strategy="all" />
+															select-strategy="all"
+															compact />
 													</QCard>
 												</v-col>
 												<v-col
