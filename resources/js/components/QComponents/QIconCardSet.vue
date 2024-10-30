@@ -76,7 +76,7 @@ const gridColsClass = computed(() => {
 						<p class="mb-1">{{ card.title }}</p>
 						<div class="flex gap-x-2 align-center justify-center">
 							<h3 class="text-h3 heading">{{ card.data }}</h3>
-							<p v-if="card.delta">{{ card.delta > 0 ? '+' : null }}{{ card.delta }}%</p>
+							<!-- <p v-if="card.delta">{{ card.delta > 0 ? '+' : null }}{{ card.delta }}%</p> -->
 						</div>
 						<Link
 							v-if="card.link"

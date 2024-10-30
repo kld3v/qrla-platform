@@ -116,7 +116,8 @@ const IconCardData = [
 				cols="12"
 				lg="4">
 				<QTapOrScanDonut
-					:venue="venue"
+					:selected-item="venue"
+					id-type="venue"
 					:data="[stats.total_block_visits, stats.total_seat_visits]" />
 			</v-col>
 		</v-row>

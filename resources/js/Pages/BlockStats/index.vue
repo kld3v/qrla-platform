@@ -92,6 +92,7 @@ const IconCardData = ref<any>([
 		delta: 40,
 	},
 ])
+console.log(selectedBlocks.value)
 
 const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blocks.map((el: BlockExtended) => el))
 </script>
@@ -200,7 +201,9 @@ const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blo
 			<v-col
 				cols="12"
 				lg="4">
-				<QTapOrScanDonut :data="[selectedBlocks[0].stats.total_block_visits, selectedBlocks[0].stats.total_seat_visits]" />
+				<QTapOrScanDonut
+					:selected-item="selectedBlocks[0]"
+					idType="block" />
 			</v-col>
 		</v-row>
 	</FullLayout>
