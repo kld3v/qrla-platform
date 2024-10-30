@@ -83,7 +83,7 @@ watch(
 			// Check if the value has actually changed
 			loading.value = true
 			let res = await getAccessesByOsAndBrowser(props.idType, props.selectedItem.id)
-			// updateDeviceStats(res.data.browsers)
+			updateDeviceStats(res.data.browsers)
 			console.log(res)
 			loading.value = false
 		}

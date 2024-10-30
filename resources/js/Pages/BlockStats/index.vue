@@ -14,6 +14,7 @@ import QTapOrScanDonut from '@/components/QComponents/QTapOrScanDonut.vue'
 import QBrowserStats from '@/components/QComponents/QBrowserStats.vue'
 import QPlaqueTimeGraph from '@/components/QComponents/QPlaqueActivityGraphParent.vue'
 import QInteractiveVenueMap from '@/components/QComponents/QInteractiveVenueMap.vue'
+import { formatNumberWithCommas } from '@/utils/helpers/numbers'
 
 const props = defineProps<{
 	venue: VenuePageProps
@@ -74,7 +75,7 @@ const IconCardData = ref<any>([
 		icon: 'lucide:nfc',
 		color: 'primary',
 		title: 'Total Visits',
-		data: selectedBlocks.value[0].stats.total_visits,
+		data: formatNumberWithCommas(selectedBlocks.value[0].stats.total_visits),
 		link: '',
 		delta: 40,
 	},
@@ -83,7 +84,7 @@ const IconCardData = ref<any>([
 		icon: 'streamline:wave-signal-solid',
 		color: 'purple',
 		title: 'Visits By Tap',
-		data: selectedBlocks.value[0].stats.total_seat_visits,
+		data: formatNumberWithCommas(selectedBlocks.value[0].stats.total_seat_visits),
 		link: '',
 		delta: -23,
 	},
@@ -92,7 +93,7 @@ const IconCardData = ref<any>([
 		icon: 'uil:qrcode-scan',
 		color: 'success',
 		title: 'Visits By Scan',
-		data: selectedBlocks.value[0].stats.total_block_visits,
+		data: formatNumberWithCommas(selectedBlocks.value[0].stats.total_block_visits),
 		link: '',
 		delta: 12,
 	},

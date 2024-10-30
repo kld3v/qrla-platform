@@ -11,6 +11,7 @@ import QDeviceStats from '@/components/QComponents/QDeviceStats.vue'
 import QBrowserStats from '@/components/QComponents/QBrowserStats.vue'
 import QTapOrScanDonut from '@/components/QComponents/QTapOrScanDonut.vue'
 import BlockPerformanceComponent from './Partials/BlockPerformanceComponent.vue'
+import { formatNumberWithCommas } from '@/utils/helpers/numbers'
 
 const props = defineProps<{
 	venue: VenuePageProps
@@ -28,7 +29,7 @@ const IconCardData = [
 		icon: 'lucide:nfc',
 		color: 'primary',
 		title: 'Venue Capacity',
-		data: props.venue.capacity,
+		data: formatNumberWithCommas(props.venue.capacity),
 		link: '',
 	},
 	{
@@ -44,7 +45,7 @@ const IconCardData = [
 		icon: 'uil:qrcode-scan',
 		color: 'success',
 		title: 'QRLA Plaques',
-		data: props.venue.plaques,
+		data: formatNumberWithCommas(props.venue.plaques),
 		link: '',
 	},
 	{
