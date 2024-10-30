@@ -13,37 +13,24 @@ class AccessLogSeeder extends Seeder
     {
         $batchSize = 1000; // Adjust the batch size based on available memory
 
-        // First, find all markers with markerable_type == 'block'
+        // Fetch all block marker IDs
         $blockMarkers = DB::table('markers')
             ->where('markerable_type', 'block')
             ->pluck('id')
             ->toArray();
 
-        // Define some blocks that are busier (e.g., blocks 1, 2, 3 are busier)
-        $busierBlocks = array_fill(0, 1.8 * count($blockMarkers), $blockMarkers[array_rand($blockMarkers)]); // Increase chance for busy blocks
+        // Define busier blocks (e.g., top 10% busiest blocks)
+        $busierBlockIds = $this->selectBusierBlocks($blockMarkers);
 
-        $totalRecordsForBlocks = 200000;
-        $totalRecordsForAll = 300000;
+        $totalRecords = 500000;
         $batches = [];
 
-        // Generate 200,000 records for block markers
-        for ($i = 0; $i < $totalRecordsForBlocks; $i++) {
-            $batches[] = $this->generateLogRecord($this->selectMarker($blockMarkers, $busierBlocks));
+        // Generate records
+        for ($i = 0; $i < $totalRecords; $i++) {
+            // Select a marker ID with higher probability for busier blocks
+            $markerId = $this->selectMarkerId($blockMarkers, $busierBlockIds);
 
-            if (count($batches) == $batchSize) {
-                DB::table('access_logs')->insert($batches);
-                $batches = [];
-            }
-        }
-
-        // Insert any remaining block marker records
-        if (!empty($batches)) {
-            DB::table('access_logs')->insert($batches);
-        }
-
-        // Now generate 300,000 records across all marker ids (from 1 to 50,000)
-        for ($i = 0; $i < $totalRecordsForAll; $i++) {
-            $batches[] = $this->generateLogRecord(rand(1, max: 43500));
+            $batches[] = $this->generateLogRecord($markerId);
 
             if (count($batches) == $batchSize) {
                 DB::table('access_logs')->insert($batches);
@@ -57,10 +44,23 @@ class AccessLogSeeder extends Seeder
         }
     }
 
-    // Select a marker with a higher chance for busy blocks
-    private function selectMarker(array $blockMarkers, array $busierBlocks)
+    private function selectBusierBlocks(array $blockMarkers): array
     {
-        return rand(0, 2) === 0 ? $busierBlocks[array_rand($busierBlocks)] : $blockMarkers[array_rand($blockMarkers)];
+        // Select top 10% of blocks as busier blocks
+        $numberOfBusierBlocks = (int) (0.1 * count($blockMarkers));
+        shuffle($blockMarkers); // Randomize before selecting
+        return array_slice($blockMarkers, 0, $numberOfBusierBlocks);
+    }
+
+    // Select a marker with higher chance for busier blocks
+    private function selectMarkerId(array $blockMarkers, array $busierBlockIds): int
+    {
+        // Assign higher probability to busier blocks
+        if (rand(1, 100) <= 70) { // 70% chance
+            return $busierBlockIds[array_rand($busierBlockIds)];
+        } else {
+            return $blockMarkers[array_rand($blockMarkers)];
+        }
     }
 
     // Generate a single log record with a given marker_id
@@ -68,7 +68,7 @@ class AccessLogSeeder extends Seeder
     {
         return [
             'marker_id' => $markerId,
-            'ip_address' => long2ip(rand(0, 4294967295)), // Generates a random IP address
+            'ip_address' => $this->generateIpAddress(),
             'user_agent' => $this->randomUserAgent(),
             'os' => $this->randomOS(),
             'device' => $this->randomDevice(),
@@ -82,58 +82,130 @@ class AccessLogSeeder extends Seeder
         ];
     }
 
-    private function generateAccessTime(): string
+    private function generateIpAddress(): string
     {
-        $now = Carbon::now();
-        $dayOfWeek = rand(0, 6); // Monday = 0, Sunday = 6
-        $hourOfDay = rand(0, 23);
-        $month = rand(1, 12);
-        
-        // Make Saturdays busier, especially between 3 PM and 5 PM
-        if ($dayOfWeek == 6) {
-            if (rand(0, 10) > 2) {
-                $hourOfDay = rand(15, 17); // Busier between 3 PM and 5 PM on Saturdays
-            }
-        }
+        // Generate a realistic IP address distribution
+        $popularIPs = [
+            '192.168.' . rand(0, 255) . '.' . rand(0, 255),
+            '10.' . rand(0, 255) . '.' . rand(0, 255) . '.' . rand(0, 255),
+            '172.' . rand(16, 31) . '.' . rand(0, 255) . '.' . rand(0, 255),
+        ];
 
-        // Reduce activity in off-season (June to September)
-        if ($month >= 6 && $month <= 9) {
-            if (rand(0, 10) > 2) {
-                return $now->subDays(rand(90, 365))->toDateTimeString(); // Less frequent activity
-            }
+        if (rand(1, 100) <= 70) { // 70% chance to pick popular IP ranges
+            return $popularIPs[array_rand($popularIPs)];
+        } else {
+            return long2ip(rand(0, 4294967295));
         }
-
-        return Carbon::createFromDate(null, $month, rand(1, 28))
-            ->setTime($hourOfDay, rand(0, 59))
-            ->toDateTimeString();
     }
 
-    // Random data generators (same as your original ones)
+    private function generateAccessTime(): string
+    {
+        // Set timezone to UTC to avoid DST issues
+        $date = Carbon::now('UTC')->subDays(rand(0, 365));
+    
+        // Increase activity on match days and during peak hours
+        if ($this->isMatchDay($date->dayOfWeek)) {
+            $hour = $this->getPeakHour();
+        } else {
+            $hour = $this->getOffPeakHour();
+        }
+
+        if ($date->month == 3 && $date->day == 31 && $hour == 1) {
+            $hour = 2; // Adjust to skip the DST transition hour
+        }
+    
+        $date->setTime($hour, rand(0, 59));
+    
+        // Ensure the generated datetime doesn't fall into a DST transition
+        while (!$this->isValidDateTime($date)) {
+            // If invalid, add one hour to skip the missing hour
+            $date->addHour();
+        }
+    
+        // Reduce activity during off-season (June to August)
+        if ($date->month >= 6 && $date->month <= 8) {
+            if (rand(1, 100) <= 70) { // 70% chance
+                $date->subDays(rand(30, 90)); // Less frequent activity
+            }
+        }
+    
+        return $date->toDateTimeString();
+    }
+    
+    private function isValidDateTime(Carbon $date): bool
+    {
+        // // Check if the datetime is valid in the database's time zone
+        // try {
+        //     // Try formatting the date; if it's invalid, an exception will be thrown
+        //     $dateString = $date->format('Y-m-d H:i:s');
+        //     new \DateTime($dateString);
+        //     return true;
+        // } catch (\Exception $e) {
+        //     return false;
+        // }
+
+        //cut out all that shit for now
+        return true;
+    }
+        
+
+    private function isMatchDay(int $dayOfWeek): bool
+    {
+        // Assume matches are on Wednesdays (3) and Saturdays (6)
+        return in_array($dayOfWeek, [3, 6]);
+    }
+
+    private function getPeakHour(): int
+    {
+        // Peak hours during matches
+        $peakHours = [15, 16, 17]; // 3 PM to 5 PM
+        return $peakHours[array_rand($peakHours)];
+    }
+
+    private function getOffPeakHour(): int
+    {
+        // Random hour with lower activity
+        $hours = array_merge(
+            array_fill(0, 5, rand(0, 5)),    // Early morning, low activity
+            array_fill(0, 10, rand(6, 14)),  // Daytime, moderate activity
+            array_fill(0, 5, rand(18, 23))   // Evening, moderate activity
+        );
+        return $hours[array_rand($hours)];
+    }
+
+    // Random data generators
     private function randomUserAgent(): string
     {
         $userAgents = [
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36 Edge/16.16299',
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36',
-            'Mozilla/5.0 (Linux; Android 9; SM-J730G Build/PPR1.180610.011) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Mobile Safari/537.36',
+            // Desktop browsers
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64)...',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)...',
+            // Mobile browsers
+            'Mozilla/5.0 (Linux; Android 10; SM-G973F)...',
+            'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)...',
+            // Add more user agents for diversity
         ];
         return $userAgents[array_rand($userAgents)];
     }
 
     private function randomOS(): ?string
     {
-        $osList = ['Android', 'iOS', null];
+        $osList = ['Windows', 'macOS', 'Linux', 'Android', 'iOS', null];
         return $osList[array_rand($osList)];
     }
 
     private function randomDevice(): ?string
     {
-        $devices = ['Mobile', 'Tablet', null];
+        $devices = ['Desktop', 'Mobile', 'Tablet', null];
         return $devices[array_rand($devices)];
     }
 
     private function randomCountry(): ?string
     {
-        $countries = ['USA', 'UK', 'Germany', 'Canada', 'Australia', 'India', null];
+        $countries = [
+            'United States', 'United Kingdom', 'Germany', 'Canada', 'Australia',
+            'India', 'Brazil', 'France', 'Spain', 'Italy', 'Netherlands', null
+        ];
         return $countries[array_rand($countries)];
     }
 
@@ -145,13 +217,21 @@ class AccessLogSeeder extends Seeder
 
     private function randomLanguage(): ?string
     {
-        $languages = ['en-US', 'en-GB', 'de-DE', 'fr-FR', 'es-ES', null];
+        $languages = ['en-US', 'en-GB', 'de-DE', 'fr-FR', 'es-ES', 'pt-BR', 'zh-CN', null];
         return $languages[array_rand($languages)];
     }
 
     private function randomReferrer(): ?string
     {
-        $referrers = ['https://google.com', 'https://facebook.com', 'https://twitter.com', null];
+        $referrers = [
+            'https://www.google.com',
+            'https://www.facebook.com',
+            'https://www.twitter.com',
+            'https://www.reddit.com',
+            'https://www.linkedin.com',
+            'https://www.instagram.com',
+            null
+        ];
         return $referrers[array_rand($referrers)];
     }
 }
