@@ -5,7 +5,6 @@ import HeaderImageAndLogo from '@/components/QComponents/HeaderImageAndLogo.vue'
 import { VenuePageProps } from '@/types'
 import QIconCardSet from '@/components/QComponents/QIconCardSet.vue'
 import QCard from '@/components/QComponents/QCard.vue'
-import HorizontalPlaque from '@/assets/images/QAssets/chelspng 1horizontal_plaque.png'
 import QCARDSTADICON from '@/assets/images/QAssets/Venues/stadium.svg'
 import QCARDLEVYICON from '@/assets/images/QAssets/Venues/levy.svg'
 import QCARDSOCCERICON from '@/assets/images/QAssets/Venues/soccer_logo.svg'
@@ -170,12 +169,11 @@ const IconCardData = [
 								height="25"
 								class="text-primary" />
 						</div>
+						<p class="text-xl">Easily view and manage all your plaques from one central dashboard, making edits and updates quick and efficient.</p>
 
-						<p>View and manage all your plaques from one central dashboard, making amendments and edits easy and efficient.</p>
-
-						<p>Manage your plaques en mass or select individual blocks to manage your blocks by.</p>
-						<p>Dynamically edit the final destination of your QRLA plaques, allowing for event changes.</p>
-						<p>Customise the QRLA Safety Verification page by uploading a new logo, allowing for flexibility around different events and brand updates.</p>
+						<p class="text-xl">Manage plaques en masse or select individual blocks for targeted management.</p>
+						<p class="text-xl">Easily update the destination of your QRLA plaques to reflect event changes in real time.</p>
+						<p class="text-xl">Customise the QRLA Safety Verification page by uploading a new logo, allowing flexibility for different events and brand updates.</p>
 					</div>
 				</QCard>
 			</v-col>
@@ -200,10 +198,10 @@ const IconCardData = [
 								height="25"
 								class="text-primary" />
 						</div>
-						<p>Track how well your QRLA plaques are performing across your entire venue with the Venue Performance Tracker.</p>
-						<p>View total number of views via QRLA plaques, including breakdowns of visits by Tap or Scan.</p>
-						<p>Get insights on how QRLA visits have changed over time, by viewing QRLA data across a variety of timescales.</p>
-						<p>View an interactive heatmap of QRLA activity across your venue.</p>
+						<p class="text-xl">Track how well your QRLA plaques are performing across your entire venue with the Venue Performance Tracker.</p>
+						<p class="text-xl">View total number of views via QRLA plaques, including breakdowns of visits by Tap or Scan.</p>
+						<p class="text-xl">Get insights on how QRLA visits have changed over time, by viewing QRLA data across a variety of timescales.</p>
+						<p class="text-xl">View an interactive heatmap of QRLA activity across your venue.</p>
 					</div>
 				</QCard>
 			</v-col>
@@ -263,8 +261,8 @@ const IconCardData = [
 								height="25"
 								class="text-primary" />
 						</div>
-						<p>View how well your QRLA plaques are performing in specific blocks with the Block Performance Tracker.</p>
-						<p>The Block Performance Tracker gives you a more detailed breakdown of where your QRLA plques are being used most in your venue.</p>
+						<p class="text-xl">View how well your QRLA plaques are performing in specific blocks with the Block Performance Tracker.</p>
+						<p class="text-xl">The Block Performance Tracker gives you a more detailed breakdown of where your QRLA plques are being used most in your venue.</p>
 					</div>
 				</QCard>
 			</v-col>
