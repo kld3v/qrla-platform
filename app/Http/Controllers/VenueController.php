@@ -89,7 +89,7 @@ class VenueController extends Controller
         $venue->load(['stands.blocks','organisation']);
 
         $stands = $venue->stands()
-                        ->with('blocks.baseUrl')
+                        ->with('blocks.redirect.baseUrl')
                         ->select('id', 'name', 'venue_id')
                         ->get();
 
