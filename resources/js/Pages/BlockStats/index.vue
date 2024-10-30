@@ -72,7 +72,7 @@ assignColorsToBlocks()
 const IconCardData = ref<any>([
 	{
 		bg: 'primary-gradient',
-		icon: 'lucide:nfc',
+		icon: 'iconamoon:eye',
 		color: 'primary',
 		title: 'Total Visits',
 		data: formatNumberWithCommas(selectedBlocks.value[0].stats.total_visits),
@@ -81,7 +81,7 @@ const IconCardData = ref<any>([
 	},
 	{
 		bg: 'purple-gradient',
-		icon: 'streamline:wave-signal-solid',
+		icon: 'lucide:nfc',
 		color: 'purple',
 		title: 'Visits By Tap',
 		data: formatNumberWithCommas(selectedBlocks.value[0].stats.total_seat_visits),
@@ -99,7 +99,7 @@ const IconCardData = ref<any>([
 	},
 	{
 		bg: 'error-gradient',
-		icon: 'ic:baseline-sync-problem',
+		icon: 'ph:chart-line-up',
 		color: 'error',
 		title: 'Average Activity Level',
 		data: selectedBlocks.value[0].access_rate,
