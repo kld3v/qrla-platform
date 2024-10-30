@@ -24,6 +24,7 @@ watch(
 	}
 )
 
+console.log(props.selectedBlocks)
 // Watch parent state and update local only when there is a change
 // this needs revisiting it feels like a complete bodge.
 watch(

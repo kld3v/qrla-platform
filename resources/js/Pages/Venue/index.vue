@@ -17,6 +17,7 @@ import QBLOCKPERFORMANCEIMAGE from '@/assets/images/QAssets/Venues/asset3.png'
 import { Link } from '@inertiajs/vue3'
 import { Icon } from '@iconify/vue'
 import { NavOptions } from '@/types'
+import { formatNumberWithCommas } from '@/utils/helpers/numbers'
 
 const props = defineProps<{
 	venue: VenuePageProps
@@ -115,11 +116,11 @@ const IconCardData = [
 							<p
 								class="h3"
 								style="font-weight: 100">
-								Your plaques have been scanned a total of {{ stats.accesses }} times at {{ venue.name }}!
+								Your plaques have been scanned a total of {{ formatNumberWithCommas(stats.accesses) }} times at {{ venue.name }}!
 							</p>
 							<Link
 								:href="
-									route('blocks.index', {
+									route('venues.showStats', {
 										venue: props.venue.id,
 									})
 								">
@@ -127,9 +128,9 @@ const IconCardData = [
 							</Link>
 						</div>
 						<img
-								:src="venue.plaque_image_url"
-								class="h-full mt-2 max-w-[500px]"
-								alt="Plaque Image" />
+							:src="venue.plaque_image_url"
+							class="h-full mt-2 max-w-[500px]"
+							alt="Plaque Image" />
 					</div>
 				</QCard>
 			</v-col>
