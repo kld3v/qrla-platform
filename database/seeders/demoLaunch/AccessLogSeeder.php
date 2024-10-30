@@ -21,7 +21,7 @@ class AccessLogSeeder extends Seeder
 
     /**
      * Tier weights for selection. Higher tiers have higher weights.
-     * Tier 1: 10, Tier 2: 9, ..., Tier 10: 1
+     * For 10 tiers: Tier 1:10, Tier 2:9, ..., Tier10:1
      */
     private array $tierWeights = [];
 
@@ -56,81 +56,88 @@ class AccessLogSeeder extends Seeder
             return;
         }
 
-        // Step 2: Assign blocks to 10 tiers based on access_rate
+        // Step 2: Assign blocks to 10 tiers
         $tiers = $this->assignTiers($blocks, 10);
 
-        // Step 3: Assign weights to tiers (Tier 1:10, Tier 2:9, ..., Tier10:1)
+        // Step 3: Assign tier weights
         $this->assignTierWeights(10);
 
-        // Step 4: Fetch all seat markers and map them to their seat IDs
-        $seatMarkers = DB::table('markers')
-            ->where('markerable_type', 'seat')
-            ->pluck('id', 'markerable_id')
+        // Step 4: Fetch block markers
+        $blockMarkers = DB::table('markers')
+            ->where('markerable_type', 'block') // morph map key
+            ->pluck('id', 'markerable_id') // pluck 'id' by 'markerable_id' (block id)
             ->toArray();
 
-        // Step 5: Fetch all seat data grouped by block_id
+        // Step 5: Fetch seat markers
+        $seatMarkers = DB::table('markers')
+            ->where('markerable_type', 'seat') // morph map key
+            ->pluck('id', 'markerable_id') // pluck 'id' by 'markerable_id' (seat id)
+            ->toArray();
+
+        // Step 6: Fetch seats grouped by block_id
         $seatsByBlock = DB::table('seats')
             ->select('id', 'block_id')
             ->get()
             ->groupBy('block_id');
 
-        // Step 6: Fetch all block markers
-        $blockMarkers = DB::table('markers')
-            ->where('markerable_type', 'block')
-            ->pluck('id', 'markerable_id')
-            ->toArray();
+        // Step 7: Organize markers by tier, separate for blocks and seats
+        $tierBlockMarkers = [];
+        $tierSeatMarkers = [];
 
-        // Step 7: Organize markers by block
-        $markersByBlock = [];
-
-        foreach ($blocks as $block) {
-            $blockId = $block->id;
-
-            // Initialize marker array for the block
-            $markersByBlock[$blockId] = [];
-
-            // Add block marker if exists
-            if (isset($blockMarkers[$blockId])) {
-                $markersByBlock[$blockId][] = $blockMarkers[$blockId];
-            } else {
-                Log::warning("Block ID {$blockId} does not have a corresponding marker.");
-            }
-
-            // Add seat markers if seats exist for the block
-            if (isset($seatsByBlock[$blockId])) {
-                foreach ($seatsByBlock[$blockId] as $seat) {
-                    if (isset($seatMarkers[$seat->id])) {
-                        $markersByBlock[$blockId][] = $seatMarkers[$seat->id];
-                    } else {
-                        Log::warning("Seat ID {$seat->id} in Block ID {$blockId} does not have a corresponding marker.");
-                    }
+        foreach ($tiers as $tier => $blockIds) {
+            foreach ($blockIds as $blockId) {
+                // Add block marker
+                if (isset($blockMarkers[$blockId])) {
+                    $tierBlockMarkers[$tier][] = $blockMarkers[$blockId];
+                } else {
+                    Log::warning("Block ID {$blockId} does not have a corresponding marker.");
                 }
-            } else {
-                Log::warning("Block ID {$blockId} has no associated seats.");
+
+                // Add seat markers
+                if (isset($seatsByBlock[$blockId])) {
+                    foreach ($seatsByBlock[$blockId] as $seat) {
+                        if (isset($seatMarkers[$seat->id])) {
+                            $tierSeatMarkers[$tier][] = $seatMarkers[$seat->id];
+                        } else {
+                            Log::warning("Seat ID {$seat->id} in Block ID {$blockId} does not have a corresponding marker.");
+                        }
+                    }
+                } else {
+                    Log::warning("Block ID {$blockId} has no associated seats.");
+                }
             }
         }
 
-        // Remove blocks with no markers
-        foreach ($markersByBlock as $blockId => $markers) {
+        // Remove tiers with no markers
+        foreach ($tierBlockMarkers as $tier => $markers) {
             if (empty($markers)) {
-                unset($markersByBlock[$blockId]);
-                Log::warning("Block ID {$blockId} has no associated markers.");
+                unset($tierBlockMarkers[$tier]);
+                Log::warning("Tier {$tier} has no block markers.");
             }
         }
 
-        if (empty($markersByBlock)) {
-            $this->command->error('No markers found for any blocks. Seeder cannot proceed.');
-            return;
+        foreach ($tierSeatMarkers as $tier => $markers) {
+            if (empty($markers)) {
+                unset($tierSeatMarkers[$tier]);
+                Log::warning("Tier {$tier} has no seat markers.");
+            }
         }
 
-        // Step 8: Collect markers for each tier
-        $markersByTier = $this->collectMarkersByTier($tiers, $markersByBlock);
+        // Step 8: Collect markers per tier is already done: tierBlockMarkers and tierSeatMarkers
 
-        // Step 9: Flatten all markers for low tier selection
-        $allMarkersFlat = $this->flattenAllMarkers($markersByBlock);
+        // Step 9: Flatten all block markers and seat markers
+        $allBlockMarkers = [];
+        foreach ($tierBlockMarkers as $tier => $markers) {
+            $allBlockMarkers = array_merge($allBlockMarkers, $markers);
+        }
 
-        if (empty($allMarkersFlat)) {
-            $this->command->error('No markers available for low tier selection. Seeder cannot proceed.');
+        $allSeatMarkers = [];
+        foreach ($tierSeatMarkers as $tier => $markers) {
+            $allSeatMarkers = array_merge($allSeatMarkers, $markers);
+        }
+
+        if (empty($allBlockMarkers) && empty($allSeatMarkers)) {
+            $this->command->error('No markers available for selection. Seeder cannot proceed.');
             return;
         }
 
@@ -140,8 +147,17 @@ class AccessLogSeeder extends Seeder
 
         // Step 11: Seed access logs
         while ($insertedRecords < $this->totalRecords) {
-            // Select a marker ID based on tiered probability
-            $markerId = $this->selectMarkerId($tiers, $markersByTier, $allMarkersFlat);
+            // Decide block or seat access
+            // 400 block markers : 1 seat marker ratio
+            // Total ratio parts: 400 +1 = 401
+            // Probability to select block marker: 400/401 ≈99.75%
+            // Probability to select seat marker: 1/401 ≈0.25%
+            $rand = rand(0, 1.5);
+            if ($rand >= 1) { // Select block marker
+                $markerId = $this->selectBlockMarker($tiers, $tierBlockMarkers);
+            } else { // Select seat marker
+                $markerId = $this->selectSeatMarker($tiers, $tierSeatMarkers);
+            }
 
             // If markerId is null, skip this iteration
             if ($markerId === null) {
@@ -182,7 +198,6 @@ class AccessLogSeeder extends Seeder
 
         for ($i = 1; $i <= $numTiers; $i++) {
             $start = ($i - 1) * $blocksPerTier;
-            $end = $i * $blocksPerTier;
             $tierBlocks = $blocks->slice($start, $blocksPerTier)->pluck('id')->toArray();
             if (!empty($tierBlocks)) {
                 $tiers[$i] = $tierBlocks;
@@ -206,47 +221,13 @@ class AccessLogSeeder extends Seeder
     }
 
     /**
-     * Collect markers for each tier.
+     * Select a block marker based on tier weights.
      *
      * @param array $tiers
-     * @param array $markersByBlock
-     * @return array
-     */
-    private function collectMarkersByTier(array $tiers, array $markersByBlock): array
-    {
-        $markersByTier = [];
-
-        foreach ($tiers as $tier => $blockIds) {
-            foreach ($blockIds as $blockId) {
-                if (isset($markersByBlock[$blockId])) {
-                    $markersByTier[$tier] = array_merge($markersByTier[$tier] ?? [], $markersByBlock[$blockId]);
-                }
-            }
-        }
-
-        return $markersByTier;
-    }
-
-    /**
-     * Flatten all markers into a single array.
-     *
-     * @param array $markersByBlock
-     * @return array
-     */
-    private function flattenAllMarkers(array $markersByBlock): array
-    {
-        return array_merge(...array_values($markersByBlock));
-    }
-
-    /**
-     * Select a marker ID based on tiered probability and block/seat ratio.
-     *
-     * @param array $tiers
-     * @param array $markersByTier
-     * @param array $allMarkersFlat
+     * @param array $tierBlockMarkers
      * @return int|null
      */
-    private function selectMarkerId(array $tiers, array $markersByTier, array $allMarkersFlat): ?int
+    private function selectBlockMarker(array $tiers, array $tierBlockMarkers): ?int
     {
         // Calculate total tier weights
         $totalTierWeight = array_sum($this->tierWeights);
@@ -265,36 +246,48 @@ class AccessLogSeeder extends Seeder
             }
         }
 
-        if ($selectedTier === null || empty($tiers[$selectedTier])) {
-            Log::warning("No blocks found in selected tier {$selectedTier}.");
+        if ($selectedTier === null || empty($tierBlockMarkers[$selectedTier])) {
+            Log::warning("No blocks found in selected tier {$selectedTier} for block marker selection.");
             return null;
         }
 
-        // Select a random block within the selected tier
-        $selectedBlockId = $tiers[$selectedTier][array_rand($tiers[$selectedTier])];
+        // Select a random block marker from the selected tier
+        return $tierBlockMarkers[$selectedTier][array_rand($tierBlockMarkers[$selectedTier])];
+    }
 
-        if (!isset($markersByTier[$selectedTier][$selectedBlockId])) {
-            Log::warning("No markers found for Block ID {$selectedBlockId} in Tier {$selectedTier}.");
-            return null;
-        }
+    /**
+     * Select a seat marker based on tier weights.
+     *
+     * @param array $tiers
+     * @param array $tierSeatMarkers
+     * @return int|null
+     */
+    private function selectSeatMarker(array $tiers, array $tierSeatMarkers): ?int
+    {
+        // Calculate total tier weights
+        $totalTierWeight = array_sum($this->tierWeights);
 
-        // Decide whether to select block marker or seat marker based on 400:1 ratio
-        // Total weight per block: 400 (block marker) + 500 (seat markers) = 900
-        // Probability to select block marker: 400/900 ≈44.44%
-        // Probability to select seat marker: 500/900 ≈55.56%
-        $rand = rand(1, 900);
-        if ($rand <= 400) { // Select block marker
-            // Assuming the first marker in the array is the block marker
-            return $markersByTier[$selectedTier][$selectedBlockId][0] ?? null;
-        } else { // Select seat marker
-            // Select a random seat marker from the block
-            $seatMarkers = array_slice($markersByTier[$selectedTier][$selectedBlockId], 1);
-            if (empty($seatMarkers)) {
-                Log::warning("No seat markers found for Block ID {$selectedBlockId}.");
-                return null;
+        // Generate a random number between 1 and totalTierWeight
+        $randTier = rand(1, $totalTierWeight);
+
+        // Determine which tier is selected
+        $cumulative = 0;
+        $selectedTier = null;
+        foreach ($this->tierWeights as $tier => $weight) {
+            $cumulative += $weight;
+            if ($randTier <= $cumulative) {
+                $selectedTier = $tier;
+                break;
             }
-            return $seatMarkers[array_rand($seatMarkers)];
         }
+
+        if ($selectedTier === null || empty($tierSeatMarkers[$selectedTier])) {
+            Log::warning("No seat markers found in selected tier {$selectedTier} for seat marker selection.");
+            return null;
+        }
+
+        // Select a random seat marker from the selected tier
+        return $tierSeatMarkers[$selectedTier][array_rand($tierSeatMarkers[$selectedTier])];
     }
 
     /**
@@ -348,32 +341,24 @@ class AccessLogSeeder extends Seeder
      */
     private function generateAccessTime(): string
     {
-        // Determine if the date should be within a break period
-        $isBreak = false;
+        // Generate a date
+        $randDayOffset = rand(0, 364); // Past year
+        $date = Carbon::now('UTC')->subDays($randDayOffset);
+
+        // Check if the date is within any break period
         foreach ($this->breakPeriods as $period) {
-            $start = Carbon::parse($period['start']);
-            $end = Carbon::parse($period['end']);
-            $randDayOffset = rand(0, 364); // Past year
-            $date = Carbon::now('UTC')->subDays($randDayOffset);
+            $start = Carbon::parse($period['start'])->startOfDay();
+            $end = Carbon::parse($period['end'])->endOfDay();
             if ($date->between($start, $end)) {
-                $isBreak = true;
-                break;
+                // During break period, reduce access rate by 50%
+                if (rand(1, 100) <= 50) {
+                    // Skip generating access during break
+                    return $this->generateAccessTime();
+                }
             }
         }
 
-        if ($isBreak) {
-            // During break periods, reduce access rate by 50%
-            $accessProbability = rand(1, 100) <= 50 ? 1 : 0;
-            if ($accessProbability === 0) {
-                // Regenerate the date outside break periods
-                return $this->generateAccessTime();
-            }
-        }
-
-        // Set timezone to UTC to avoid DST issues
-        $date = Carbon::now('UTC')->subDays(rand(0, 365));
-
-        // Increase activity on match days and during peak hours
+        // Determine if it's a match day
         if ($this->isMatchDay($date->dayOfWeek)) {
             $hour = $this->getPeakHour();
         } else {
@@ -474,7 +459,7 @@ class AccessLogSeeder extends Seeder
      */
     private function randomOS(): ?string
     {
-        $osList = ['Windows', 'macOS', 'Linux', 'Android', 'iOS', null];
+        $osList = ['Android', 'iOS', null];
         return $osList[array_rand($osList)];
     }
 
