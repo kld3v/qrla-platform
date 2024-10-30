@@ -151,40 +151,49 @@ class StatsOverTimeService
                 ->get()
                 ->toArray();
     
-            // Filter and calculate OS percentages in PHP
             $filteredOsData = array_filter($osResults, function ($item) {
-                return $item['os'] !== null && $item['os'] !== 'Unknown' && $item['os'] !== '0';
+                return $item['os'] !== null && $item['os'] !== 'Unknown' && $item['os'] !== '0' && $item['os'] !== '';
             });
             $filteredTotalAccessCount = array_sum(array_column($filteredOsData, 'access_count'));
     
-            $osData = array_map(function ($item) use ($filteredTotalAccessCount) {
+            $osData = array_values(array_map(function ($item) use ($filteredTotalAccessCount) {
                 $percentage = $filteredTotalAccessCount > 0 ? ($item['access_count'] / $filteredTotalAccessCount) * 100 : 0;
                 return [
                     'os' => $item['os'],
                     'access_percentage' => round($percentage, 1),
                 ];
-            }, $filteredOsData);
+            }, $filteredOsData));
     
-            // Filter and calculate browser percentages in PHP
-            $filteredBrowsers = array_filter($browserResults, function ($item) {
-                return $item['browser'] !== null && $item['browser'] !== 'Unknown' && $item['browser'] !== '0';
-            });
-            $filteredBrowserTotalAccessCount = array_sum(array_column($filteredBrowsers, 'access_count'));
+            // Aggregate browser counts by browser name, excluding empty, null, "Unknown", and "0" values
+            $aggregatedBrowsers = [];
+            foreach ($browserResults as $browser) {
+                $name = $browser['browser'];
+                if ($name !== null && $name !== 'Unknown' && $name !== '0' && $name !== '') {
+                    if (!isset($aggregatedBrowsers[$name])) {
+                        $aggregatedBrowsers[$name] = 0;
+                    }
+                    $aggregatedBrowsers[$name] += $browser['access_count'];
+                }
+            }
     
-            $browsers = array_map(function ($item) use ($filteredBrowserTotalAccessCount) {
-                $percentage = $filteredBrowserTotalAccessCount > 0 ? ($item['access_count'] / $filteredBrowserTotalAccessCount) * 100 : 0;
+            // Calculate browser percentages based on aggregated data
+            $filteredBrowserTotalAccessCount = array_sum($aggregatedBrowsers);
+    
+            $browsers = array_values(array_map(function ($name) use ($aggregatedBrowsers, $filteredBrowserTotalAccessCount) {
+                $percentage = $filteredBrowserTotalAccessCount > 0 ? ($aggregatedBrowsers[$name] / $filteredBrowserTotalAccessCount) * 100 : 0;
                 return [
-                    'browser' => $item['browser'],
+                    'browser' => $name,
                     'access_percentage' => round($percentage, 1),
                 ];
-            }, $filteredBrowsers);
+            }, array_keys($aggregatedBrowsers)));
         }
     
         return [
             'os' => $osData,
             'browsers' => $browsers,
         ];
-    }    
+    }
+    
     
 
     public function getAccessesByMarkerType($venueId, $blockId, $startTime, $endTime)
