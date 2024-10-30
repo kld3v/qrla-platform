@@ -36,6 +36,11 @@ class AccessLogSeeder extends Seeder
     ];
 
     /**
+     * List of game days.
+     */
+    private array $gameDays = [];
+
+    /**
      * Run the database seeds.
      */
     public function run(): void
@@ -44,6 +49,9 @@ class AccessLogSeeder extends Seeder
         DB::disableQueryLog();
 
         $this->command->info('Starting AccessLogSeeder...');
+
+        // Initialize game days
+        $this->initializeGameDays();
 
         // Step 1: Fetch all blocks ordered by access_rate descending
         $blocks = DB::table('blocks')
@@ -147,13 +155,9 @@ class AccessLogSeeder extends Seeder
 
         // Step 11: Seed access logs
         while ($insertedRecords < $this->totalRecords) {
-            // Decide block or seat access
-            // 400 block markers : 1 seat marker ratio
-            // Total ratio parts: 400 +1 = 401
-            // Probability to select block marker: 400/401 ≈99.75%
-            // Probability to select seat marker: 1/401 ≈0.25%
-            $rand = rand(0, 1.5);
-            if ($rand >= 1) { // Select block marker
+  
+            $rand = mt_rand() / mt_getrandmax(); // Generate a float between 0 and 1
+            if ($rand >= 0.62) { // Select block marker
                 $markerId = $this->selectBlockMarker($tiers, $tierBlockMarkers);
             } else { // Select seat marker
                 $markerId = $this->selectSeatMarker($tiers, $tierSeatMarkers);
@@ -182,6 +186,38 @@ class AccessLogSeeder extends Seeder
         }
 
         $this->command->info('Access log seeding completed successfully.');
+    }
+
+    /**
+     * Initialize game days for the past year.
+     * For simplicity, randomly select 40 Wednesdays and Saturdays as game days.
+     *
+     * @return void
+     */
+    private function initializeGameDays(): void
+    {
+        $this->gameDays = [];
+
+        $startDate = Carbon::now('UTC')->subYear();
+        $endDate = Carbon::now('UTC');
+
+        // Collect all Wednesdays and Saturdays in the past year
+        $currentDate = $startDate->copy();
+        while ($currentDate->lte($endDate)) {
+            if (in_array($currentDate->dayOfWeek, [Carbon::WEDNESDAY, Carbon::SATURDAY])) {
+                $this->gameDays[] = $currentDate->copy();
+            }
+            $currentDate->addDay();
+        }
+
+        // Randomly select 40 game days from the collected Wednesdays and Saturdays
+        if (count($this->gameDays) > 40) {
+            $this->gameDays = collect($this->gameDays)->random(40)->toArray();
+            // Sort the game days
+            usort($this->gameDays, function ($a, $b) {
+                return $a->timestamp - $b->timestamp;
+            });
+        }
     }
 
     /**
@@ -298,14 +334,18 @@ class AccessLogSeeder extends Seeder
      */
     private function generateLogRecord(int $markerId): array
     {
+        // Generate OS and Browser first
+        $os = $this->randomOS();
+        $browser = $this->randomBrowser();
+
         return [
             'marker_id'    => $markerId,
             'ip_address'   => $this->generateIpAddress(),
-            'user_agent'   => $this->randomUserAgent(),
-            'os'           => $this->randomOS(),
+            'os'           => $os,
+            'browser'      => $browser,
+            'user_agent'   => $this->generateUserAgent($os, $browser),
             'device'       => $this->randomDevice(),
             'country'      => $this->randomCountry(),
-            'browser'      => $this->randomBrowser(),
             'language'     => $this->randomLanguage(),
             'referrer'     => $this->randomReferrer(),
             'accessed_at'  => $this->generateAccessTime(),
@@ -341,9 +381,31 @@ class AccessLogSeeder extends Seeder
      */
     private function generateAccessTime(): string
     {
-        // Generate a date
-        $randDayOffset = rand(0, 364); // Past year
-        $date = Carbon::now('UTC')->subDays($randDayOffset);
+        // Determine if this access should be on a game day or not
+        $isGameDay = false;
+        $accessVolumeMultiplier = 1;
+
+        // Calculate total number of game days
+        $totalGameDays = count($this->gameDays);
+
+        if ($totalGameDays > 0) {
+            // Define probability to assign to a game day (e.g., 10%)
+            $gameDayProbability = 0.10;
+            if (mt_rand() / mt_getrandmax() <= $gameDayProbability) {
+                $isGameDay = true;
+                // Select a random game day
+                $gameDay = $this->gameDays[array_rand($this->gameDays)];
+                $date = $gameDay->copy();
+                // Assign access volume multiplier for peak activity
+                $accessVolumeMultiplier = 5; // Increase access rate on game days
+            }
+        }
+
+        if (!$isGameDay) {
+            // Generate a non-game day date
+            $randDayOffset = rand(0, 364); // Past year
+            $date = Carbon::now('UTC')->subDays($randDayOffset);
+        }
 
         // Check if the date is within any break period
         foreach ($this->breakPeriods as $period) {
@@ -359,7 +421,7 @@ class AccessLogSeeder extends Seeder
         }
 
         // Determine if it's a match day
-        if ($this->isMatchDay($date->dayOfWeek)) {
+        if ($isGameDay) {
             $hour = $this->getPeakHour();
         } else {
             $hour = $this->getOffPeakHour();
@@ -372,26 +434,14 @@ class AccessLogSeeder extends Seeder
 
         $date->setTime($hour, rand(0, 59));
 
-        // Reduce activity during off-season (June to August)
-        if ($date->month >= 6 && $date->month <= 8) {
+        // Reduce activity during off-season (June to August) if not a game day
+        if (!$isGameDay && $date->month >= 6 && $date->month <= 8) {
             if (rand(1, 100) <= 70) { // 70% chance
                 $date->subDays(rand(30, 90)); // Less frequent activity
             }
         }
 
         return $date->toDateTimeString();
-    }
-
-    /**
-     * Check if a given day is a match day.
-     *
-     * @param int $dayOfWeek
-     * @return bool
-     */
-    private function isMatchDay(int $dayOfWeek): bool
-    {
-        // Assume matches are on Wednesdays (3) and Saturdays (6)
-        return in_array($dayOfWeek, [3, 6]);
     }
 
     /**
@@ -433,34 +483,98 @@ class AccessLogSeeder extends Seeder
     }
 
     /**
-     * Generate a random user agent string.
+     * Generate a realistic user agent string based on OS and Browser.
      *
+     * @param string $os
+     * @param string $browser
      * @return string
      */
-    private function randomUserAgent(): string
+    private function generateUserAgent(string $os, string $browser): string
     {
-        $userAgents = [
-            // Desktop browsers
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15',
-            // Mobile browsers
-            'Mozilla/5.0 (Linux; Android 10; SM-G973F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Mobile Safari/537.36',
-            'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1',
-            // Add more user agents as needed
-        ];
+        // Define user agents based on OS and Browser
+        $userAgents = [];
+
+        if ($os === 'iOS') {
+            if ($browser === 'Safari') {
+                $userAgents = [
+                    'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1',
+                    'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1',
+                ];
+            } else {
+                // Other browsers on iOS (rare)
+                $userAgents = [
+                    'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Chrome/115.0.0.0 Mobile Safari/604.1',
+                ];
+            }
+        } elseif ($os === 'Android') {
+            if ($browser === 'Chrome') {
+                $userAgents = [
+                    'Mozilla/5.0 (Linux; Android 10; SM-G973F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Mobile Safari/537.36',
+                    'Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Mobile Safari/537.36',
+                ];
+            } else {
+                // Other browsers on Android
+                $userAgents = [
+                    'Mozilla/5.0 (Linux; Android 10; SM-G973F) AppleWebKit/537.36 (KHTML, like Gecko) Firefox/89.0 Mobile Safari/537.36',
+                ];
+            }
+        } else {
+            // Desktop user agents
+            if ($browser === 'Chrome') {
+                $userAgents = [
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
+                    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
+                ];
+            } elseif ($browser === 'Safari') {
+                $userAgents = [
+                    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15',
+                    'Mozilla/5.0 (Macintosh; Intel Mac OS X 11_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Safari/605.1.15',
+                ];
+            } else {
+                // Other browsers on Desktop
+                $userAgents = [
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0',
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/91.0.864.37',
+                ];
+            }
+        }
 
         return $userAgents[array_rand($userAgents)];
     }
 
     /**
-     * Randomly select an operating system.
+     * Randomly select an operating system with weighted probabilities.
      *
-     * @return string|null
+     * @return string
      */
-    private function randomOS(): ?string
+    private function randomOS(): string
     {
-        $osList = ['Android', 'iOS', null];
-        return $osList[array_rand($osList)];
+        $rand = mt_rand() / mt_getrandmax(); // Float between 0 and 1
+
+        if ($rand <= 0.67) { // 67% iOS
+            return 'iOS';
+        } else { // 33% Android
+            return 'Android';
+        }
+    }
+
+    /**
+     * Randomly select a browser with weighted probabilities.
+     *
+     * @return string
+     */
+    private function randomBrowser(): string
+    {
+        $rand = mt_rand() / mt_getrandmax(); // Float between 0 and 1
+
+        if ($rand <= 0.67) { // 67% Safari
+            return 'Safari';
+        } elseif ($rand <= 0.67 + 0.20) { // 20% Chrome
+            return 'Chrome';
+        } else { // 13% Others
+            $browsers = ['Firefox', 'Edge', 'Opera'];
+            return $browsers[array_rand($browsers)];
+        }
     }
 
     /**
@@ -486,17 +600,6 @@ class AccessLogSeeder extends Seeder
             'India', 'Brazil', 'France', 'Spain', 'Italy', 'Netherlands', null
         ];
         return $countries[array_rand($countries)];
-    }
-
-    /**
-     * Randomly select a browser.
-     *
-     * @return string|null
-     */
-    private function randomBrowser(): ?string
-    {
-        $browsers = ['Chrome', 'Firefox', 'Safari', 'Edge', 'Opera', null];
-        return $browsers[array_rand($browsers)];
     }
 
     /**
