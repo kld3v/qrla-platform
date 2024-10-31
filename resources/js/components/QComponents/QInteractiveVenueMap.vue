@@ -1,9 +1,7 @@
 <template>
-	<div class="svg-wrapper">
-		<div
-			v-html="svgContent"
-			ref="svgContainer"></div>
-	</div>
+  <div class="svg-wrapper">
+    <div v-html="svgContent" ref="svgContainer"></div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -11,26 +9,26 @@ import { ref, onMounted, nextTick, watch } from 'vue'
 import { Stand, BlockExtended } from '@/types'
 
 const props = defineProps<{
-	svgUrl: string
-	stands: Stand[]
-	selectedBlocks: BlockExtended[]
-	updateSelectedBlockState: (blocks: BlockExtended[]) => void
+  svgUrl: string
+  stands: Stand[]
+  selectedBlocks?: BlockExtended[]
+  updateSelectedBlockState?: (blocks: BlockExtended[]) => void
 }>()
 
-const internalSelectedBlocks = ref<BlockExtended[]>(props.selectedBlocks)
+const internalSelectedBlocks = ref<BlockExtended[]>(props.selectedBlocks || [])
 
 const updateInternalBlocksState = (block: BlockExtended) => {
-	// Check if the block is already in the selectedBlocks
-	const iDoHaveYourBlock = internalSelectedBlocks.value.find((el) => el.id === block.id)
+  const blockExists = internalSelectedBlocks.value.find((el) => el.id === block.id)
 
-	if (iDoHaveYourBlock) {
-		// If it exists, remove it from internalSelectedBlocks
-		internalSelectedBlocks.value = internalSelectedBlocks.value.filter((el) => el.id !== block.id)
-	} else {
-		// If it doesn't exist, add it to internalSelectedBlocks
-		internalSelectedBlocks.value.push(block)
-	}
-	console.log('internalValue', internalSelectedBlocks.value)
+  if (blockExists) {
+    internalSelectedBlocks.value = internalSelectedBlocks.value.filter((el) => el.id !== block.id)
+  } else {
+    internalSelectedBlocks.value.push(block)
+  }
+
+  if (props.updateSelectedBlockState) {
+    props.updateSelectedBlockState(internalSelectedBlocks.value)
+  }
 }
 
 const svgContent = ref('')
@@ -38,145 +36,146 @@ const svgContainer = ref<SVGElement | null>(null)
 const blockColorMap = ref({})
 
 const createBlockColorMap = () => {
-	props.stands.forEach((stand) => {
-		stand.blocks.forEach((block) => {
-			const blockNameWithUnderscores = block.name.replace(/\s+/g, '_')
-			//@ts-ignore
-			blockColorMap.value[blockNameWithUnderscores] = block.color
-		})
-	})
+  props.stands.forEach((stand) => {
+    stand.blocks.forEach((block) => {
+      const blockNameWithUnderscores = block.name.replace(/\s+/g, '_')
+      //@ts-ignore
+      blockColorMap.value[blockNameWithUnderscores] = block.color
+    })
+  })
 }
 
 const loadSvgFile = async () => {
-	try {
-		const response = await fetch(props.svgUrl)
-		const svg = await response.text()
-		svgContent.value = svg
-		nextTick(() => {
-			addPolygonHoverEffects()
-		})
-	} catch (error) {
-		console.error('Error loading SVG:', error)
-	}
+  try {
+    const response = await fetch(props.svgUrl)
+    const svg = await response.text()
+    svgContent.value = svg
+    nextTick(() => {
+      addPolygonHoverEffects()
+    })
+  } catch (error) {
+    console.error('Error loading SVG:', error)
+  }
 }
 
 const handlePolygonClick = (polygonIdWithUnderscores: string) => {
-	let clickedBlock: BlockExtended | null = null
+  let clickedBlock: BlockExtended | null = null
 
-	// Find the block that corresponds to the clicked polygon
-	props.stands.forEach((stand) => {
-		stand.blocks.forEach((block) => {
-			const blockNameWithUnderscores = block.name.replace(/\s+/g, '_')
-			if (blockNameWithUnderscores === polygonIdWithUnderscores) {
-				clickedBlock = block
-			}
-		})
-	})
+  props.stands.forEach((stand) => {
+    stand.blocks.forEach((block) => {
+      const blockNameWithUnderscores = block.name.replace(/\s+/g, '_')
+      if (blockNameWithUnderscores === polygonIdWithUnderscores) {
+        clickedBlock = block
+      }
+    })
+  })
 
-	// If no block is found, log a warning and return
-	if (!clickedBlock) {
-		console.warn('Block not found for polygon:', polygonIdWithUnderscores)
-		return
-	}
+  if (!clickedBlock) {
+    console.warn('Block not found for polygon:', polygonIdWithUnderscores)
+    return
+  }
 
-	// Update internal selection and propagate to parent
-	updateInternalBlocksState(clickedBlock)
-	props.updateSelectedBlockState(internalSelectedBlocks.value)
+  updateInternalBlocksState(clickedBlock)
 }
 
 const addPolygonHoverEffects = () => {
-	console.log('run!')
-	let polygons: NodeListOf<SVGPolygonElement> | null = null
+  let polygons: NodeListOf<SVGPolygonElement> | null = null
 
-	if (svgContainer.value) {
-		polygons = svgContainer.value.querySelectorAll('polygon')
-	}
+  if (svgContainer.value) {
+    polygons = svgContainer.value.querySelectorAll('polygon')
+  }
 
-	if (polygons) {
-		polygons.forEach((polygon) => {
-			const polygonId = polygon.getAttribute('id')
-			if (!polygonId) return
+  if (polygons) {
+    polygons.forEach((polygon) => {
+      const polygonId = polygon.getAttribute('id')
+      if (!polygonId) return
 
-			const polygonIdWithUnderscores = polygonId.replace(/\s+/g, '_')
+      const polygonIdWithUnderscores = polygonId.replace(/\s+/g, '_')
 
-			// Determine if the polygon is selected
-			const isSelected = internalSelectedBlocks.value.some((block) => block.name.replace(/\s+/g, '_') === polygonIdWithUnderscores)
+      const isSelected = internalSelectedBlocks.value.some((block) => block.name.replace(/\s+/g, '_') === polygonIdWithUnderscores)
 
-			// Set the initial fill color based on selection or stand color
-			let fillColor = ''
-			if (isSelected) {
-				fillColor = '#A2F732' // Highlight color for selected blocks
-				//@ts-ignore
-			} else if (blockColorMap.value[polygonIdWithUnderscores]) {
-				//@ts-ignore
-				fillColor = blockColorMap.value[polygonIdWithUnderscores]
-			} else {
-				fillColor = '#CCCCCC' // Default color
-			}
+      let fillColor = ''
+      if (isSelected) {
+        fillColor = '#A2F732'
+        //@ts-ignore
+      } else if (blockColorMap.value[polygonIdWithUnderscores]) {
+        //@ts-ignore
+        fillColor = blockColorMap.value[polygonIdWithUnderscores]
+      } else {
+        fillColor = '#CCCCCC'
+      }
 
-			polygon.style.fill = fillColor
+      polygon.style.fill = fillColor
 
-			// Store the original fill color for use in mouseout
-			const originalFill = fillColor
+      if (!polygon.hasAttribute('data-listeners-added')) {
+        polygon.addEventListener('mouseover', () => {
+          polygon.style.fill = '#A2F732'
+        })
 
-			// Add event listeners only if they haven't been added yet
-			if (!polygon.hasAttribute('data-listeners-added')) {
-				// Always add hover listeners
-				polygon.addEventListener('mouseover', () => {
-					polygon.style.fill = '#A2F732' // Highlight color on hover
-				})
+        polygon.addEventListener('mouseout', () => {
+          const currentlySelected = internalSelectedBlocks.value.some((block) => block.name.replace(/\s+/g, '_') === polygonIdWithUnderscores)
 
-				polygon.addEventListener('mouseout', () => {
-					// Re-determine if the polygon is selected after hover
-					const currentlySelected = internalSelectedBlocks.value.some((block) => block.name.replace(/\s+/g, '_') === polygonIdWithUnderscores)
+          if (currentlySelected) {
+            polygon.style.fill = '#A2F732'
+            //@ts-ignore
+          } else if (blockColorMap.value[polygonIdWithUnderscores]) {
+            //@ts-ignore
+            polygon.style.fill = blockColorMap.value[polygonIdWithUnderscores]
+          } else {
+            polygon.style.fill = '#CCCCCC'
+          }
+        })
 
-					if (currentlySelected) {
-						polygon.style.fill = '#A2F732' // Maintain highlight if selected
-						//@ts-ignore
-					} else if (blockColorMap.value[polygonIdWithUnderscores]) {
-						//@ts-ignore
-						polygon.style.fill = blockColorMap.value[polygonIdWithUnderscores]
-					} else {
-						polygon.style.fill = '#CCCCCC'
-					}
-				})
+        polygon.addEventListener('click', () => {
+          handlePolygonClick(polygonIdWithUnderscores)
+        })
 
-				// Add click listener
-				polygon.addEventListener('click', () => {
-					handlePolygonClick(polygonIdWithUnderscores)
-				})
-
-				// Mark the polygon as having listeners added
-				polygon.setAttribute('data-listeners-added', 'true')
-			}
-		})
-	}
+        polygon.setAttribute('data-listeners-added', 'true')
+      }
+    })
+  }
 }
 
 onMounted(() => {
-	createBlockColorMap()
-	loadSvgFile()
+  createBlockColorMap()
+  loadSvgFile()
 })
 
+if (props.selectedBlocks !== undefined) {
+  watch(
+    () => props.selectedBlocks,
+    (newVal) => {
+      if (newVal !== undefined) {
+        internalSelectedBlocks.value = newVal
+        nextTick(() => {
+          addPolygonHoverEffects()
+        })
+      }
+    },
+    {
+      immediate: true,
+    }
+  )
+
+
+}
+
 watch(
-	() => props.selectedBlocks,
-	(newVal, oldVal) => {
-		// internalSelectedBlocks.value = newVal
-		// console.log('local state: updated and next tick called!', internalSelectedBlocks.value)
-		internalSelectedBlocks.value = newVal
-		nextTick(() => {
-			addPolygonHoverEffects()
-		})
-	},
-	{
-		immediate: true,
-	}
+  () => props.stands,
+  () => {
+    createBlockColorMap()
+    nextTick(() => {
+      addPolygonHoverEffects()
+    })
+  },
+  { deep: true }
 )
+
 </script>
 
 <style scoped>
 svg {
-	width: 100%;
-	height: auto;
+  width: 100%;
+  height: auto;
 }
 </style>
