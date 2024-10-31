@@ -18,16 +18,12 @@ const emailRules = ref([
   (v: string) => /.+@.+\..+/.test(v) || 'E-mail must be valid'
 ])
 
-// Updated props to include 'token'
 const props = defineProps<{
   canResetPassword?: boolean
   status?: string
-  token?: string // Added
+  token?: string 
 }>()
 
-console.log(props)
-
-// Updated form to include 'token'
 const form = useForm({
   name: '',
   email: '',
@@ -36,8 +32,7 @@ const form = useForm({
   token: props.token ?? ''
 })
 
-// Submit handler remains unchanged
-const submit = () => {
+    const submit = () => {
   form.post(route('register'), {
     onFinish: () => {
       form.reset('password', 'password_confirmation')
