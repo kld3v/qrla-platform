@@ -9,6 +9,7 @@ use App\Http\Controllers\VenueController;
 use App\Http\Controllers\BlockController;
 use App\Http\Controllers\MarkerController;
 use App\Http\Controllers\StatsController;
+use App\Http\Controllers\RegisterLinkController;
 
 
 Route::get('/', function () {
@@ -46,8 +47,9 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/profile-picture/upload', [ProfilePictureController::class, 'upload'])->name('user.uploadProfilePhoto');
 
     Route::post('/organisation/logo/upload', [OrganisationController::class, 'uploadLogo'])->name('organisation.uploadLogo');
-});
 
+
+});
 
 Route::get('/stats/accesses-over-time', [StatsController::class, 'getAccessesOverTime']);
 

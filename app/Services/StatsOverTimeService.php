@@ -164,6 +164,11 @@ class StatsOverTimeService
                 ];
             }, $filteredOsData));
     
+            // Sort osData by access_percentage in descending order
+            usort($osData, function ($a, $b) {
+                return $b['access_percentage'] <=> $a['access_percentage'];
+            });
+    
             // Aggregate browser counts by browser name, excluding empty, null, "Unknown", and "0" values
             $aggregatedBrowsers = [];
             foreach ($browserResults as $browser) {
@@ -186,6 +191,11 @@ class StatsOverTimeService
                     'access_percentage' => round($percentage, 1),
                 ];
             }, array_keys($aggregatedBrowsers)));
+    
+            // Sort browsers by access_percentage in descending order
+            usort($browsers, function ($a, $b) {
+                return $b['access_percentage'] <=> $a['access_percentage'];
+            });
         }
     
         return [
@@ -193,6 +203,7 @@ class StatsOverTimeService
             'browsers' => $browsers,
         ];
     }
+    
     
     
 
