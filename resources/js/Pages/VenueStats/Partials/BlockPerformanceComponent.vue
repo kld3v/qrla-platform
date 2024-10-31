@@ -40,6 +40,24 @@
                 </QCard>
             </v-col>
             <v-col cols="12" lg="6">
+              <!-- Legend -->
+              <div class="flex flex-col items-center mb-4">
+                <!-- Color Legend -->
+                <div style="display: flex; align-items: center;">
+                  <div class="flex flex-col items-center mr-2">
+                    <span class="h4">Low</span>
+                    <span class="h6">{{ minPercent }}%</span>
+                  </div>
+                  <div
+                    style="width: 150px; height: 10px; border-radius: 5px;"
+                    :style="{ background: colorGradient }"
+                  ></div>
+                  <div class="flex flex-col items-center ml-2">
+                    <span class="h4">High</span>
+                    <span class="h6">{{ maxPercent }}%</span>
+                  </div>
+                </div>
+              </div>
                 <!-- Pass the localStands to QInteractiveVenueMap -->
                 <QInteractiveVenueMap
                     :svg-url="selectedItem.map_svg_url"
@@ -81,7 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, watch } from "vue";
+import { ref, reactive, onMounted, watch, computed } from "vue";
 import { Stand, BlockShort, VenuePageProps, TimeRange } from "@/types";
 import { getAccessesByBlockOverTime } from "@/utils/apiDataFetchers";
 import QCard from "@/components/QComponents/QCard.vue";
@@ -188,37 +206,45 @@ const fetchData = async () => {
     computeAndAssignColors();
 };
 
-const computeAndAssignColors = () => {
-    if (blockPercentData.current && blockPercentData.current.data.length > 0) {
-        // Extract access counts
-        const accessCounts = blockPercentData.current.data.map(
-            (item) => item.access_count,
-        );
-        const minAccess = Math.min(...accessCounts);
-        const maxAccess = Math.max(...accessCounts);
-        const range = maxAccess - minAccess || 1; // Avoid division by zero
+const minPercent = ref('0');
+const maxPercent = ref('0');
 
-        // Assign colors to blocks based on normalized access counts
-        localStands.value.forEach((stand) => {
-            stand.blocks.forEach((block) => {
-                // Find corresponding block data
-                const blockData = blockPercentData.current.data.find(
-                    (item) => item.block_id === block.id,
-                );
-                if (blockData) {
-                    const normalizedValue =
-                        (blockData.access_count - minAccess) / range;
-                    const colorIndex = Math.floor(
-                        normalizedValue * (venueMapColors.length - 1),
-                    );
-                    block.color = venueMapColors[colorIndex];
-                } else {
-                    // Default color if no data
-                    block.color = "#CCCCCC";
-                }
-            });
-        });
-    }
+const computeAndAssignColors = () => {
+  if (blockPercentData.current && blockPercentData.current.data.length > 0) {
+    // Extract access counts
+    const accessCounts = blockPercentData.current.data.map(
+      (item) => item.access_count,
+    );
+    const minAccess = Math.min(...accessCounts);
+    const maxAccess = Math.max(...accessCounts);
+    const range = maxAccess - minAccess || 1; // Avoid division by zero
+
+    // Update minPercent and maxPercent
+    const totalAccesses = accessCounts.reduce((sum, val) => sum + val, 0) || 1;
+    minPercent.value = ((minAccess / totalAccesses) * 100).toFixed(2);
+    maxPercent.value = ((maxAccess / totalAccesses) * 100).toFixed(2);
+
+    // Assign colors to blocks based on normalized access counts
+    localStands.value.forEach((stand) => {
+      stand.blocks.forEach((block) => {
+        // Find corresponding block data
+        const blockData = blockPercentData.current.data.find(
+          (item) => item.block_id === block.id,
+        );
+        if (blockData) {
+          const normalizedValue =
+            (blockData.access_count - minAccess) / range;
+          const colorIndex = Math.floor(
+            normalizedValue * (venueMapColors.length - 1),
+          );
+          block.color = venueMapColors[colorIndex];
+        } else {
+          // Default color if no data
+          block.color = '#CCCCCC';
+        }
+      });
+    });
+  }
 };
 
 // Watch for changes in the current data and recompute colors
@@ -260,4 +286,8 @@ const getBlockColor = (blockId) => {
     }
     return "#CCCCCC"; // default color if not found
 };
+
+const colorGradient = computed(() => {
+    return `linear-gradient(to right, ${venueMapColors[0]}, ${venueMapColors[venueMapColors.length - 1]})`;
+});
 </script>
