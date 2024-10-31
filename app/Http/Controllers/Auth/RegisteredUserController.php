@@ -98,8 +98,7 @@ class RegisteredUserController extends Controller
                     // Attach venues if any
                     if (!empty($uniqueRegisterLink->venue_ids)) {
                         $user->venues()->attach($uniqueRegisterLink->venue_ids);
-                    } else {
-                    }
+                    } 
             
                     // Delete the unique link to prevent reuse
                     $uniqueRegisterLink->delete();

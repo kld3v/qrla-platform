@@ -33,7 +33,7 @@ const IconCardData = [
 		bg: 'dark-primary-gradient',
 		color: 'primary',
 		title: 'Venue Capacity',
-		data: capacity,
+		data: formatNumberWithCommas(capacity),
 		link: '',
 		image: QCARDSTADICON,
 	},
@@ -51,7 +51,7 @@ const IconCardData = [
 
 		color: 'secondary',
 		title: 'QRLA Plaques',
-		data: plaques,
+		data: formatNumberWithCommas(plaques),
 		link: '',
 		image: QCARDQRLAICON,
 	},

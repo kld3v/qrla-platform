@@ -2,6 +2,7 @@
 import { usePage } from '@inertiajs/vue3';
 import SideRegister from '@/views/authentication/SideRegister.vue';
 
+
 interface yeahMan {
   token?: string;
   auth:any
