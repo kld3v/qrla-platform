@@ -5,8 +5,9 @@ import { QPlaqueActivityGraphDataObject } from '@/types'
 
 const props = defineProps<{
 	data: QPlaqueActivityGraphDataObject[] | null | undefined
+	timePast: 'Past Year' | 'Past Three Months' | 'Past Month' | 'Past Week' | 'Past Day'
 }>()
-
+console.log(props.data)
 const graphData = reactive<{
 	categories: QPlaqueActivityGraphDataObject['time_group'][]
 	total: QPlaqueActivityGraphDataObject['total_access_count'][]
@@ -112,7 +113,7 @@ watch(
 					</v-avatar>
 					<div>
 						<v-card-title class="text-h5">Activity</v-card-title>
-						<v-card-subtitle class="text-white">Past Year</v-card-subtitle>
+						<v-card-subtitle class="text-white">{{ timePast }}</v-card-subtitle>
 					</div>
 				</div>
 				<div class="d-flex align-center gap-4">
