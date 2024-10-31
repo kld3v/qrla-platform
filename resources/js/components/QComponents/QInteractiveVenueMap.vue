@@ -30,7 +30,6 @@ const updateInternalBlocksState = (block: BlockExtended) => {
 		// If it doesn't exist, add it to internalSelectedBlocks
 		internalSelectedBlocks.value.push(block)
 	}
-	console.log('internalValue', internalSelectedBlocks.value)
 }
 
 const svgContent = ref('')
