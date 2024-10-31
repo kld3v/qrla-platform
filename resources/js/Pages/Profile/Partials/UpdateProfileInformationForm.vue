@@ -14,13 +14,13 @@ const props = defineProps<{
 
 console.log(props)
 const form = useForm({
-	name: props.auth?.user.name,
-	email: props.auth?.user.email,
-	organisationName: props.organisation?.name,
-	role: props.auth?.user.role,
-	location: props.organisation?.address_line1 + ', ' + props.organisation?.city + ', ' + props.organisation?.country,
-	phone: props.auth?.user.phone,
-})
+    name: props.auth.user.name,
+    email: props.auth.user.email,
+    organisationName: props.auth.user.organisation.name,
+    role: props.auth.user.role,
+    location: `${props.auth.user.organisation.address_line1}, ${props.auth.user.organisation.city}, ${props.auth.user.organisation.country}`,
+    phone: props.auth.user.phone,
+});
 
 const submitForm = () => {
 	form.patch(route('profile.update'), {
@@ -32,6 +32,7 @@ const submitForm = () => {
 		},
 	})
 }
+
 </script>
 
 <template>

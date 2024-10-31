@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { usePage } from '@inertiajs/vue3' 
-import { onMounted } from 'vue'
-import SideRegister from '@/views/authentication/SideRegister.vue'
+import { usePage } from '@inertiajs/vue3';
+import SideRegister from '@/views/authentication/SideRegister.vue';
 
-const { props } = usePage() 
+interface yeahMan {
+  token?: string;
+  auth:any
+}
 
-onMounted(() => {
-  console.log('SideRegister component mounted.', { token: props.token });
-});
+//@ts-ignore
+const { props } = usePage<yeahMan>();
 </script>
 
 <template>
-    <SideRegister :token="props.token" />
+  <SideRegister :token="props.token" />
 </template>
