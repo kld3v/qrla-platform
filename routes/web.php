@@ -51,8 +51,6 @@ Route::middleware('auth')->group(function (): void {
 
 });
 
-Route::post('/generate-link', [RegisterLinkController::class, 'generateLink'])->name('generate.link');
-
 Route::get('/stats/accesses-over-time', [StatsController::class, 'getAccessesOverTime']);
 
 Route::get('/stats/accesses-by-os-browser', [StatsController::class, 'getAccessesByOsAndBrowser']);

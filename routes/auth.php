@@ -14,13 +14,15 @@ use Illuminate\Http\Request;
 
 
 Route::middleware('guest')->group(function () {
+
+    
+    Route::get('/register/{token}', [RegisteredUserController::class, 'showRegistrationFormWithToken'])
+        ->name('register.token');
+
     Route::get('register', [RegisteredUserController::class, 'create'])
                 ->name('register');
 
     Route::post('register', [RegisteredUserController::class, 'store']);
-
-    Route::get('/register/{token}', [RegisteredUserController::class, 'showRegistrationFormWithToken'])
-        ->name('register.token');
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
                 ->name('login');
