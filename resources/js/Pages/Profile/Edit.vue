@@ -88,7 +88,7 @@ const componentMap = {
 				lg="3">
 				<QCardBanner
 					:title="props.organisation?.name"
-					subHeading="Product and Systems Manager"
+					:subHeading="props.auth.user?.role"
 					:imageSrc="props.organisation?.logo_path" />
 			</v-col>
 		</v-row>
