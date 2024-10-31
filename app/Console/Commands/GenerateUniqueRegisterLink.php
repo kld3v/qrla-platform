@@ -38,13 +38,6 @@ class GenerateUniqueRegisterLink extends Command
         $venue_ids = $this->option('venue_ids');
         $expires_at_input = $this->option('expires_at');
 
-        // Validate role against predefined roles (Optional but recommended)
-        $valid_roles = ['admin', 'user', 'manager']; // Adjust as per your application
-        if (!in_array($role, $valid_roles)) {
-            $this->error("Invalid role. Valid roles are: " . implode(', ', $valid_roles));
-            return 1; // Non-zero exit code for failure
-        }
-
         // Validate organisation exists
         $organisation = \App\Models\Organisation::find($organisation_id);
         if (!$organisation) {
