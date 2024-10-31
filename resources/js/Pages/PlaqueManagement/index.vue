@@ -58,9 +58,7 @@ const assignColorsToBlocks = (): void => {
 	console.log('colors assigned')
 }
 
-onMounted(() => {
-	assignColorsToBlocks()
-})
+assignColorsToBlocks()
 
 const returnSelectedStandBlocksForTable = computed(() => {
 	if (selectedStand.value === 'All') {
