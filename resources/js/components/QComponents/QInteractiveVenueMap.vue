@@ -1,6 +1,14 @@
 <template>
   <div class="svg-wrapper">
     <div v-html="svgContent" ref="svgContainer"></div>
+    <div
+      ref="tooltipRef"
+      class="tooltip"
+      v-if="tooltipVisible"
+      :style="{ top: tooltipPosition.y + 'px', left: tooltipPosition.x + 'px' }"
+    >
+      {{ tooltipText }}
+    </div>
   </div>
 </template>
 
@@ -35,6 +43,12 @@ const updateInternalBlocksState = (block: BlockExtended) => {
 const svgContent = ref('')
 const svgContainer = ref<SVGElement | null>(null)
 const blockColorMap = ref({})
+
+// Tooltip related refs
+const tooltipRef = ref<HTMLDivElement | null>(null)
+const tooltipVisible = ref(false)
+const tooltipText = ref('')
+const tooltipPosition = ref({ x: 0, y: 0 })
 
 const createBlockColorMap = () => {
   props.stands.forEach((stand) => {
@@ -79,6 +93,31 @@ const handlePolygonClick = (polygonIdWithUnderscores: string) => {
   updateInternalBlocksState(clickedBlock)
 }
 
+const getBlockNameByPolygonId = (polygonIdWithUnderscores: string): string | null => {
+  let blockName: string | null = null
+  props.stands.forEach((stand) => {
+    stand.blocks.forEach((block) => {
+      const blockNameWithUnderscores = block.name.replace(/\s+/g, '_')
+      if (blockNameWithUnderscores === polygonIdWithUnderscores) {
+        blockName = block.name
+      }
+    })
+  })
+  return blockName
+}
+
+const updateTooltipPosition = (event: MouseEvent) => {
+  const svgWrapperRect = svgContainer.value?.getBoundingClientRect();
+  if (svgWrapperRect && tooltipRef.value) {
+    const tooltipWidth = tooltipRef.value.offsetWidth;
+    const tooltipHeight = tooltipRef.value.offsetHeight;
+
+    tooltipPosition.value.x = event.clientX - svgWrapperRect.left - tooltipWidth / 2;
+    tooltipPosition.value.y = event.clientY - svgWrapperRect.top - tooltipHeight - 5;
+  }
+};
+
+
 const addPolygonHoverEffects = () => {
   let polygons: NodeListOf<SVGPolygonElement> | null = null
 
@@ -93,7 +132,9 @@ const addPolygonHoverEffects = () => {
 
       const polygonIdWithUnderscores = polygonId.replace(/\s+/g, '_')
 
-      const isSelected = internalSelectedBlocks.value.some((block) => block.name.replace(/\s+/g, '_') === polygonIdWithUnderscores)
+      const isSelected = internalSelectedBlocks.value.some(
+        (block) => block.name.replace(/\s+/g, '_') === polygonIdWithUnderscores
+      )
 
       let fillColor = ''
       if (isSelected) {
@@ -109,16 +150,28 @@ const addPolygonHoverEffects = () => {
       polygon.style.fill = fillColor
 
       if (!polygon.hasAttribute('data-listeners-added')) {
-        polygon.addEventListener('mouseover', () => {
+        polygon.addEventListener('mouseover', (event: MouseEvent) => {
           // Only change color if hover color is not disabled
           if (!props.disableHoverColor) {
             polygon.style.fill = '#A2F732'
           }
-          // Other hover effects can be added here in the future
+          // Show tooltip
+          const blockName = getBlockNameByPolygonId(polygonIdWithUnderscores)
+          if (blockName) {
+            tooltipText.value = blockName
+            tooltipVisible.value = true
+            updateTooltipPosition(event)
+          }
+        })
+
+        polygon.addEventListener('mousemove', (event: MouseEvent) => {
+          updateTooltipPosition(event)
         })
 
         polygon.addEventListener('mouseout', () => {
-          const currentlySelected = internalSelectedBlocks.value.some((block) => block.name.replace(/\s+/g, '_') === polygonIdWithUnderscores)
+          const currentlySelected = internalSelectedBlocks.value.some(
+            (block) => block.name.replace(/\s+/g, '_') === polygonIdWithUnderscores
+          )
 
           let fillColor = ''
           if (currentlySelected) {
@@ -135,7 +188,8 @@ const addPolygonHoverEffects = () => {
           if (!props.disableHoverColor) {
             polygon.style.fill = fillColor
           }
-          // Other hover out effects can be added here in the future
+          // Hide tooltip
+          tooltipVisible.value = false
         })
 
         polygon.addEventListener('click', () => {
@@ -183,8 +237,26 @@ watch(
 </script>
 
 <style scoped>
+.svg-wrapper {
+  position: relative;
+}
+
 svg {
   width: 100%;
   height: auto;
+}
+
+.tooltip {
+  position: absolute;
+  background-color: #ffffff;
+  border: 1px solid #606060;
+  padding: 8px; 
+  font-size: 18px; 
+  border-radius: 5px; 
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 10;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+  color: #000000;
 }
 </style>
