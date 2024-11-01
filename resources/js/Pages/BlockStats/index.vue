@@ -73,13 +73,13 @@ const assignColorsToBlocks = (): void => {
 assignColorsToBlocks()
 
 // to be relpaced with prop data
-const IconCardData = ref<any>([
+const IconCardData = computed(() => [
 	{
 		bg: 'primary-gradient',
 		icon: 'iconamoon:eye',
 		color: 'primary',
 		title: 'Total Visits',
-		data: formatNumberWithCommas(selectedBlocks.value[0].stats.total_visits),
+		data: formatNumberWithCommas(selectedBlocks.value[0]?.stats.total_visits || 0),
 		link: '',
 		delta: 40,
 	},
@@ -88,7 +88,7 @@ const IconCardData = ref<any>([
 		icon: 'lucide:nfc',
 		color: 'purple',
 		title: 'Visits By Tap',
-		data: formatNumberWithCommas(selectedBlocks.value[0].stats.total_seat_visits),
+		data: formatNumberWithCommas(selectedBlocks.value[0]?.stats.total_seat_visits || 0),
 		link: '',
 		delta: -23,
 	},
@@ -97,7 +97,7 @@ const IconCardData = ref<any>([
 		icon: 'uil:qrcode-scan',
 		color: 'success',
 		title: 'Visits By Scan',
-		data: formatNumberWithCommas(selectedBlocks.value[0].stats.total_block_visits),
+		data: formatNumberWithCommas(selectedBlocks.value[0]?.stats.total_block_visits || 0),
 		link: '',
 		delta: 12,
 	},
@@ -106,12 +106,11 @@ const IconCardData = ref<any>([
 		icon: 'ph:chart-line-up',
 		color: 'error',
 		title: 'Average Activity Level',
-		data: selectedBlocks.value[0].access_rate,
+		data: selectedBlocks.value[0]?.access_rate || 0,
 		link: '',
 		delta: 40,
 	},
 ])
-console.log(selectedBlocks.value)
 
 const returnSelectedStandBlocksForTable = computed(() => {
 	if (selectedStand.value === 'All') {
