@@ -13,6 +13,7 @@ const props = defineProps<{
   stands: Stand[]
   selectedBlocks?: BlockExtended[]
   updateSelectedBlockState?: (blocks: BlockExtended[]) => void
+  disableHoverColor?: boolean
 }>()
 
 const internalSelectedBlocks = ref<BlockExtended[]>(props.selectedBlocks || [])
@@ -109,21 +110,32 @@ const addPolygonHoverEffects = () => {
 
       if (!polygon.hasAttribute('data-listeners-added')) {
         polygon.addEventListener('mouseover', () => {
-          polygon.style.fill = '#A2F732'
+          // Only change color if hover color is not disabled
+          if (!props.disableHoverColor) {
+            polygon.style.fill = '#A2F732'
+          }
+          // Other hover effects can be added here in the future
         })
 
         polygon.addEventListener('mouseout', () => {
           const currentlySelected = internalSelectedBlocks.value.some((block) => block.name.replace(/\s+/g, '_') === polygonIdWithUnderscores)
 
+          let fillColor = ''
           if (currentlySelected) {
-            polygon.style.fill = '#A2F732'
+            fillColor = '#A2F732'
             //@ts-ignore
           } else if (blockColorMap.value[polygonIdWithUnderscores]) {
             //@ts-ignore
-            polygon.style.fill = blockColorMap.value[polygonIdWithUnderscores]
+            fillColor = blockColorMap.value[polygonIdWithUnderscores]
           } else {
-            polygon.style.fill = '#CCCCCC'
+            fillColor = '#CCCCCC'
           }
+
+          // Only reset color if hover color is not disabled
+          if (!props.disableHoverColor) {
+            polygon.style.fill = fillColor
+          }
+          // Other hover out effects can be added here in the future
         })
 
         polygon.addEventListener('click', () => {
@@ -156,8 +168,6 @@ if (props.selectedBlocks !== undefined) {
       immediate: true,
     }
   )
-
-
 }
 
 watch(
@@ -170,7 +180,6 @@ watch(
   },
   { deep: true }
 )
-
 </script>
 
 <style scoped>

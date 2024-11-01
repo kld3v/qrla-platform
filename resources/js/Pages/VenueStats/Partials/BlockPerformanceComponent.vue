@@ -59,10 +59,12 @@
                 </div>
               </div>
                 <!-- Pass the localStands to QInteractiveVenueMap -->
-                <QInteractiveVenueMap
-                    :svg-url="selectedItem.map_svg_url"
-                    :stands="localStands"
-                />
+              <QInteractiveVenueMap
+                :svg-url="selectedItem.map_svg_url"
+                :stands="localStands"
+                disable-hover-color
+              />
+
             </v-col>
         </v-row>
         <v-row>
