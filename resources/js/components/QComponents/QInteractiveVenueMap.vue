@@ -3,7 +3,7 @@
 		<div
 			v-html="svgContent"
 			ref="svgContainer"
-			class="flex align-center justify-center"></div>
+			class="grid place-items-center"></div>
 		<div
 			ref="tooltipRef"
 			class="tooltip"
