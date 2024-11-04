@@ -2,7 +2,15 @@
 	<div class="svg-wrapper">
 		<div
 			v-html="svgContent"
-			ref="svgContainer"></div>
+			ref="svgContainer"
+			class="grid place-items-center"></div>
+		<div
+			ref="tooltipRef"
+			class="tooltip"
+			v-if="tooltipVisible"
+			:style="{ top: tooltipPosition.y + 'px', left: tooltipPosition.x + 'px' }">
+			{{ tooltipText }}
+		</div>
 	</div>
 </template>
 
@@ -13,21 +21,19 @@ import { Stand, BlockExtended } from '@/types'
 const props = defineProps<{
 	svgUrl: string
 	stands: Stand[]
-	selectedBlocks: BlockExtended[]
-	updateSelectedBlockState: (blocks: BlockExtended[]) => void
+	selectedBlocks?: BlockExtended[]
+	updateSelectedBlockState?: (blocks: BlockExtended[]) => void
+	disableHoverColor?: boolean
 }>()
 
-const internalSelectedBlocks = ref<BlockExtended[]>(props.selectedBlocks)
+const internalSelectedBlocks = ref<BlockExtended[]>(props.selectedBlocks || [])
 
 const updateInternalBlocksState = (block: BlockExtended) => {
-	// Check if the block is already in the selectedBlocks
-	const iDoHaveYourBlock = internalSelectedBlocks.value.find((el) => el.id === block.id)
+	const blockExists = internalSelectedBlocks.value.find((el) => el.id === block.id)
 
-	if (iDoHaveYourBlock) {
-		// If it exists, remove it from internalSelectedBlocks
+	if (blockExists) {
 		internalSelectedBlocks.value = internalSelectedBlocks.value.filter((el) => el.id !== block.id)
 	} else {
-		// If it doesn't exist, add it to internalSelectedBlocks
 		internalSelectedBlocks.value.push(block)
 	}
 }
@@ -35,6 +41,12 @@ const updateInternalBlocksState = (block: BlockExtended) => {
 const svgContent = ref('')
 const svgContainer = ref<SVGElement | null>(null)
 const blockColorMap = ref({})
+
+// Tooltip related refs
+const tooltipRef = ref<HTMLDivElement | null>(null)
+const tooltipVisible = ref(false)
+const tooltipText = ref('')
+const tooltipPosition = ref({ x: 0, y: 0 })
 
 const createBlockColorMap = () => {
 	props.stands.forEach((stand) => {
@@ -62,7 +74,6 @@ const loadSvgFile = async () => {
 const handlePolygonClick = (polygonIdWithUnderscores: string) => {
 	let clickedBlock: BlockExtended | null = null
 
-	// Find the block that corresponds to the clicked polygon
 	props.stands.forEach((stand) => {
 		stand.blocks.forEach((block) => {
 			const blockNameWithUnderscores = block.name.replace(/\s+/g, '_')
@@ -72,19 +83,39 @@ const handlePolygonClick = (polygonIdWithUnderscores: string) => {
 		})
 	})
 
-	// If no block is found, log a warning and return
 	if (!clickedBlock) {
 		console.warn('Block not found for polygon:', polygonIdWithUnderscores)
 		return
 	}
 
-	// Update internal selection and propagate to parent
 	updateInternalBlocksState(clickedBlock)
-	props.updateSelectedBlockState(internalSelectedBlocks.value)
+}
+
+const getBlockNameByPolygonId = (polygonIdWithUnderscores: string): string | null => {
+	let blockName: string | null = null
+	props.stands.forEach((stand) => {
+		stand.blocks.forEach((block) => {
+			const blockNameWithUnderscores = block.name.replace(/\s+/g, '_')
+			if (blockNameWithUnderscores === polygonIdWithUnderscores) {
+				blockName = block.name
+			}
+		})
+	})
+	return blockName
+}
+
+const updateTooltipPosition = (event: MouseEvent) => {
+	const svgWrapperRect = svgContainer.value?.getBoundingClientRect()
+	if (svgWrapperRect && tooltipRef.value) {
+		const tooltipWidth = tooltipRef.value.offsetWidth
+		const tooltipHeight = tooltipRef.value.offsetHeight
+
+		tooltipPosition.value.x = event.clientX - svgWrapperRect.left - tooltipWidth / 2
+		tooltipPosition.value.y = event.clientY - svgWrapperRect.top - tooltipHeight - 5
+	}
 }
 
 const addPolygonHoverEffects = () => {
-	console.log('run!')
 	let polygons: NodeListOf<SVGPolygonElement> | null = null
 
 	if (svgContainer.value) {
@@ -98,54 +129,66 @@ const addPolygonHoverEffects = () => {
 
 			const polygonIdWithUnderscores = polygonId.replace(/\s+/g, '_')
 
-			// Determine if the polygon is selected
 			const isSelected = internalSelectedBlocks.value.some((block) => block.name.replace(/\s+/g, '_') === polygonIdWithUnderscores)
 
-			// Set the initial fill color based on selection or stand color
 			let fillColor = ''
 			if (isSelected) {
-				fillColor = '#A2F732' // Highlight color for selected blocks
+				fillColor = '#A2F732'
 				//@ts-ignore
 			} else if (blockColorMap.value[polygonIdWithUnderscores]) {
 				//@ts-ignore
 				fillColor = blockColorMap.value[polygonIdWithUnderscores]
 			} else {
-				fillColor = '#CCCCCC' // Default color
+				fillColor = '#CCCCCC'
 			}
 
 			polygon.style.fill = fillColor
 
-			// Store the original fill color for use in mouseout
-			const originalFill = fillColor
-
-			// Add event listeners only if they haven't been added yet
 			if (!polygon.hasAttribute('data-listeners-added')) {
-				// Always add hover listeners
-				polygon.addEventListener('mouseover', () => {
-					polygon.style.fill = '#A2F732' // Highlight color on hover
-				})
-
-				polygon.addEventListener('mouseout', () => {
-					// Re-determine if the polygon is selected after hover
-					const currentlySelected = internalSelectedBlocks.value.some((block) => block.name.replace(/\s+/g, '_') === polygonIdWithUnderscores)
-
-					if (currentlySelected) {
-						polygon.style.fill = '#A2F732' // Maintain highlight if selected
-						//@ts-ignore
-					} else if (blockColorMap.value[polygonIdWithUnderscores]) {
-						//@ts-ignore
-						polygon.style.fill = blockColorMap.value[polygonIdWithUnderscores]
-					} else {
-						polygon.style.fill = '#CCCCCC'
+				polygon.addEventListener('mouseover', (event: MouseEvent) => {
+					// Only change color if hover color is not disabled
+					if (!props.disableHoverColor) {
+						polygon.style.fill = '#A2F732'
+					}
+					// Show tooltip
+					const blockName = getBlockNameByPolygonId(polygonIdWithUnderscores)
+					if (blockName) {
+						tooltipText.value = blockName
+						tooltipVisible.value = true
+						updateTooltipPosition(event)
 					}
 				})
 
-				// Add click listener
+				polygon.addEventListener('mousemove', (event: MouseEvent) => {
+					updateTooltipPosition(event)
+				})
+
+				polygon.addEventListener('mouseout', () => {
+					const currentlySelected = internalSelectedBlocks.value.some((block) => block.name.replace(/\s+/g, '_') === polygonIdWithUnderscores)
+
+					let fillColor = ''
+					if (currentlySelected) {
+						fillColor = '#A2F732'
+						//@ts-ignore
+					} else if (blockColorMap.value[polygonIdWithUnderscores]) {
+						//@ts-ignore
+						fillColor = blockColorMap.value[polygonIdWithUnderscores]
+					} else {
+						fillColor = '#CCCCCC'
+					}
+
+					// Only reset color if hover color is not disabled
+					if (!props.disableHoverColor) {
+						polygon.style.fill = fillColor
+					}
+					// Hide tooltip
+					tooltipVisible.value = false
+				})
+
 				polygon.addEventListener('click', () => {
 					handlePolygonClick(polygonIdWithUnderscores)
 				})
 
-				// Mark the polygon as having listeners added
 				polygon.setAttribute('data-listeners-added', 'true')
 			}
 		})
@@ -157,25 +200,56 @@ onMounted(() => {
 	loadSvgFile()
 })
 
+if (props.selectedBlocks !== undefined) {
+	watch(
+		() => props.selectedBlocks,
+		(newVal) => {
+			if (newVal !== undefined) {
+				internalSelectedBlocks.value = newVal
+				nextTick(() => {
+					addPolygonHoverEffects()
+				})
+			}
+		},
+		{
+			immediate: true,
+		}
+	)
+}
+
 watch(
-	() => props.selectedBlocks,
-	(newVal, oldVal) => {
-		// internalSelectedBlocks.value = newVal
-		// console.log('local state: updated and next tick called!', internalSelectedBlocks.value)
-		internalSelectedBlocks.value = newVal
+	() => props.stands,
+	() => {
+		createBlockColorMap()
 		nextTick(() => {
 			addPolygonHoverEffects()
 		})
 	},
-	{
-		immediate: true,
-	}
+	{ deep: true }
 )
 </script>
 
 <style scoped>
+.svg-wrapper {
+	position: relative;
+}
+
 svg {
 	width: 100%;
 	height: auto;
+}
+
+.tooltip {
+	position: absolute;
+	background-color: #ffffff;
+	border: 1px solid #606060;
+	padding: 8px;
+	font-size: 18px;
+	border-radius: 5px;
+	pointer-events: none;
+	white-space: nowrap;
+	z-index: 10;
+	box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+	color: #000000;
 }
 </style>
