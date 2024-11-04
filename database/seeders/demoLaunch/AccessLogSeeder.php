@@ -4,154 +4,631 @@ namespace Database\Seeders\demoLaunch;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class AccessLogSeeder extends Seeder
 {
+    /**
+     * Total number of access log records to generate.
+     */
+    private int $totalRecords = 500000;
+
+    /**
+     * Batch size for inserting records.
+     */
+    private int $batchSize = 1000;
+
+    /**
+     * Tier weights for selection. Higher tiers have higher weights.
+     * For 10 tiers: Tier 1:10, Tier 2:9, ..., Tier10:1
+     */
+    private array $tierWeights = [];
+
+    /**
+     * Predefined break periods to simulate dips in access logs.
+     */
+    private array $breakPeriods = [
+        ['start' => '2023-12-25', 'end' => '2024-01-05'], // Christmas Break
+        ['start' => '2024-03-08', 'end' => '2024-03-14'], // International Break 1
+        ['start' => '2024-06-01', 'end' => '2024-06-07'], // Summer Break
+        // Add more break periods as needed
+    ];
+
+    /**
+     * List of game days.
+     */
+    private array $gameDays = [];
+
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
-        $batchSize = 1000; // Adjust the batch size based on available memory
+        // Disable query log for performance
+        DB::disableQueryLog();
 
-        // First, find all markers with markerable_type == 'block'
+        $this->command->info('Starting AccessLogSeeder...');
+
+        // Initialize game days
+        $this->initializeGameDays();
+
+        // Step 1: Fetch all blocks ordered by access_rate descending
+        $blocks = DB::table('blocks')
+            ->select('id', 'access_rate')
+            ->orderByDesc('access_rate')
+            ->get();
+
+        if ($blocks->isEmpty()) {
+            $this->command->error('No blocks found. Seeder cannot proceed.');
+            return;
+        }
+
+        // Step 2: Assign blocks to 10 tiers
+        $tiers = $this->assignTiers($blocks, 10);
+
+        // Step 3: Assign tier weights
+        $this->assignTierWeights(10);
+
+        // Step 4: Fetch block markers
         $blockMarkers = DB::table('markers')
-            ->where('markerable_type', 'block')
-            ->pluck('id')
+            ->where('markerable_type', 'block') // morph map key
+            ->pluck('id', 'markerable_id') // pluck 'id' by 'markerable_id' (block id)
             ->toArray();
 
-        // Define some blocks that are busier (e.g., blocks 1, 2, 3 are busier)
-        $busierBlocks = array_fill(0, 1.8 * count($blockMarkers), $blockMarkers[array_rand($blockMarkers)]); // Increase chance for busy blocks
+        // Step 5: Fetch seat markers
+        $seatMarkers = DB::table('markers')
+            ->where('markerable_type', 'seat') // morph map key
+            ->pluck('id', 'markerable_id') // pluck 'id' by 'markerable_id' (seat id)
+            ->toArray();
 
-        $totalRecordsForBlocks = 200000;
-        $totalRecordsForAll = 300000;
+        // Step 6: Fetch seats grouped by block_id
+        $seatsByBlock = DB::table('seats')
+            ->select('id', 'block_id')
+            ->get()
+            ->groupBy('block_id');
+
+        // Step 7: Organize markers by tier, separate for blocks and seats
+        $tierBlockMarkers = [];
+        $tierSeatMarkers = [];
+
+        foreach ($tiers as $tier => $blockIds) {
+            foreach ($blockIds as $blockId) {
+                // Add block marker
+                if (isset($blockMarkers[$blockId])) {
+                    $tierBlockMarkers[$tier][] = $blockMarkers[$blockId];
+                } else {
+                    Log::warning("Block ID {$blockId} does not have a corresponding marker.");
+                }
+
+                // Add seat markers
+                if (isset($seatsByBlock[$blockId])) {
+                    foreach ($seatsByBlock[$blockId] as $seat) {
+                        if (isset($seatMarkers[$seat->id])) {
+                            $tierSeatMarkers[$tier][] = $seatMarkers[$seat->id];
+                        } else {
+                            Log::warning("Seat ID {$seat->id} in Block ID {$blockId} does not have a corresponding marker.");
+                        }
+                    }
+                } else {
+                    Log::warning("Block ID {$blockId} has no associated seats.");
+                }
+            }
+        }
+
+        // Remove tiers with no markers
+        foreach ($tierBlockMarkers as $tier => $markers) {
+            if (empty($markers)) {
+                unset($tierBlockMarkers[$tier]);
+                Log::warning("Tier {$tier} has no block markers.");
+            }
+        }
+
+        foreach ($tierSeatMarkers as $tier => $markers) {
+            if (empty($markers)) {
+                unset($tierSeatMarkers[$tier]);
+                Log::warning("Tier {$tier} has no seat markers.");
+            }
+        }
+
+        // Step 8: Collect markers per tier is already done: tierBlockMarkers and tierSeatMarkers
+
+        // Step 9: Flatten all block markers and seat markers
+        $allBlockMarkers = [];
+        foreach ($tierBlockMarkers as $tier => $markers) {
+            $allBlockMarkers = array_merge($allBlockMarkers, $markers);
+        }
+
+        $allSeatMarkers = [];
+        foreach ($tierSeatMarkers as $tier => $markers) {
+            $allSeatMarkers = array_merge($allSeatMarkers, $markers);
+        }
+
+        if (empty($allBlockMarkers) && empty($allSeatMarkers)) {
+            $this->command->error('No markers available for selection. Seeder cannot proceed.');
+            return;
+        }
+
+        // Step 10: Initialize variables for batching
         $batches = [];
+        $insertedRecords = 0;
 
-        // Generate 200,000 records for block markers
-        for ($i = 0; $i < $totalRecordsForBlocks; $i++) {
-            $batches[] = $this->generateLogRecord($this->selectMarker($blockMarkers, $busierBlocks));
+        // Step 11: Seed access logs
+        while ($insertedRecords < $this->totalRecords) {
+  
+            $rand = mt_rand() / mt_getrandmax(); // Generate a float between 0 and 1
+            if ($rand >= 0.62) { // Select block marker
+                $markerId = $this->selectBlockMarker($tiers, $tierBlockMarkers);
+            } else { // Select seat marker
+                $markerId = $this->selectSeatMarker($tiers, $tierSeatMarkers);
+            }
 
-            if (count($batches) == $batchSize) {
-                DB::table('access_logs')->insert($batches);
+            // If markerId is null, skip this iteration
+            if ($markerId === null) {
+                continue;
+            }
+
+            // Generate a single access log record
+            $batches[] = $this->generateLogRecord($markerId);
+
+            // Insert batch if reached batch size or if it's the last batch
+            if (count($batches) >= $this->batchSize || ($insertedRecords + count($batches)) >= $this->totalRecords) {
+                try {
+                    DB::table('access_logs')->insert($batches);
+                    $insertedRecords += count($batches);
+                    $this->command->info("Inserted {$insertedRecords} / {$this->totalRecords} access logs.");
+                } catch (\Exception $e) {
+                    $this->command->error("Failed to insert batch: " . $e->getMessage());
+                    Log::error("AccessLogSeeder: Failed to insert batch", ['error' => $e->getMessage()]);
+                }
                 $batches = [];
             }
         }
 
-        // Insert any remaining block marker records
-        if (!empty($batches)) {
-            DB::table('access_logs')->insert($batches);
+        $this->command->info('Access log seeding completed successfully.');
+    }
+
+    /**
+     * Initialize game days for the past year.
+     * For simplicity, randomly select 40 Wednesdays and Saturdays as game days.
+     *
+     * @return void
+     */
+    private function initializeGameDays(): void
+    {
+        $this->gameDays = [];
+
+        $startDate = Carbon::now('UTC')->subYear();
+        $endDate = Carbon::now('UTC');
+
+        // Collect all Wednesdays and Saturdays in the past year
+        $currentDate = $startDate->copy();
+        while ($currentDate->lte($endDate)) {
+            if (in_array($currentDate->dayOfWeek, [Carbon::WEDNESDAY, Carbon::SATURDAY])) {
+                $this->gameDays[] = $currentDate->copy();
+            }
+            $currentDate->addDay();
         }
 
-        // Now generate 300,000 records across all marker ids (from 1 to 50,000)
-        for ($i = 0; $i < $totalRecordsForAll; $i++) {
-            $batches[] = $this->generateLogRecord(rand(1, max: 43500));
+        // Randomly select 40 game days from the collected Wednesdays and Saturdays
+        if (count($this->gameDays) > 40) {
+            $this->gameDays = collect($this->gameDays)->random(40)->toArray();
+            // Sort the game days
+            usort($this->gameDays, function ($a, $b) {
+                return $a->timestamp - $b->timestamp;
+            });
+        }
+    }
 
-            if (count($batches) == $batchSize) {
-                DB::table('access_logs')->insert($batches);
-                $batches = [];
+    /**
+     * Assign blocks to tiers based on access_rate.
+     *
+     * @param \Illuminate\Support\Collection $blocks
+     * @param int $numTiers
+     * @return array
+     */
+    private function assignTiers($blocks, int $numTiers): array
+    {
+        $tiers = [];
+        $blocksPerTier = ceil($blocks->count() / $numTiers);
+
+        for ($i = 1; $i <= $numTiers; $i++) {
+            $start = ($i - 1) * $blocksPerTier;
+            $tierBlocks = $blocks->slice($start, $blocksPerTier)->pluck('id')->toArray();
+            if (!empty($tierBlocks)) {
+                $tiers[$i] = $tierBlocks;
             }
         }
 
-        // Insert any remaining records
-        if (!empty($batches)) {
-            DB::table('access_logs')->insert($batches);
+        return $tiers;
+    }
+
+    /**
+     * Assign weights to tiers. Higher tiers have higher weights.
+     *
+     * @param int $numTiers
+     * @return void
+     */
+    private function assignTierWeights(int $numTiers): void
+    {
+        for ($i = 1; $i <= $numTiers; $i++) {
+            $this->tierWeights[$i] = $numTiers - $i + 1; // Tier 1:10, Tier 2:9,..., Tier10:1
         }
     }
 
-    // Select a marker with a higher chance for busy blocks
-    private function selectMarker(array $blockMarkers, array $busierBlocks)
+    /**
+     * Select a block marker based on tier weights.
+     *
+     * @param array $tiers
+     * @param array $tierBlockMarkers
+     * @return int|null
+     */
+    private function selectBlockMarker(array $tiers, array $tierBlockMarkers): ?int
     {
-        return rand(0, 2) === 0 ? $busierBlocks[array_rand($busierBlocks)] : $blockMarkers[array_rand($blockMarkers)];
+        // Calculate total tier weights
+        $totalTierWeight = array_sum($this->tierWeights);
+
+        // Generate a random number between 1 and totalTierWeight
+        $randTier = rand(1, $totalTierWeight);
+
+        // Determine which tier is selected
+        $cumulative = 0;
+        $selectedTier = null;
+        foreach ($this->tierWeights as $tier => $weight) {
+            $cumulative += $weight;
+            if ($randTier <= $cumulative) {
+                $selectedTier = $tier;
+                break;
+            }
+        }
+
+        if ($selectedTier === null || empty($tierBlockMarkers[$selectedTier])) {
+            Log::warning("No blocks found in selected tier {$selectedTier} for block marker selection.");
+            return null;
+        }
+
+        // Select a random block marker from the selected tier
+        return $tierBlockMarkers[$selectedTier][array_rand($tierBlockMarkers[$selectedTier])];
     }
 
-    // Generate a single log record with a given marker_id
-    private function generateLogRecord($markerId): array
+    /**
+     * Select a seat marker based on tier weights.
+     *
+     * @param array $tiers
+     * @param array $tierSeatMarkers
+     * @return int|null
+     */
+    private function selectSeatMarker(array $tiers, array $tierSeatMarkers): ?int
     {
+        // Calculate total tier weights
+        $totalTierWeight = array_sum($this->tierWeights);
+
+        // Generate a random number between 1 and totalTierWeight
+        $randTier = rand(1, $totalTierWeight);
+
+        // Determine which tier is selected
+        $cumulative = 0;
+        $selectedTier = null;
+        foreach ($this->tierWeights as $tier => $weight) {
+            $cumulative += $weight;
+            if ($randTier <= $cumulative) {
+                $selectedTier = $tier;
+                break;
+            }
+        }
+
+        if ($selectedTier === null || empty($tierSeatMarkers[$selectedTier])) {
+            Log::warning("No seat markers found in selected tier {$selectedTier} for seat marker selection.");
+            return null;
+        }
+
+        // Select a random seat marker from the selected tier
+        return $tierSeatMarkers[$selectedTier][array_rand($tierSeatMarkers[$selectedTier])];
+    }
+
+    /**
+     * Generate a single access log record.
+     *
+     * @param int $markerId
+     * @return array
+     */
+    private function generateLogRecord(int $markerId): array
+    {
+        // Generate OS and Browser first
+        $os = $this->randomOS();
+        $browser = $this->randomBrowser();
+
         return [
-            'marker_id' => $markerId,
-            'ip_address' => long2ip(rand(0, 4294967295)), // Generates a random IP address
-            'user_agent' => $this->randomUserAgent(),
-            'os' => $this->randomOS(),
-            'device' => $this->randomDevice(),
-            'country' => $this->randomCountry(),
-            'browser' => $this->randomBrowser(),
-            'language' => $this->randomLanguage(),
-            'referrer' => $this->randomReferrer(),
-            'accessed_at' => $this->generateAccessTime(),
-            'created_at' => now(),
-            'updated_at' => now(),
+            'marker_id'    => $markerId,
+            'ip_address'   => $this->generateIpAddress(),
+            'os'           => $os,
+            'browser'      => $browser,
+            'user_agent'   => $this->generateUserAgent($os, $browser),
+            'device'       => $this->randomDevice(),
+            'country'      => $this->randomCountry(),
+            'language'     => $this->randomLanguage(),
+            'referrer'     => $this->randomReferrer(),
+            'accessed_at'  => $this->generateAccessTime(),
+            'created_at'   => now(),
+            'updated_at'   => now(),
         ];
     }
 
+    /**
+     * Generate a realistic IP address.
+     *
+     * @return string
+     */
+    private function generateIpAddress(): string
+    {
+        $popularIPs = [
+            '192.168.' . rand(0, 255) . '.' . rand(0, 255),
+            '10.' . rand(0, 255) . '.' . rand(0, 255) . '.' . rand(0, 255),
+            '172.' . rand(16, 31) . '.' . rand(0, 255) . '.' . rand(0, 255),
+        ];
+
+        if (rand(1, 100) <= 70) { // 70% chance
+            return $popularIPs[array_rand($popularIPs)];
+        } else {
+            return long2ip(rand(0, 4294967295));
+        }
+    }
+
+    /**
+     * Generate a realistic access time with football calendar simulation.
+     *
+     * @return string
+     */
     private function generateAccessTime(): string
     {
-        $now = Carbon::now();
-        $dayOfWeek = rand(0, 6); // Monday = 0, Sunday = 6
-        $hourOfDay = rand(0, 23);
-        $month = rand(1, 12);
-        
-        // Make Saturdays busier, especially between 3 PM and 5 PM
-        if ($dayOfWeek == 6) {
-            if (rand(0, 10) > 2) {
-                $hourOfDay = rand(15, 17); // Busier between 3 PM and 5 PM on Saturdays
+        // Determine if this access should be on a game day or not
+        $isGameDay = false;
+        $accessVolumeMultiplier = 1;
+
+        // Calculate total number of game days
+        $totalGameDays = count($this->gameDays);
+
+        if ($totalGameDays > 0) {
+            // Define probability to assign to a game day (e.g., 10%)
+            $gameDayProbability = 0.10;
+            if (mt_rand() / mt_getrandmax() <= $gameDayProbability) {
+                $isGameDay = true;
+                // Select a random game day
+                $gameDay = $this->gameDays[array_rand($this->gameDays)];
+                $date = $gameDay->copy();
+                // Assign access volume multiplier for peak activity
+                $accessVolumeMultiplier = 5; // Increase access rate on game days
             }
         }
 
-        // Reduce activity in off-season (June to September)
-        if ($month >= 6 && $month <= 9) {
-            if (rand(0, 10) > 2) {
-                return $now->subDays(rand(90, 365))->toDateTimeString(); // Less frequent activity
+        if (!$isGameDay) {
+            // Generate a non-game day date
+            $randDayOffset = rand(0, 364); // Past year
+            $date = Carbon::now('UTC')->subDays($randDayOffset);
+        }
+
+        // Check if the date is within any break period
+        foreach ($this->breakPeriods as $period) {
+            $start = Carbon::parse($period['start'])->startOfDay();
+            $end = Carbon::parse($period['end'])->endOfDay();
+            if ($date->between($start, $end)) {
+                // During break period, reduce access rate by 50%
+                if (rand(1, 100) <= 50) {
+                    // Skip generating access during break
+                    return $this->generateAccessTime();
+                }
             }
         }
 
-        return Carbon::createFromDate(null, $month, rand(1, 28))
-            ->setTime($hourOfDay, rand(0, 59))
-            ->toDateTimeString();
+        // Determine if it's a match day
+        if ($isGameDay) {
+            $hour = $this->getPeakHour();
+        } else {
+            $hour = $this->getOffPeakHour();
+        }
+
+        // Handle DST transition (example for specific date, adjust as needed)
+        if ($date->month == 3 && $date->day == 31 && $hour == 1) {
+            $hour = 2; // Adjust to skip the DST transition hour
+        }
+
+        $date->setTime($hour, rand(0, 59));
+
+        // Reduce activity during off-season (June to August) if not a game day
+        if (!$isGameDay && $date->month >= 6 && $date->month <= 8) {
+            if (rand(1, 100) <= 70) { // 70% chance
+                $date->subDays(rand(30, 90)); // Less frequent activity
+            }
+        }
+
+        return $date->toDateTimeString();
     }
 
-    // Random data generators (same as your original ones)
-    private function randomUserAgent(): string
+    /**
+     * Get a random peak hour.
+     *
+     * @return int
+     */
+    private function getPeakHour(): int
     {
-        $userAgents = [
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36 Edge/16.16299',
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36',
-            'Mozilla/5.0 (Linux; Android 9; SM-J730G Build/PPR1.180610.011) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Mobile Safari/537.36',
-        ];
+        $peakHours = [15, 16, 17]; // 3 PM to 5 PM
+        return $peakHours[array_rand($peakHours)];
+    }
+
+    /**
+     * Get a random off-peak hour.
+     *
+     * @return int
+     */
+    private function getOffPeakHour(): int
+    {
+        $hours = [];
+
+        // Early morning (0-5)
+        for ($i = 0; $i <= 5; $i++) {
+            $hours[] = $i;
+        }
+
+        // Daytime (6-14)
+        for ($i = 6; $i <= 14; $i++) {
+            $hours[] = $i;
+        }
+
+        // Evening (18-23)
+        for ($i = 18; $i <= 23; $i++) {
+            $hours[] = $i;
+        }
+
+        return $hours[array_rand($hours)];
+    }
+
+    /**
+     * Generate a realistic user agent string based on OS and Browser.
+     *
+     * @param string $os
+     * @param string $browser
+     * @return string
+     */
+    private function generateUserAgent(string $os, string $browser): string
+    {
+        // Define user agents based on OS and Browser
+        $userAgents = [];
+
+        if ($os === 'iOS') {
+            if ($browser === 'Safari') {
+                $userAgents = [
+                    'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1',
+                    'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1',
+                ];
+            } else {
+                // Other browsers on iOS (rare)
+                $userAgents = [
+                    'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Chrome/115.0.0.0 Mobile Safari/604.1',
+                ];
+            }
+        } elseif ($os === 'Android') {
+            if ($browser === 'Chrome') {
+                $userAgents = [
+                    'Mozilla/5.0 (Linux; Android 10; SM-G973F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Mobile Safari/537.36',
+                    'Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Mobile Safari/537.36',
+                ];
+            } else {
+                // Other browsers on Android
+                $userAgents = [
+                    'Mozilla/5.0 (Linux; Android 10; SM-G973F) AppleWebKit/537.36 (KHTML, like Gecko) Firefox/89.0 Mobile Safari/537.36',
+                ];
+            }
+        } else {
+            // Desktop user agents
+            if ($browser === 'Chrome') {
+                $userAgents = [
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
+                    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
+                ];
+            } elseif ($browser === 'Safari') {
+                $userAgents = [
+                    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15',
+                    'Mozilla/5.0 (Macintosh; Intel Mac OS X 11_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Safari/605.1.15',
+                ];
+            } else {
+                // Other browsers on Desktop
+                $userAgents = [
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0',
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/91.0.864.37',
+                ];
+            }
+        }
+
         return $userAgents[array_rand($userAgents)];
     }
 
-    private function randomOS(): ?string
+    /**
+     * Randomly select an operating system with weighted probabilities.
+     *
+     * @return string
+     */
+    private function randomOS(): string
     {
-        $osList = ['Android', 'iOS', null];
-        return $osList[array_rand($osList)];
+        $rand = mt_rand() / mt_getrandmax(); // Float between 0 and 1
+
+        if ($rand <= 0.67) { // 67% iOS
+            return 'iOS';
+        } else { // 33% Android
+            return 'Android';
+        }
     }
 
+    /**
+     * Randomly select a browser with weighted probabilities.
+     *
+     * @return string
+     */
+    private function randomBrowser(): string
+    {
+        $rand = mt_rand() / mt_getrandmax(); // Float between 0 and 1
+
+        if ($rand <= 0.67) { // 67% Safari
+            return 'Safari';
+        } elseif ($rand <= 0.67 + 0.20) { // 20% Chrome
+            return 'Chrome';
+        } else { // 13% Others
+            $browsers = ['Firefox', 'Edge', 'Opera'];
+            return $browsers[array_rand($browsers)];
+        }
+    }
+
+    /**
+     * Randomly select a device type.
+     *
+     * @return string|null
+     */
     private function randomDevice(): ?string
     {
-        $devices = ['Mobile', 'Tablet', null];
+        $devices = ['Desktop', 'Mobile', 'Tablet', null];
         return $devices[array_rand($devices)];
     }
 
+    /**
+     * Randomly select a country.
+     *
+     * @return string|null
+     */
     private function randomCountry(): ?string
     {
-        $countries = ['USA', 'UK', 'Germany', 'Canada', 'Australia', 'India', null];
+        $countries = [
+            'United States', 'United Kingdom', 'Germany', 'Canada', 'Australia',
+            'India', 'Brazil', 'France', 'Spain', 'Italy', 'Netherlands', null
+        ];
         return $countries[array_rand($countries)];
     }
 
-    private function randomBrowser(): ?string
-    {
-        $browsers = ['Chrome', 'Firefox', 'Safari', 'Edge', 'Opera', null];
-        return $browsers[array_rand($browsers)];
-    }
-
+    /**
+     * Randomly select a language.
+     *
+     * @return string|null
+     */
     private function randomLanguage(): ?string
     {
-        $languages = ['en-US', 'en-GB', 'de-DE', 'fr-FR', 'es-ES', null];
+        $languages = ['en-US', 'en-GB', 'de-DE', 'fr-FR', 'es-ES', 'pt-BR', 'zh-CN', null];
         return $languages[array_rand($languages)];
     }
 
+    /**
+     * Randomly select a referrer URL.
+     *
+     * @return string|null
+     */
     private function randomReferrer(): ?string
     {
-        $referrers = ['https://google.com', 'https://facebook.com', 'https://twitter.com', null];
+        $referrers = [
+            'https://www.google.com',
+            'https://www.facebook.com',
+            'https://www.twitter.com',
+            'https://www.reddit.com',
+            'https://www.linkedin.com',
+            'https://www.instagram.com',
+            null
+        ];
         return $referrers[array_rand($referrers)];
     }
 }

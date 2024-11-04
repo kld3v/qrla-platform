@@ -58,9 +58,7 @@ const assignColorsToBlocks = (): void => {
 	console.log('colors assigned')
 }
 
-onMounted(() => {
-	assignColorsToBlocks()
-})
+assignColorsToBlocks()
 
 const returnSelectedStandBlocksForTable = computed(() => {
 	if (selectedStand.value === 'All') {
@@ -148,7 +146,8 @@ const saveNewEndDestinationURl = async (): Promise<void> => {
 															:selected-blocks="selectedBlocks"
 															:update-selected-block-state="updateSelectedBlockState"
 															:block-data="returnSelectedStandBlocksForTable"
-															select-strategy="all" />
+															select-strategy="all"
+															compact />
 													</QCard>
 												</v-col>
 												<v-col
@@ -192,7 +191,8 @@ const saveNewEndDestinationURl = async (): Promise<void> => {
 															:selected-blocks="selectedBlocks"
 															:update-selected-block-state="updateSelectedBlockState"
 															:block-data="returnSelectedStandBlocksForTable"
-															select-strategy="all" />
+															select-strategy="all"
+															compact />
 													</QCard>
 												</v-col>
 												<v-col

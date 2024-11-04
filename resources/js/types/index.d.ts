@@ -54,6 +54,20 @@ export type BlockExtended = {
 		total_seat_visits: number
 		total_visits: number
 	}
+	redirect: {
+		id: number
+		base_url_id: number
+		logo_id: number
+		redirect_preset_id: number
+		created_at: string
+		updated_at: string
+		base_url: {
+			id: number
+			url: string
+			created_at: string
+			updated_at: string
+		}
+	}
 }
 
 export type BlockShort = {

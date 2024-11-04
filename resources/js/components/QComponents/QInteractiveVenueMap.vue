@@ -36,10 +36,6 @@ const updateInternalBlocksState = (block: BlockExtended) => {
 	} else {
 		internalSelectedBlocks.value.push(block)
 	}
-
-	if (props.updateSelectedBlockState) {
-		props.updateSelectedBlockState(internalSelectedBlocks.value)
-	}
 }
 
 const svgContent = ref('')

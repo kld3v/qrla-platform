@@ -1,19 +1,20 @@
 <script setup lang="ts">
 import LogoIcon from '@/layouts/full/logo/LogoIcon.vue'
 import { Form } from 'vee-validate'
-
 import { ref } from 'vue'
 import QRLATITLE from '@/assets/images/QAssets/qrla_green.svg'
 import STADIUM_OUTLINE from '@/assets/images/QAssets/stadium_outline.svg'
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import InputError from '@/components/InputError.vue'
 
-const passwordRules = ref([(v: string) => !!v || 'Password is required', (v: string) => (v && v.length <= 10) || 'Password must be less than 10 characters'])
+// Existing validation rules
+const passwordRules = ref([(v: string) => !!v || 'Password is required', (v: string) => (v && v.length >= 6) || 'Password must be more than 8 characters'])
 const emailRules = ref([(v: string) => !!v || 'E-mail is required', (v: string) => /.+@.+\..+/.test(v) || 'E-mail must be valid'])
 
-defineProps<{
+const props = defineProps<{
 	canResetPassword?: boolean
 	status?: string
+	token?: string
 }>()
 
 const form = useForm({
@@ -21,6 +22,7 @@ const form = useForm({
 	email: '',
 	password: '',
 	password_confirmation: '',
+	token: props.token ?? '',
 })
 
 const submit = () => {
@@ -55,6 +57,13 @@ const submit = () => {
 						<Form
 							class="mt-5"
 							@submit="submit">
+							<!-- Hidden Token Field -->
+							<input
+								type="hidden"
+								v-if="form.token"
+								name="token"
+								v-model="form.token" />
+
 							<v-label class="font-weight-semibold pb-2 text-white opacity-1"> Name </v-label>
 							<VTextField
 								v-model="form.name"
@@ -64,6 +73,7 @@ const submit = () => {
 							<InputError
 								class=""
 								:message="form.errors.name" />
+
 							<v-label class="font-weight-semibold pb-2 text-white opacity-1"> Email </v-label>
 							<VTextField
 								v-model="form.email"
@@ -71,10 +81,10 @@ const submit = () => {
 								class="mb-6"
 								required
 								hide-details="auto" />
-
 							<InputError
 								class=""
 								:message="form.errors.email" />
+
 							<v-label class="font-weight-semibold pb-2 opacity-1 text-white">Password</v-label>
 							<VTextField
 								v-model="form.password"
@@ -83,10 +93,10 @@ const submit = () => {
 								hide-details="auto"
 								type="password"
 								class="pwdInput mb-6"></VTextField>
-
 							<InputError
 								class="mt-2"
 								:message="form.errors.password" />
+
 							<v-label class="font-weight-semibold pb-2 opacity-1 text-white">Confirm Password</v-label>
 							<VTextField
 								v-model="form.password_confirmation"
@@ -95,7 +105,6 @@ const submit = () => {
 								hide-details="auto"
 								type="password"
 								class="pwdInput mb-16"></VTextField>
-
 							<InputError
 								class="mt-2"
 								:message="form.errors.password_confirmation" />
@@ -118,8 +127,8 @@ const submit = () => {
 								class="pl-0 text-primary opacity-1 pl-2 font-weight-medium text-decoration-none"
 								height="auto"
 								:href="route('login')"
-								variant="plain"
-								>Already have an account? Sign In</Link
+								variant="plain">
+								Already have an account? Sign In</Link
 							>
 						</p>
 					</div>

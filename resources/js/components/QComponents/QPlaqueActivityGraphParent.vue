@@ -10,9 +10,10 @@
 				class="text-left flex flex-col gap-y-2">
 				<h3 class="q-text-qrla_green h3">QRLA Plaque Activity</h3>
 				<p class="text-subtitle-1">Overview of Tap or Scans through plaques</p>
-				<QSpicyLoading v-if="loading" />
+				<QSpicyLoading v-if="loading"><p class="q-text-qrla_green">Compiling Activity Data...</p></QSpicyLoading>
 				<QPlaqueActivityGraph
 					v-else
+					:time-past="timePast"
 					:data="graphData?.current?.data" />
 			</v-col>
 			<v-col
@@ -58,6 +59,7 @@ const graphData = reactive<IGraphData>({
 	current: null, // for storing the current data passed to the graph
 })
 
+const timePast = ref<'Past Year' | 'Past Three Months' | 'Past Month' | 'Past Week' | 'Past Day'>('Past Three Months')
 // Loading Icon
 const loading = ref(false)
 
@@ -91,18 +93,25 @@ const handleTimeScaleChange = (timeScale: TimeRange) => {
 	switch (timeScale) {
 		case '1d':
 			graphData.current = graphData.day
+			timePast.value = 'Past Day'
 			break
 		case '1w':
 			graphData.current = graphData.week
+			timePast.value = 'Past Week'
+
 			break
 		case '1m':
 			graphData.current = graphData.month
+			timePast.value = 'Past Month'
+
 			break
 		case '3m':
 			graphData.current = graphData.threeMonths
+			timePast.value = 'Past Three Months'
 			break
 		case '1y':
 			graphData.current = graphData.year
+			timePast.value = 'Past Year'
 			break
 	}
 }

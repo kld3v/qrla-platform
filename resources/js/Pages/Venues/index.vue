@@ -9,9 +9,11 @@ import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
 import { QCardType, User, VenuesTableData } from '@/types'
 import QCARDAVATAR from '@/assets/images/profile/user-1.jpg'
 import QCARDCOMPANYLOGO from '@/assets/images/QAssets/levy_logo.png'
-import QCARDSTADICON from '@/assets/images/svgs/stadium_icon.svg'
+import QCARDSTADICON from '@/assets/images/svgs/stadium_icon_dark.svg'
 import QCARDGRAPHICON from '@/assets/images/svgs/graph_rising.svg'
+import QCARDQRLALOGO from '@/assets/images/QAssets/Venues/qrla_logo.svg'
 import { VenuePageProps } from '@/types'
+import { formatNumberWithCommas } from '@/utils/helpers/numbers'
 
 const props = defineProps<{
 	venues: VenuePageProps[]
@@ -22,8 +24,8 @@ const props = defineProps<{
 
 const cards: QCardType[] = [
 	{ bg: 'dark-primary-gradient', icon: QCARDSTADICON, title: 'Total Venues', dataValue: props.stats?.total_venues, color: 'primary' },
-	{ bg: 'dark-primary-gradient', icon: 'mdi-account-group', title: 'Total Plaques', dataValue: props.stats?.total_plaques, color: 'primary' },
-	{ bg: 'dark-primary-gradient', icon: QCARDGRAPHICON, title: 'Total Visits', dataValue: props.stats?.total_visits, color: 'primary' },
+	{ bg: 'dark-primary-gradient', icon: QCARDQRLALOGO, title: 'Total Plaques', dataValue: formatNumberWithCommas(props.stats?.total_plaques), color: 'primary' },
+	{ bg: 'dark-primary-gradient', icon: QCARDGRAPHICON, title: 'Total Visits', dataValue: formatNumberWithCommas(props.stats?.total_visits), color: 'primary' },
 ]
 
 const filterVenues = (array: VenuePageProps[]): VenuesTableData[] => {
@@ -62,7 +64,7 @@ const filterVenues = (array: VenuePageProps[]): VenuesTableData[] => {
 				lg="3">
 				<QCardBanner
 					:title="$page.props.auth.user.name"
-					subHeading="Product and Systems Manager"
+					:subHeading="props.auth.user?.role"
 					:imageSrc="auth.user.organisation?.logo_path || QCARDCOMPANYLOGO" />
 			</v-col>
 		</v-row>

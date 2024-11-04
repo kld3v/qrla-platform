@@ -2,8 +2,7 @@
 import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
 import FullLayout from '@/layouts/full/FullLayout.vue'
 import HeaderImageAndLogo from '@/components/QComponents/HeaderImageAndLogo.vue'
-import { computed, onMounted, ref } from 'vue'
-import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.vue'
+import { computed, ref } from 'vue'
 import QCard from '@/components/QComponents/QCard.vue'
 import QIconCardSet from '@/components/QComponents/QIconCardSet.vue'
 import QMenusAnchor from '@/components/QComponents/QMenusAnchor.vue'
@@ -23,8 +22,13 @@ const props = defineProps<{
 }>()
 
 console.log(props)
-const selectedStand = ref<Stand>(props.stands[0])
+const selectedStand = ref<Stand | 'All'>('All') // Allow 'All' as an option
 const changeSelectedStand = (standName: string): void => {
+	if (standName === 'All') {
+		selectedStand.value = 'All'
+		console.log('All Blocks Selected')
+		return
+	}
 	for (const stand of props.stands) {
 		if (standName === stand.name) {
 			selectedStand.value = stand
@@ -69,13 +73,13 @@ const assignColorsToBlocks = (): void => {
 assignColorsToBlocks()
 
 // to be relpaced with prop data
-const IconCardData = ref<any>([
+const IconCardData = computed(() => [
 	{
 		bg: 'primary-gradient',
 		icon: 'iconamoon:eye',
 		color: 'primary',
 		title: 'Total Visits',
-		data: formatNumberWithCommas(selectedBlocks.value[0].stats.total_visits),
+		data: formatNumberWithCommas(selectedBlocks.value[0]?.stats.total_visits || 0),
 		link: '',
 		delta: 40,
 	},
@@ -84,7 +88,7 @@ const IconCardData = ref<any>([
 		icon: 'lucide:nfc',
 		color: 'purple',
 		title: 'Visits By Tap',
-		data: formatNumberWithCommas(selectedBlocks.value[0].stats.total_seat_visits),
+		data: formatNumberWithCommas(selectedBlocks.value[0]?.stats.total_seat_visits || 0),
 		link: '',
 		delta: -23,
 	},
@@ -93,7 +97,7 @@ const IconCardData = ref<any>([
 		icon: 'uil:qrcode-scan',
 		color: 'success',
 		title: 'Visits By Scan',
-		data: formatNumberWithCommas(selectedBlocks.value[0].stats.total_block_visits),
+		data: formatNumberWithCommas(selectedBlocks.value[0]?.stats.total_block_visits || 0),
 		link: '',
 		delta: 12,
 	},
@@ -102,14 +106,21 @@ const IconCardData = ref<any>([
 		icon: 'ph:chart-line-up',
 		color: 'error',
 		title: 'Average Activity Level',
-		data: selectedBlocks.value[0].access_rate,
+		data: selectedBlocks.value[0]?.access_rate || 0,
 		link: '',
 		delta: 40,
 	},
 ])
-console.log(selectedBlocks.value)
 
-const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blocks.map((el: BlockExtended) => el))
+const returnSelectedStandBlocksForTable = computed(() => {
+	if (selectedStand.value === 'All') {
+		// Return all blocks from all stands
+		return props.stands.flatMap((stand: Stand) => stand.blocks.map((el: BlockExtended) => el))
+	} else {
+		// Return blocks of the selected stand
+		return selectedStand.value.blocks.map((el: BlockExtended) => el)
+	}
+})
 </script>
 <template>
 	<FullLayout
@@ -145,9 +156,9 @@ const returnSelectedStandBlocksForTable = computed(() => selectedStand.value.blo
 							menu-location="start"
 							dropdown-button-color="secondary"
 							:label="'Stand'"
-							:initialSelectedItem="selectedStand.name"
+							:initialSelectedItem="selectedStand === 'All' ? 'All' : selectedStand.name"
 							:change-selected-stand="changeSelectedStand"
-							:dropdown-options="[...props.stands.map((el: Stand) => el.name)]"></QMenusAnchor>
+							:dropdown-options="[...props.stands.map((el: Stand) => el.name), 'All']"></QMenusAnchor>
 					</div>
 					<v-row>
 						<v-col

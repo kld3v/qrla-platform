@@ -33,10 +33,10 @@ class BlockController extends Controller
         $this->authorize('viewBlocks', $venue);
     
         $stands = $venue->stands()
-                        ->with('blocks')
-                        ->select('id', 'name', 'venue_id')
-                        ->get();
-    
+            ->with(['blocks.redirect.baseUrl'])
+            ->select('id', 'name', 'venue_id')
+            ->get();
+        
         foreach ($stands as $stand) {
             foreach ($stand->blocks as $block) {
                 $totalSeatVisits = $block->seatAccessCounts()->sum('total_count');
