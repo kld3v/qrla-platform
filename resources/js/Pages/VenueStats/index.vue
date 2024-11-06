@@ -3,7 +3,6 @@ import QSubsectionHeader from '@/components/QComponents/QSubSectionHeader.vue'
 import FullLayout from '@/layouts/full/FullLayout.vue'
 import HeaderImageAndLogo from '@/components/QComponents/HeaderImageAndLogo.vue'
 import { ref } from 'vue'
-import VenueTitleAndAddress from '@/components/QComponents/VenueTitleAndAddress.vue'
 import QIconCardSet from '@/components/QComponents/QIconCardSet.vue'
 import QPlaqueActivityGraphParent from '@/components/QComponents/QPlaqueActivityGraphParent.vue'
 import { NavOptions, Stand, VenuePageProps } from '@/types'
@@ -19,41 +18,40 @@ const props = defineProps<{
 	stands: Stand[]
 	nav: NavOptions
 }>()
-console.log(props)
 const isGlobalHome = ref(false)
 
 // to be relpaced with prop data
 const IconCardData = [
 	{
 		bg: 'primary-gradient',
-		icon: 'lucide:nfc',
+		icon: 'iconamoon:eye',
 		color: 'primary',
-		title: 'Venue Capacity',
-		data: formatNumberWithCommas(props.venue.capacity),
+		title: 'Total Visits',
+		data: formatNumberWithCommas(props.stats.total_visits),
 		link: '',
 	},
 	{
 		bg: 'purple-gradient',
-		icon: 'iconamoon:eye',
+		icon: 'lucide:nfc',
 		color: 'purple',
-		title: 'Venue Type',
-		data: props.venue.type,
+		title: 'Visits By Tap',
+		data: formatNumberWithCommas(props.stats.total_seat_visits),
 		link: '',
 	},
 	{
 		bg: 'success-gradient',
 		icon: 'uil:qrcode-scan',
 		color: 'success',
-		title: 'QRLA Plaques',
-		data: formatNumberWithCommas(props.venue.plaques),
+		title: 'Visits By Scan',
+		data: formatNumberWithCommas(props.stats.total_block_visits),
 		link: '',
 	},
 	{
 		bg: 'error-gradient',
 		icon: 'ph:chart-line-up',
 		color: 'error',
-		title: 'Managed By',
-		data: props.venue.organisation.name,
+		title: 'Average Activity Level',
+		data: props.venue.access_rate,
 		link: '',
 	},
 ]

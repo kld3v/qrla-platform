@@ -64,7 +64,7 @@ const filterVenues = (array: VenuePageProps[]): VenuesTableData[] => {
 				lg="3">
 				<QCardBanner
 					:title="$page.props.auth.user.name"
-					subHeading="Product and Systems Manager"
+					:subHeading="props.auth.user?.role"
 					:imageSrc="auth.user.organisation?.logo_path || QCARDCOMPANYLOGO" />
 			</v-col>
 		</v-row>
