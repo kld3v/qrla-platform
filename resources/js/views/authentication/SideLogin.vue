@@ -115,16 +115,6 @@ const submit = () => {
 								>Sign In</v-btn
 							>
 						</Form>
-						<p class="d-flex align-center justify-center textSecondary mt-6 font-weight-medium">
-							<Link
-								method="get"
-								class="pl-0 text-primary opacity-1 pl-2 font-weight-medium text-decoration-none"
-								height="auto"
-								:href="route('register')"
-								variant="plain"
-								>Create an account</Link
-							>
-						</p>
 					</div>
 				</div>
 			</v-col>
