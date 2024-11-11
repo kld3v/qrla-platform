@@ -22,7 +22,7 @@ class CanaryUserSeeder extends Seeder
             [
                 'name' => 'Canary Bot',
                 'email_verified_at' => now(),
-                'password' => Hash::make('canary_password'), // Use a strong password
+                'password' => Hash::make('canary_password'),
                 'remember_token' => Str::random(10),
                 'organisation_id' => $organisationId,
                 'role' => 'Bot',
