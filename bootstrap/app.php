@@ -20,6 +20,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'venues/onboard',
         ]);
 
+        $middleware->alias([
+            'canary.auth' =>  \App\Http\Middleware\CanaryAuthMiddleware::class,
+        ]);
+
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {

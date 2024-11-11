@@ -112,4 +112,22 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    
+    
+    /*
+    |--------------------------------------------------------------------------
+    | Canary Key
+    |--------------------------------------------------------------------------
+    |
+    | The canary key allows AWS Canary to use the system as if it was a real
+    | user. By providing the correct key, the middleware will authenticate
+    | requests as if made by a real user, allowing for testing and monitoring.
+    |
+    */
+
+    'canary' => [
+        'key' => env('CANARY_KEY'),
+    ],
+
+
 ];
