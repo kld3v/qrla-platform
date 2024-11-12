@@ -18,6 +18,7 @@ class VenueController extends Controller
 
     public function index()
     {
+        Log::info('Venues Index Loaded');
         $user = auth()->user()->load('organisation', 'venues');
     
         $venues = $user->venues;
