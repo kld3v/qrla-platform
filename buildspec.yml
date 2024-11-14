@@ -5,16 +5,23 @@ phases:
     runtime-versions:
       php: 8.2  # Updated to PHP 8.2
     commands:
-      # Install Composer if it's not already available
+      - echo "Starting installation phase..."
+
+      # Install Composer
       - echo "Installing Composer..."
       - curl -sS https://getcomposer.org/installer | php
       - mv composer.phar /usr/local/bin/composer
       - echo "Composer installed successfully."
 
-      # Install npm (if using npm for frontend assets)
-      - echo "Installing npm..."
-      - curl -sL https://deb.nodesource.com/setup_16.x | bash -
-      - apt-get install -y nodejs
+      # Install Node.js and npm using nvm instead of apt-get
+      - echo "Installing Node.js via nvm..."
+      - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+      - . ~/.nvm/nvm.sh
+      - nvm install 16  # Adjust to match the version you need
+      - nvm use 16
+      - node -v
+      - npm -v
+      - echo "Node.js and npm installed successfully."
 
   pre_build:
     commands:
@@ -22,34 +29,38 @@ phases:
       - echo "Installing PHP dependencies..."
       - composer install --no-dev --prefer-dist --optimize-autoloader
 
-      # Set up caching for Composer (optional)
+      # Caching Composer dependencies (optional)
       - echo "Caching Composer dependencies..."
       - if [ ! -d /root/.cache/composer ]; then mkdir -p /root/.cache/composer; fi
       - export COMPOSER_CACHE_DIR=/root/.cache/composer
 
-      # Generate application key (only for staging, not for production)
+      # Generate application key (for staging only)
+      - echo "Generating application key..."
       - php artisan key:generate --force
 
-      # Optionally: Run npm to install frontend assets if needed
-      - echo "Installing Node dependencies..."
+      # Install Node.js dependencies and build assets
+      - echo "Installing Node.js dependencies and building assets..."
       - npm install
-      - npm run prod  # or any other npm build command you use, like `npm run build`
+      - npm run build  # or `npm run build` depending on your Laravel Mix setup
 
   build:
     commands:
-      # Run tests (optional, recommended for staging)
+      # Run PHP unit tests
       - echo "Running tests..."
       - php artisan test
 
-      # Run migrations (only for staging, be careful on production)
+      # Run database migrations (only for staging)
+      - echo "Running migrations..."
       - php artisan migrate --force
 
   post_build:
     commands:
-      # Clear any cached views/routes (optional)
+      # Clear Laravel cache
+      - echo "Clearing cache..."
       - php artisan config:cache
       - php artisan route:cache
       - php artisan view:cache
+      - echo "Cache cleared successfully."
 
 artifacts:
   files:
