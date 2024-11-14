@@ -1,0 +1,57 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      php: 8.2  # Updated to PHP 8.2
+    commands:
+      # Install Composer if it's not already available
+      - echo "Installing Composer..."
+      - curl -sS https://getcomposer.org/installer | php
+      - mv composer.phar /usr/local/bin/composer
+      - echo "Composer installed successfully."
+
+      # Install npm (if using npm for frontend assets)
+      - echo "Installing npm..."
+      - curl -sL https://deb.nodesource.com/setup_16.x | bash -
+      - apt-get install -y nodejs
+
+  pre_build:
+    commands:
+      # Install PHP dependencies with Composer
+      - echo "Installing PHP dependencies..."
+      - composer install --no-dev --prefer-dist --optimize-autoloader
+
+      # Set up caching for Composer (optional)
+      - echo "Caching Composer dependencies..."
+      - if [ ! -d /root/.cache/composer ]; then mkdir -p /root/.cache/composer; fi
+      - export COMPOSER_CACHE_DIR=/root/.cache/composer
+
+      # Generate application key (only for staging, not for production)
+      - php artisan key:generate --force
+
+      # Optionally: Run npm to install frontend assets if needed
+      - echo "Installing Node dependencies..."
+      - npm install
+      - npm run prod  # or any other npm build command you use, like `npm run build`
+
+  build:
+    commands:
+      # Run tests (optional, recommended for staging)
+      - echo "Running tests..."
+      - php artisan test
+
+      # Run migrations (only for staging, be careful on production)
+      - php artisan migrate --force
+
+  post_build:
+    commands:
+      # Clear any cached views/routes (optional)
+      - php artisan config:cache
+      - php artisan route:cache
+      - php artisan view:cache
+
+artifacts:
+  files:
+    - '**/*'
+  discard-paths: yes
