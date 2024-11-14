@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      php: 8.2  # Set to PHP 8.2 to match your requirements
+      php: 8.2  # Set to PHP 8.2
       nodejs: 22  # Node.js version for frontend assets
     commands:
       - echo "Starting installation phase..."
@@ -23,15 +23,11 @@ phases:
       # Install Node.js dependencies and build assets
       - echo "Installing Node.js dependencies and building assets..."
       - npm ci
-      - npm run build  # or npm run build if that’s your preferred command
+      - npm run build  # Use your actual build command, if different
 
   build:
     commands:
-      # Run database migrations (for staging, skip for production)
-      - echo "Running migrations..."
-      - php artisan migrate --force
-
-      # Run PHP unit tests
+      # Run PHP unit tests (assuming tests don’t need a database)
       - echo "Running tests..."
       - php artisan test
 
