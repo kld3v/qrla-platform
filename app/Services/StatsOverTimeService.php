@@ -267,7 +267,7 @@ class StatsOverTimeService
     
 
     //HELPER FUNCTIONS BELOW
-    private function generateTimeGroups($startTime, $endTime, $interval)
+    protected function generateTimeGroups($startTime, $endTime, $interval)
     {
         $start = Carbon::parse($startTime);
         $end = Carbon::parse($endTime);
@@ -309,7 +309,7 @@ class StatsOverTimeService
         return $allTimeGroups;
     }
 
-    private function determineInterval($startTime, $endTime)
+    protected function determineInterval($startTime, $endTime)
     {
         $start = Carbon::parse($startTime);
         $end = Carbon::parse($endTime);
@@ -330,7 +330,7 @@ class StatsOverTimeService
         }
     }
 
-    private function getSeatMarkerIdsForVenue($venue)
+    protected function getSeatMarkerIdsForVenue($venue)
     {
         return Marker::whereHasMorph('markerable', 'seat', function ($query) use ($venue) {
             $query->whereHas('block.stand', function ($query) use ($venue) {
@@ -339,7 +339,7 @@ class StatsOverTimeService
         })->pluck('id')->toArray();
     }
 
-    private function getBlockMarkerIdsForVenue($venue)
+    protected function getBlockMarkerIdsForVenue($venue)
     {
         return Marker::whereHasMorph('markerable', 'block', function ($query) use ($venue) {
             $query->whereHas('stand', function ($query) use ($venue) {
@@ -348,14 +348,14 @@ class StatsOverTimeService
         })->pluck('id')->toArray();
     }
 
-    private function getSeatMarkerIdsForBlock($block)
+    protected function getSeatMarkerIdsForBlock($block)
     {
         return Marker::whereHasMorph('markerable', 'seat', function ($query) use ($block) {
             $query->where('block_id', $block->id);
         })->pluck('id')->toArray();
     }
 
-    private function getMarkerIdsForVenue($venue)
+    protected function getMarkerIdsForVenue($venue)
     {
         $seatMarkerIds = $this->getSeatMarkerIdsForVenue($venue);
         $blockMarkerIds = $this->getBlockMarkerIdsForVenue($venue);
@@ -363,7 +363,7 @@ class StatsOverTimeService
         return array_merge($seatMarkerIds, $blockMarkerIds);
     }
 
-    private function getMarkerIdsForBlock($block)
+    protected function getMarkerIdsForBlock($block)
     {
         $seatMarkerIds = $this->getSeatMarkerIdsForBlock($block);
         $blockMarkerIds = $block->markers()->pluck('id')->toArray();
@@ -371,7 +371,7 @@ class StatsOverTimeService
         return array_merge($seatMarkerIds, $blockMarkerIds);
     }
 
-    private function getAccessCountsOverTime($markerIds, $interval, $startTime, $endTime)
+    protected function getAccessCountsOverTime($markerIds, $interval, $startTime, $endTime)
     {
         if (empty($markerIds)) {
             return [];

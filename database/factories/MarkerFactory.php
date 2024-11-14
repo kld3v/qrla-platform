@@ -2,7 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Block;
 use App\Models\Marker;
+use App\Models\Seat;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class MarkerFactory extends Factory
@@ -11,10 +13,12 @@ class MarkerFactory extends Factory
 
     public function definition()
     {
+        $markerableType = $this->faker->randomElement(['seat', 'block']);
+
         return [
             'short_code' => $this->faker->bothify('MKR-####'),
-            'markerable_id' => $this->faker->numberBetween(1, 100),
-            'markerable_type' => $this->faker->randomElement(['block', 'seat']),
+            'markerable_id' => ($markerableType === 'seat' ? Seat::factory() : Block::factory()), // Generates the appropriate ID
+            'markerable_type' => $markerableType,
         ];
     }
 }
