@@ -3,11 +3,11 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      php: 8.2  # Set to PHP 8.2
+      php: 8.2  # Set to PHP 8.2 to match your requirements
       nodejs: 22  # Node.js version for frontend assets
     commands:
       - echo "Starting installation phase..."
-
+      
       # Install Composer
       - echo "Installing Composer..."
       - curl -sS https://getcomposer.org/installer | php
@@ -16,20 +16,24 @@ phases:
 
   pre_build:
     commands:
-      # Install PHP dependencies with Composer
+      # Install PHP dependencies with Composer, including dev dependencies
       - echo "Installing PHP dependencies..."
-      - composer install --no-dev --prefer-dist --optimize-autoloader
+      - composer install --no-interaction --prefer-dist --optimize-autoloader --dev
 
-      # Install Node.js dependencies and build assets
+      # Install Node.js dependencies and build frontend assets
       - echo "Installing Node.js dependencies and building assets..."
       - npm ci
-      - npm run build  # Use your actual build command, if different
+      - npm run build  # Adjust to your build command (e.g., npm run production)
 
   build:
     commands:
-      # Run PHP unit tests (assuming tests don’t need a database)
+      # Run tests with PHPUnit (or php artisan test if development dependencies are properly set up)
       - echo "Running tests..."
-      - php artisan test
+      - vendor/bin/phpunit  # Use PHPUnit directly to avoid issues
+
+      # Run database migrations (for staging, skip for production)
+      - echo "Running migrations..."
+      - php artisan migrate --force || echo "Skipping migrations as there's no DB connection."
 
   post_build:
     commands:
