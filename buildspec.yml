@@ -3,7 +3,8 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      php: 8.2  # Updated to PHP 8.2
+      php: 8.2  # Set to PHP 8.2 to match your requirements
+      nodejs: 22  # Node.js version for frontend assets
     commands:
       - echo "Starting installation phase..."
 
@@ -13,45 +14,30 @@ phases:
       - mv composer.phar /usr/local/bin/composer
       - echo "Composer installed successfully."
 
-      # Install Node.js and npm using nvm instead of apt-get
-      - echo "Installing Node.js via nvm..."
-      - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-      - . ~/.nvm/nvm.sh
-      - nvm install 16  # Adjust to match the version you need
-      - nvm use 16
-      - node -v
-      - npm -v
-      - echo "Node.js and npm installed successfully."
-
   pre_build:
     commands:
       # Install PHP dependencies with Composer
       - echo "Installing PHP dependencies..."
       - composer install --no-dev --prefer-dist --optimize-autoloader
 
-      # Caching Composer dependencies (optional)
-      - echo "Caching Composer dependencies..."
-      - if [ ! -d /root/.cache/composer ]; then mkdir -p /root/.cache/composer; fi
-      - export COMPOSER_CACHE_DIR=/root/.cache/composer
-
-      # Generate application key (for staging only)
+      # Generate Laravel application key (for staging, not production)
       - echo "Generating application key..."
       - php artisan key:generate --force
 
       # Install Node.js dependencies and build assets
       - echo "Installing Node.js dependencies and building assets..."
-      - npm install
-      - npm run build  # or `npm run build` depending on your Laravel Mix setup
+      - npm ci
+      - npm run build  # or npm run build if that’s your preferred command
 
   build:
     commands:
+      # Run database migrations (for staging, skip for production)
+      - echo "Running migrations..."
+      - php artisan migrate --force
+
       # Run PHP unit tests
       - echo "Running tests..."
       - php artisan test
-
-      # Run database migrations (only for staging)
-      - echo "Running migrations..."
-      - php artisan migrate --force
 
   post_build:
     commands:
@@ -64,5 +50,19 @@ phases:
 
 artifacts:
   files:
-    - '**/*'
-  discard-paths: yes
+    - 'app/**'
+    - 'bootstrap/**'
+    - 'public/**'
+    - 'resources/**'
+    - 'routes/**'
+    - 'vendor/**'
+    - 'composer.json'
+    - 'composer.lock'
+    - 'package.json'
+    - 'package-lock.json'
+  discard-paths: no
+
+cache:
+  paths:
+    - '$HOME/.cache/composer/**/*'
+    - 'node_modules/**/*'
