@@ -20,10 +20,6 @@ phases:
       - echo "Installing PHP dependencies..."
       - composer install --no-dev --prefer-dist --optimize-autoloader
 
-      # Generate Laravel application key (for staging, not production)
-      - echo "Generating application key..."
-      - php artisan key:generate --force
-
       # Install Node.js dependencies and build assets
       - echo "Installing Node.js dependencies and building assets..."
       - npm ci
