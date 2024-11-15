@@ -11,6 +11,11 @@ use App\Http\Controllers\MarkerController;
 use App\Http\Controllers\StatsController;
 use App\Http\Controllers\RegisterLinkController;
 
+Route::domain('https://qrla.io')->group(function () {
+    Route::get('/', function () {
+        return redirect('https://qrla.co.uk');
+    });
+});
 
 Route::get('/', function () {
     if (auth()->check()) {
