@@ -11,7 +11,7 @@ echo "Deploying to ENVIRONMENT: $APP_ENV"
 
 # Define the source and destination paths
 NGINX_CONF_DIR="/etc/nginx/conf.d"
-PLATFORM_NGINX_CONF_DIR="/var/app/staging/.platform/nginx"
+PLATFORM_NGINX_CONF_DIR="/var/app/current/.platform/nginx"
 
 # Verify if source files exist
 echo "Checking if Nginx configuration files exist in $PLATFORM_NGINX_CONF_DIR"
