@@ -42,3 +42,6 @@ echo "Reloading Nginx to apply the new configuration..."
 systemctl reload nginx
 
 echo "New Nginx configuration is now running."
+
+echo "Current Nginx configuration:"
+cat /etc/nginx/nginx.conf
