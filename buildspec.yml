@@ -3,54 +3,39 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      php: 8.2  # Set to PHP 8.2 to match your requirements
-      nodejs: 22  # Node.js version for frontend assets
+      php: 8.2
+      nodejs: 22
     commands:
       - echo "Starting installation phase..."
-      
-      # Install Composer
-      - echo "Installing Composer..."
       - curl -sS https://getcomposer.org/installer | php
       - mv composer.phar /usr/local/bin/composer
       - echo "Composer installed successfully."
 
   pre_build:
     commands:
-      # Install PHP dependencies with Composer, including dev dependencies
       - echo "Installing PHP dependencies..."
       - composer install --no-interaction --prefer-dist --optimize-autoloader --dev
-
-      # Install Node.js dependencies and build frontend assets
       - echo "Installing Node.js dependencies and building assets..."
       - npm ci
-      - npm run build  # Adjust to your build command (e.g., npm run production)
+      - npm run build
 
   build:
     commands:
-      # No tests or migrations in the build phase since there's no DB connection
       - echo "Skipping tests and migrations due to lack of database connection."
 
   post_build:
     commands:
-      # Clear Laravel cache
       - echo "Clearing cache..."
       - php artisan config:cache
       - php artisan route:cache
       - php artisan view:cache
       - echo "Cache cleared successfully."
+      - echo "Inspecting packaged files..."
+      - ls -al
 
 artifacts:
   files:
-    - 'app/**'
-    - 'bootstrap/**'
-    - 'public/**'
-    - 'resources/**'
-    - 'routes/**'
-    - 'vendor/**'
-    - 'composer.json'
-    - 'composer.lock'
-    - 'package.json'
-    - 'package-lock.json'
+    - '**/*'  # Package all files
   discard-paths: no
 
 cache:
