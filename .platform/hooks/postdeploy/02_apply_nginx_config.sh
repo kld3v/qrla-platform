@@ -10,7 +10,7 @@ exec > >(tee -a /tmp/eb-predeploy.log) 2>&1
 echo "Deploying to ENVIRONMENT: $APP_ENV"
 
 # Define the source and destination paths
-PLATFORM_NGINX_CONF_DIR="/var/app/currents/.platform/nginx"
+PLATFORM_NGINX_CONF_DIR="/var/app/current/.platform/nginx"
 TEMP_CONF_DIR="/tmp/nginx_conf"
 NGINX_CONF_DIR="/etc/nginx/conf.d"
 MAIN_CONF_FILE="/etc/nginx/nginx.conf"
