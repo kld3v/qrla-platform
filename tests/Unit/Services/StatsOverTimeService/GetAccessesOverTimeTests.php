@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Services\StatsOverTimeService;
 
 use Tests\TestCase;
 use App\Services\StatsOverTimeService;
