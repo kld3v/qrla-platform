@@ -14,10 +14,13 @@ class MarkerFactory extends Factory
     public function definition()
     {
         $markerableType = $this->faker->randomElement(['seat', 'block']);
+        $markerable = $markerableType === 'seat' 
+            ? Seat::factory()->create() 
+            : Block::factory()->create();
 
         return [
             'short_code' => $this->faker->bothify('MKR-####'),
-            'markerable_id' => ($markerableType === 'seat' ? Seat::factory() : Block::factory()), // Generates the appropriate ID
+            'markerable_id' => $markerable->id,
             'markerable_type' => $markerableType,
         ];
     }

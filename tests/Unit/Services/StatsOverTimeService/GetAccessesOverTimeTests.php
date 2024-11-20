@@ -6,7 +6,10 @@ use Tests\TestCase;
 use App\Services\StatsOverTimeService;
 use App\Models\AccessLog;
 use App\Models\Venue;
+use App\Models\Stand;
 use App\Models\Block;
+use App\Models\Seat;
+use App\Models\Marker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;
 use Exception;
@@ -27,11 +30,32 @@ class GetAccessesOverTimeTests extends TestCase
     public function it_returns_access_counts_for_venue_with_valid_venue_id()
     {
         $venue = Venue::factory()->create();
+        $stand = Stand::factory()->create(['venue_id' => $venue->id]);
+        $block = Block::factory()->create(['stand_id' => $stand->id]);
+        $seat = Seat::factory()->create(['block_id' => $block->id]);
+
         $startTime = Carbon::now()->subDay();
         $endTime = Carbon::now();
 
-        AccessLog::factory()->count(5)->create([
-            'marker_id' => $this->getVenueMarkerId($venue),
+        // Create markers for block and seat
+        $blockMarker = Marker::factory()->create([
+            'markerable_id' => $block->id,
+            'markerable_type' => 'block',
+        ]);
+
+        $seatMarker = Marker::factory()->create([
+            'markerable_id' => $seat->id,
+            'markerable_type' => 'seat',
+        ]);
+
+        // Create access logs for the markers
+        AccessLog::factory()->count(3)->create([
+            'marker_id' => $blockMarker->id,
+            'accessed_at' => Carbon::now()->subHour(),
+        ]);
+
+        AccessLog::factory()->count(2)->create([
+            'marker_id' => $seatMarker->id,
             'accessed_at' => Carbon::now()->subHour(),
         ]);
 
@@ -41,28 +65,51 @@ class GetAccessesOverTimeTests extends TestCase
         $this->assertEquals(5, array_sum(array_column($result, 'total_access_count')));
     }
 
+
     /** @test */
     public function it_returns_access_counts_for_block_with_valid_block_id()
     {
         $block = Block::factory()->create();
+        $seat = Seat::factory()->create(['block_id' => $block->id]);
+
         $startTime = Carbon::now()->subDay();
         $endTime = Carbon::now();
 
+        // Use MarkerFactory to create markers for block and seat
+        $blockMarker = Marker::factory()->create([
+            'markerable_id' => $block->id,
+            'markerable_type' => 'block',
+        ]);
+
+        $seatMarker = Marker::factory()->create([
+            'markerable_id' => $seat->id,
+            'markerable_type' => 'seat',
+        ]);
+
+        // Create access logs for the markers
+        AccessLog::factory()->count(2)->create([
+            'marker_id' => $blockMarker->id,
+            'accessed_at' => Carbon::now()->subHour(),
+        ]);
+
         AccessLog::factory()->count(3)->create([
-            'marker_id' => $this->getBlockMarkerId($block),
+            'marker_id' => $seatMarker->id,
             'accessed_at' => Carbon::now()->subHour(),
         ]);
 
         $result = $this->service->getAccessesOverTime('block', $block->id, $startTime, $endTime);
 
         $this->assertNotEmpty($result);
-        $this->assertEquals(3, array_sum(array_column($result, 'total_access_count')));
+        $this->assertEquals(5, array_sum(array_column($result, 'total_access_count')));
     }
 
     /** @test */
     public function it_handles_different_time_intervals_correctly()
     {
         $venue = Venue::factory()->create();
+        $stand = Stand::factory()->create(['venue_id' => $venue->id]);
+        $block = Block::factory()->create(['stand_id' => $stand->id]);
+
         $intervals = [
             'minute' => [Carbon::now()->subMinute(), Carbon::now()],
             'hour' => [Carbon::now()->subHour(), Carbon::now()],
@@ -104,16 +151,5 @@ class GetAccessesOverTimeTests extends TestCase
     {
         $this->expectException(Exception::class);
         $this->service->getAccessesOverTime('venue', 999, Carbon::now()->subDay(), Carbon::now());
-    }
-
-    // Helper functions to get marker IDs
-    protected function getVenueMarkerId($venue)
-    {
-        return $venue->markers()->first()->id ?? 1;
-    }
-
-    protected function getBlockMarkerId($block)
-    {
-        return $block->markers()->first()->id ?? 1;
     }
 }
