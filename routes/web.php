@@ -10,6 +10,7 @@ use App\Http\Controllers\BlockController;
 use App\Http\Controllers\MarkerController;
 use App\Http\Controllers\StatsController;
 use App\Http\Controllers\RegisterLinkController;
+use Spatie\CookieConsent\CookieConsent;
 
 Route::domain('https://qrla.io')->group(function () {
     Route::get('/', function () {
