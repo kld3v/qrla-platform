@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Logo;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Venue;
 
 class LogoFactory extends Factory
 {
@@ -12,7 +13,7 @@ class LogoFactory extends Factory
     public function definition()
     {
         return [
-            'venue_id' => $this->faker->numberBetween(1, 100),
+            'venue_id' => Venue::factory(),
             'path' => $this->faker->imageUrl(),
         ];
     }

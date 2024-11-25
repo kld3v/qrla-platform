@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Organisation;
 use App\Models\Venue;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -26,7 +27,11 @@ class VenueFactory extends Factory
             'long_description' => $this->faker->text,
             'contact_email' => $this->faker->safeEmail,
             'contact_phone' => $this->faker->phoneNumber,
-            'management' => $this->faker->name,
+            'organisation_id' => Organisation::factory(),
+            'plaques' => $this->faker->numberBetween(0, 500), // Adjust as necessary
+            'access_rate' => $this->faker->randomFloat(2, 0, 100),
+            'map_svg_url' => $this->faker->url,
+            'plaque_image_url' => $this->faker->imageUrl(),
         ];
     }
 }

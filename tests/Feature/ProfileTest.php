@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Illuminate\Support\Facades\Log;
 
 class ProfileTest extends TestCase
 {
@@ -30,6 +31,8 @@ class ProfileTest extends TestCase
             ->patch('/profile', [
                 'name' => 'Test User',
                 'email' => 'test@example.com',
+                'role' => 'fish monger',
+                'phone' => '+44 012345523'
             ]);
 
         $response
@@ -52,6 +55,8 @@ class ProfileTest extends TestCase
             ->patch('/profile', [
                 'name' => 'Test User',
                 'email' => $user->email,
+                'role' => 'fish monger',
+                'phone' => '+44 012345523'
             ]);
 
         $response

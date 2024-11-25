@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\AccessLog;
+use App\Models\Marker;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class AccessLogFactory extends Factory
@@ -12,7 +13,7 @@ class AccessLogFactory extends Factory
     public function definition()
     {
         return [
-            'marker_id' => $this->faker->randomDigit,
+            'marker_id' => Marker::factory(),
             'ip_address' => $this->faker->ipv4,
             'user_agent' => $this->faker->userAgent,
             'os' => $this->faker->word,
