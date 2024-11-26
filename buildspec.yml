@@ -14,18 +14,20 @@ phases:
   pre_build:
     commands:
       - echo "Installing PHP dependencies..."
-      - composer install --no-interaction --prefer-dist --optimize-autoloader --dev
-      - echo "Installing Node.js dependencies and building assets..."
+      - composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+      - echo "Installing Node.js dependencies..."
+      - rm -rf node_modules
       - npm ci
+      - echo "Building frontend assets..."
       - npm run build
 
   build:
     commands:
-      - echo "Skipping tests and migrations due to lack of database connection."
+      - echo "Build phase: no tests or migrations executed for this build."
 
   post_build:
     commands:
-      - echo "Clearing cache..."
+      - echo "Clearing Laravel cache..."
       - php artisan config:cache
       - php artisan route:cache
       - php artisan view:cache
@@ -35,7 +37,17 @@ phases:
 
 artifacts:
   files:
-    - '**/*'  # Package all files
+    - 'app/**/*'
+    - 'bootstrap/**/*'
+    - 'config/**/*'
+    - 'database/**/*'
+    - 'public/**/*'
+    - 'resources/**/*'
+    - 'routes/**/*'
+    - 'storage/**/*'
+    - 'vendor/**/*'
+    - '.env.example'
+    - 'artisan'
   discard-paths: no
 
 cache:
