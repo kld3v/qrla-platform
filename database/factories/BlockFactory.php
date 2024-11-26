@@ -5,7 +5,7 @@ namespace Database\Factories;
 use App\Models\Block;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Stand;
-use App\Models\BaseUrl;
+use App\Models\Redirect;
 
 class BlockFactory extends Factory
 {
@@ -16,7 +16,7 @@ class BlockFactory extends Factory
         return [
             'name' => $this->faker->word,
             'stand_id' => Stand::factory(),
-            'base_url_id' => BaseUrl::factory(),
+            'redirect_id' => Redirect::factory(),
         ];
     }
 }
