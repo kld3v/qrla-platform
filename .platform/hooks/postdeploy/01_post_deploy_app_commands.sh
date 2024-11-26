@@ -1,4 +1,5 @@
 #!/bin/bash
+composer install --no-dev --optimize-autoloader
 php artisan route:cache
 php artisan config:cache
 php artisan view:cache

@@ -25,10 +25,10 @@
         <!-- <env name="DB_CONNECTION" value="sqlite"/>
         <env name="DB_DATABASE" value=":memory:"/> -->
 
-        <!-- <env name="DB_CONNECTION" value="mysql"/>
+        <env name="DB_CONNECTION" value="mysql"/>
         <env name="DB_DATABASE" value="platform_staging"/>
         <env name="DB_USERNAME" value="platform_staging"/>
-        <env name="DB_PASSWORD" value="platform_staging"/> -->
+        <env name="DB_PASSWORD" value="platformStaging_123!"/>
 
         <env name="MAIL_MAILER" value="array"/>
         <env name="PULSE_ENABLED" value="false"/>
