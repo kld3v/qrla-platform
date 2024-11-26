@@ -1,0 +1,10 @@
+# Test-related files
+phpunit.xml
+coverage/
+
+# Local development files
+.env.testing
+.env.local
+.env.example
+node_modules/
+vendor/bin/
