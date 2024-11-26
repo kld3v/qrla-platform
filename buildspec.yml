@@ -44,8 +44,12 @@ artifacts:
     - 'routes/**/*'
     - 'storage/**/*'
     - 'vendor/**/*'
-    - '.env.example'
-    - 'artisan'
+    - '.platform/**/*'        # Include platform hooks
+    - '.ebextensions/**/*'    # Include EB configurations
+    - 'composer.json'         # Include composer.json
+    - 'composer.lock'         # Include composer.lock
+    - 'artisan'               # Include Laravel CLI
+    - '.env.example'          # Include example env file
   discard-paths: no
 
 cache:
