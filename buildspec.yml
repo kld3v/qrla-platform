@@ -45,7 +45,7 @@ artifacts:
     - 'storage/**/*'
     - 'vendor/**/*'
     - '.platform/**/*'        # Include platform hooks
-    # - '.ebextensions/**/*'    # Include EB configurations
+    - '.ebextensions/**/*'    # Include EB configurations
     - 'artisan'               # Include Laravel CLI
   discard-paths: no
 
